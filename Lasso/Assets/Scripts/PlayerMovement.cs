@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jump = 5f;
     private Rigidbody2D body;
     private Animator anim;
+    private bool grounded;
 
     // Awake is called when the script instance is being loaded
     private void Awake()
@@ -35,14 +36,28 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = new Vector3(-6, 6, 1);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && grounded)
         {
-            // Setting the velocity of the Rigidbody2D component to the input axis on the Y axis
-            body.velocity = new Vector2(body.velocity.x, jump);
+            Jump();
         }
 
         // Setting the animation parameters
         anim.SetBool("run", horizontalInput != 0);
+        anim.SetBool("grounded", grounded);
+    }
 
+    private void Jump() 
+    {
+        body.velocity = new Vector2(body.velocity.x, jump);
+        anim.SetTrigger("jump");
+        grounded = false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+        {
+            grounded = true;
+        }
     }
 }
