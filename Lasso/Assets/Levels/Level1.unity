@@ -226,7 +226,7 @@ GameObject:
   - component: {fileID: 631893053}
   - component: {fileID: 631893052}
   - component: {fileID: 631893051}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ground (3)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -339,7 +339,7 @@ Transform:
   m_GameObject: {fileID: 631893050}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.68, y: 0.52, z: 0}
+  m_LocalPosition: {x: 3.73, y: -1.64, z: 0}
   m_LocalScale: {x: 8.56, y: 2.99, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -356,7 +356,7 @@ GameObject:
   - component: {fileID: 1023272920}
   - component: {fileID: 1023272919}
   - component: {fileID: 1023272918}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ground (2)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -469,7 +469,7 @@ Transform:
   m_GameObject: {fileID: 1023272917}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.7, y: -1.12, z: 0}
+  m_LocalPosition: {x: 1.2, y: -2.6, z: 0}
   m_LocalScale: {x: 8.56, y: 2.99, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -486,7 +486,7 @@ GameObject:
   - component: {fileID: 1252819491}
   - component: {fileID: 1252819490}
   - component: {fileID: 1252819489}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ground (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -599,8 +599,8 @@ Transform:
   m_GameObject: {fileID: 1252819488}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4, y: -2.7, z: 0}
-  m_LocalScale: {x: 8.56, y: 2.99, z: 0}
+  m_LocalPosition: {x: -8.2279, y: -0.4311, z: 0}
+  m_LocalScale: {x: 8.066153, y: 49.567368, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -754,7 +754,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 3
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 16dd84fa253f1bc4e81a4660fb6d3b71, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -764,7 +764,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &1337052756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -779,6 +779,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 9
   jump: 11
+  groundCheckSize: 0
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!95 &1337052757
 Animator:
   serializedVersion: 5
@@ -811,7 +815,7 @@ GameObject:
   - component: {fileID: 2076828206}
   - component: {fileID: 2076828205}
   - component: {fileID: 2076828207}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ground
   m_TagString: Ground
   m_Icon: {fileID: 0}
