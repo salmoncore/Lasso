@@ -35,4 +35,12 @@ public class Health : MonoBehaviour
         // Clamp the health to be between 0 and startingHealth
         currentHealth = Mathf.Clamp(currentHealth + _heal, 0, startingHealth);
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            TakeDamage(1);
+        }
+    }
 }
