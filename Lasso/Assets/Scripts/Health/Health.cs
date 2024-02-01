@@ -7,10 +7,12 @@ public class Health : MonoBehaviour
     // Note that there are 3 hearts in the UI. Any more will require a UI change.
     [SerializeField] private int startingHealth = 3;
     public int currentHealth { get; private set; }
+    private Animator anim;
 
     private void Awake()
     {
         currentHealth = startingHealth;
+        anim = GetComponent<Animator>();
     }
 
     private void TakeDamage(int _damage) 
@@ -20,11 +22,11 @@ public class Health : MonoBehaviour
 
         if (currentHealth > 0) // Player hurt
         {
-            
+            anim.SetTrigger("hurt");
         }
         else // Player dead lol
         {
-            
+            anim.SetTrigger("die");
         }
     }
 
@@ -32,13 +34,5 @@ public class Health : MonoBehaviour
     {
         // Clamp the health to be between 0 and startingHealth
         currentHealth = Mathf.Clamp(currentHealth + _heal, 0, startingHealth);
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            TakeDamage(1);
-        }
     }
 }
