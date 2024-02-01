@@ -8,6 +8,7 @@ public class Health : MonoBehaviour
     [SerializeField] private int startingHealth = 3;
     public int currentHealth { get; private set; }
     private Animator anim;
+    private bool dead;
 
     private void Awake()
     {
@@ -23,10 +24,16 @@ public class Health : MonoBehaviour
         if (currentHealth > 0) // Player hurt
         {
             anim.SetTrigger("hurt");
+            // TODO: Needs iframes
         }
         else // Player dead lol
         {
-            anim.SetTrigger("die");
+            if (!dead)
+            { 
+                anim.SetTrigger("die");
+                GetComponent<PlayerMovement>().enabled = false;
+                dead = true;
+            }
         }
     }
 
@@ -38,9 +45,14 @@ public class Health : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        // TODO: Remove these for release
+        if (Input.GetKeyDown(KeyCode.PageDown))
         {
             TakeDamage(1);
+        }
+        if (Input.GetKeyDown(KeyCode.PageUp))
+        {
+            Heal(1);
         }
     }
 }

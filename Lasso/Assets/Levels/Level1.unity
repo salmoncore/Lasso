@@ -174,9 +174,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerHealth: {fileID: 226934503}
-  Heart1: {fileID: 956976189}
-  Heart2: {fileID: 1239339090}
-  Heart3: {fileID: 617940704}
+  hearts:
+  - {fileID: 956976189}
+  - {fileID: 1239339090}
+  - {fileID: 617940704}
 --- !u!1001 &226934501
 PrefabInstance:
   m_ObjectHideFlags: 0
