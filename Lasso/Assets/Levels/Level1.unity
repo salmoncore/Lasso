@@ -779,7 +779,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 9
   jump: 11
-  groundCheckSize: 0.2
+  groundCheckSize: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
