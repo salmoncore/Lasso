@@ -16,7 +16,7 @@ public class Health : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    private void TakeDamage(int _damage) 
+    public void TakeDamage(int _damage) 
     {
         // Clamp the health to be between 0 and startingHealth
         currentHealth = Mathf.Clamp(currentHealth - _damage, 0, startingHealth);
