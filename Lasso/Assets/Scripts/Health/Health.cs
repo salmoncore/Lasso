@@ -37,10 +37,16 @@ public class Health : MonoBehaviour
         }
     }
 
-    private void Heal(int _heal)
+    public void Heal(int _heal)
     {
-        // Clamp the health to be between 0 and startingHealth
-        currentHealth = Mathf.Clamp(currentHealth + _heal, 0, startingHealth);
+        if (currentHealth > 0) // Player healable
+        {
+            // Clamp the health to be between 0 and startingHealth
+            currentHealth = Mathf.Clamp(currentHealth + _heal, 1, startingHealth);
+
+            // TODO: Set heal animation
+ 
+        }
     }
 
     private void Update()
