@@ -62,7 +62,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool canAttack()
     {
-        // TODO: Disallow spamming the attack
+        // Modify to prevent attacking when doing certain movement
         return true;
     }
 }
