@@ -60,4 +60,9 @@ public class PlayerMovement : MonoBehaviour
         return raycastHit.collider != null;
     }
 
+    public bool canAttack()
+    {
+        // Modify to prevent attacking when doing certain movement
+        return true;
+    }
 }
