@@ -40,7 +40,7 @@ public class Health : MonoBehaviour
         {
             if (!dead)
             { 
-                anim.SetTrigger("die");
+                anim.SetBool("dead", true);
                 GetComponent<PlayerMovement>().enabled = false;
                 body.velocity = new Vector2(0, 0);
                 dead = true;
