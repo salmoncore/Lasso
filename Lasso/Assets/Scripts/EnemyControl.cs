@@ -5,14 +5,13 @@ using UnityEngine;
 
 public class EnemyControl : MonoBehaviour
 {
+    [SerializeField] private int damage = 1;
     public GameObject pointA;
     public GameObject pointB;
     private Rigidbody2D rb;
     private Animator anim;
     private Transform currentPoint;
     public float speed;
-
-
 
     void Start()
     {
@@ -44,6 +43,15 @@ public class EnemyControl : MonoBehaviour
         {
             flip();
             currentPoint = pointB.transform;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Player")
+        {
+            Debug.Log("Ya");
+            collision.GetComponent<Health>().TakeDamage(damage);
         }
     }
 
