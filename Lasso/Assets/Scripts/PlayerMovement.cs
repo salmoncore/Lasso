@@ -60,4 +60,9 @@ public class PlayerMovement : MonoBehaviour
         return raycastHit.collider != null;
     }
 
+    public bool canAttack()
+    {
+        // TODO: Disallow spamming the attack
+        return true;
+    }
 }
