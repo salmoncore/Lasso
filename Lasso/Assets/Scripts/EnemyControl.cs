@@ -50,7 +50,6 @@ public class EnemyControl : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            Debug.Log("Ya");
             collision.GetComponent<Health>().TakeDamage(damage);
         }
     }
