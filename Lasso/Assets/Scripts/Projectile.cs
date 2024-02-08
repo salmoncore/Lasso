@@ -5,6 +5,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
 	[SerializeField] private float speed;
+	[SerializeField] private float lifetime;
 	private float direction;
 	private bool hit;
 
@@ -19,10 +20,7 @@ public class Projectile : MonoBehaviour
 
 	private void Update()
 	{
-		if (hit)
-		{ 
-			return;
-		}
+		if (hit) { return; }
 		float movementSpeed = speed * Time.deltaTime * direction;
 		transform.Translate(movementSpeed, 0, 0);
 	}
