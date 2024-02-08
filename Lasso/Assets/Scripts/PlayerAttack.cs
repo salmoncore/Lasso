@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     [SerializeField] private float attackCooldown;
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private GameObject[] lassoPool;
     private Animator anim;
     private PlayerMovement playerMovement;
     private float cooldownTimer = Mathf.Infinity;
@@ -29,5 +31,9 @@ public class PlayerAttack : MonoBehaviour
     {
         anim.SetTrigger("attack");
         cooldownTimer = 0;
+
+        // Using object pooling instead of instantiate & destroy. We love wasting RAM.
+        lassoPool[0].transform.position = firePoint.position;
+        lassoPool[0].GetComponent<Projectile>().SetDirection(Mathf.Sign(transform.localScale.x));
     }
 }

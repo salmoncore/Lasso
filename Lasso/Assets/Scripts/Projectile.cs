@@ -19,7 +19,10 @@ public class Projectile : MonoBehaviour
 
 	private void Update()
 	{
-		if (hit) return;
+		if (hit)
+		{ 
+			return;
+		}
 		float movementSpeed = speed * Time.deltaTime * direction;
 		transform.Translate(movementSpeed, 0, 0);
 	}
@@ -28,7 +31,7 @@ public class Projectile : MonoBehaviour
 	{
 		hit = true;
 		boxCollider.enabled = false;
-		anim.SetTrigger("Thrown");
+		anim.SetTrigger("Hit");
 	}
 
 	public void SetDirection(float _direction)
@@ -37,5 +40,19 @@ public class Projectile : MonoBehaviour
 		gameObject.SetActive(true);
 		hit = false;
 		boxCollider.enabled = true;
+
+		float localScaleX = transform.localScale.x;
+
+		if (Mathf.Sign(localScaleX) != _direction)
+		{
+			localScaleX = -localScaleX;
+		}
+
+		transform.localScale = new Vector3(localScaleX, transform.localScale.y, transform.localScale.z);
+	}
+
+	private void Deactivate()
+	{
+		gameObject.SetActive(false);
 	}
 }
