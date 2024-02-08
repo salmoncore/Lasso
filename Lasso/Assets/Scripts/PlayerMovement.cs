@@ -61,7 +61,6 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate() {
         // Normal jump at full speed
         if (jump) {
-            Debug.Log(jumpSpeed);
             body.velocity = new Vector2(body.velocity.x, jumpSpeed);
             jump = false;
         }
