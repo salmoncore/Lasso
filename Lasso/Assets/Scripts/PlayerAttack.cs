@@ -6,20 +6,20 @@ public class PlayerAttack : MonoBehaviour
 {
     [SerializeField] private float attackCooldown;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private GameObject[] lassoPool;
-    private Animator anim;
+    [SerializeField] private GameObject lassoObj;
+	private Animator anim;
     private PlayerMovement playerMovement;
     private float cooldownTimer = Mathf.Infinity;
 
     private void Awake()
     {
-        anim = GetComponent<Animator>();
+		anim = GetComponent<Animator>();
         playerMovement = GetComponent<PlayerMovement>();
 	}
 
 	private void Update()
 	{
-        if (Input.GetKeyDown(";") && (cooldownTimer > attackCooldown) && playerMovement.canAttack())
+		if (Input.GetKeyDown(";") && (cooldownTimer > attackCooldown) && playerMovement.canAttack())
         {
             Attack();
         }
@@ -29,11 +29,18 @@ public class PlayerAttack : MonoBehaviour
 
     private void Attack()
     {
-        anim.SetTrigger("attack");
         cooldownTimer = 0;
 
-        // Using object pooling instead of instantiate & destroy. We love wasting RAM.
-        lassoPool[0].transform.position = firePoint.position;
-        lassoPool[0].GetComponent<Projectile>().SetDirection(Mathf.Sign(transform.localScale.x));
+        if (LassoReady())
+        {
+			anim.SetTrigger("attack");
+			lassoObj.transform.position = firePoint.position;
+            lassoObj.GetComponent<Projectile>().SetDirection(Mathf.Sign(transform.localScale.x));
+        }
+    }
+
+    private bool LassoReady() 
+    { 
+        return (lassoObj.activeInHierarchy) ? false : true;
     }
 }
