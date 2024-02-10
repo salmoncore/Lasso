@@ -33,16 +33,10 @@ public class PlayerMovement : MonoBehaviour
         // Setting the velocity of the Rigidbody2D component to the input axis on the X axis
         body.velocity = new Vector2(horizontalInput * speed, body.velocity.y);
 
-        // Flipping the sprite based on the input axis
-        if (horizontalInput > 0.01f)
-        {
-            transform.localScale = new Vector3(6, 6, 1);
-        }
-        else if (horizontalInput < -0.01f)
-        {
-            transform.localScale = new Vector3(-6, 6, 1);
-        }
 
+
+        // Flipping the sprite based on the input axis
+        flipSprite(horizontalInput);
 
         // Jumping
         if (Input.GetButtonDown("Jump") && isGrounded()) {
@@ -57,6 +51,18 @@ public class PlayerMovement : MonoBehaviour
         anim.SetBool("run", horizontalInput != 0);
         anim.SetBool("grounded", isGrounded());
     }
+
+    void flipSprite(float horizontalInput)
+    {
+		if (horizontalInput > 0.01f)
+		{
+			transform.localScale = new Vector3(6, 6, 1);
+		}
+		else if (horizontalInput < -0.01f)
+		{
+			transform.localScale = new Vector3(-6, 6, 1);
+		}
+	}
 
     void FixedUpdate() {
         // Normal jump at full speed
@@ -81,7 +87,23 @@ public class PlayerMovement : MonoBehaviour
         return raycastHit.collider != null;
     }
 
-    public bool canAttack()
+    private bool collisionLeft()
+    {
+		Vector2 boxCastSize = boxCollider.bounds.size;
+		boxCastSize.x -= groundCheckSize;
+		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.left, 0.1f, groundLayer);
+		return raycastHit.collider != null;
+	}
+
+	private bool collisionRight()
+	{
+		Vector2 boxCastSize = boxCollider.bounds.size;
+		boxCastSize.x -= groundCheckSize;
+		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.left, 0.1f, groundLayer);
+		return raycastHit.collider != null;
+	}
+
+	public bool canAttack()
     {
         // Modify to prevent attacking when doing certain movement
         return true;
