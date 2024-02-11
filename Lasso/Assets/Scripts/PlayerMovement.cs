@@ -7,7 +7,10 @@ public class PlayerMovement : MonoBehaviour
 {
     // Serializing the fields so that it shows up in the Unity inspector
     [SerializeField] private float speed = 5f; // Default values, change in Unity
-    [SerializeField] private float jump = 5f;
+    [SerializeField] private float jumpShortSpeed = 4f;
+    [SerializeField] private float jumpSpeed = 11.5f;
+    [SerializeField] private bool jump = false;
+    [SerializeField] private bool jumpCancel = false;
     [SerializeField] private float groundCheckSize = 0.5f;
     [SerializeField] private LayerMask groundLayer;
     private Rigidbody2D body;
@@ -31,24 +34,46 @@ public class PlayerMovement : MonoBehaviour
         body.velocity = new Vector2(horizontalInput * speed, body.velocity.y);
 
         // Flipping the sprite based on the input axis
-        if (horizontalInput > 0.01f)
-        {
-            transform.localScale = new Vector3(6, 6, 1);
-        }
-        else if (horizontalInput < -0.01f)
-        {
-            transform.localScale = new Vector3(-6, 6, 1);
-        }
+        flipSprite(horizontalInput);
 
         // Jumping
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded())
-        {
-            body.velocity = new Vector2(body.velocity.x, jump);
+        if (Input.GetButtonDown("Jump") && isGrounded()) {
+            jump = true;
+        } 
+        
+        if (Input.GetButtonUp("Jump") && !isGrounded()) {
+            jumpCancel = true;
         }
 
         // Setting the animation parameters
         anim.SetBool("run", horizontalInput != 0);
         anim.SetBool("grounded", isGrounded());
+    }
+
+    void flipSprite(float horizontalInput)
+    {
+		if (horizontalInput > 0.01f)
+		{
+			transform.localScale = new Vector3(6, 6, 1);
+		}
+		else if (horizontalInput < -0.01f)
+		{
+			transform.localScale = new Vector3(-6, 6, 1);
+		}
+	}
+
+    void FixedUpdate() {
+        // Normal jump at full speed
+        if (jump) {
+            body.velocity = new Vector2(body.velocity.x, jumpSpeed);
+            jump = false;
+        }
+
+        if (jumpCancel) {
+            if (body.velocity.y > jumpShortSpeed)
+                body.velocity = new Vector2(body.velocity.x, jumpShortSpeed);
+            jumpCancel = false;
+        }
     }
 
     private bool isGrounded()
@@ -60,4 +85,9 @@ public class PlayerMovement : MonoBehaviour
         return raycastHit.collider != null;
     }
 
+	public bool canAttack()
+    {
+        // Modify to prevent attacking when doing certain movement
+        return true;
+    }
 }
