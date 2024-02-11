@@ -381,10 +381,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 839809995413806357, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
-      propertyPath: jump
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2114736059195305176, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
       propertyPath: m_Interpolate
       value: 0
@@ -397,10 +393,6 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 0.11094116
       objectReference: {fileID: 0}
-    - target: {fileID: 3242223935991177991, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 6200000, guid: 16dd84fa253f1bc4e81a4660fb6d3b71, type: 2}
     - target: {fileID: 3242223935991177991, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
       propertyPath: m_Offset.x
       value: 0.00018953718
