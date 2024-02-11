@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4168133793931004646}
   - component: {fileID: 8909004129374416919}
   - component: {fileID: 4144986528301848229}
-  - component: {fileID: 3519514327566681255}
   - component: {fileID: 3065587701788614415}
   m_Layer: 0
   m_Name: crow_enemy
@@ -154,22 +153,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.19047144, y: 0.29528537}
   m_EdgeRadius: 0
---- !u!114 &3519514327566681255
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7130824503898513176}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8b85b76648924d49b3eda6c823d8f0f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 1
-  pointA: {fileID: 0}
-  pointB: {fileID: 0}
-  speed: 2
 --- !u!50 &3065587701788614415
 Rigidbody2D:
   serializedVersion: 4
