@@ -33,8 +33,6 @@ public class PlayerMovement : MonoBehaviour
         // Setting the velocity of the Rigidbody2D component to the input axis on the X axis
         body.velocity = new Vector2(horizontalInput * speed, body.velocity.y);
 
-
-
         // Flipping the sprite based on the input axis
         flipSprite(horizontalInput);
 
@@ -86,22 +84,6 @@ public class PlayerMovement : MonoBehaviour
         RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
         return raycastHit.collider != null;
     }
-
-    private bool collisionLeft()
-    {
-		Vector2 boxCastSize = boxCollider.bounds.size;
-		boxCastSize.x -= groundCheckSize;
-		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.left, 0.1f, groundLayer);
-		return raycastHit.collider != null;
-	}
-
-	private bool collisionRight()
-	{
-		Vector2 boxCastSize = boxCollider.bounds.size;
-		boxCastSize.x -= groundCheckSize;
-		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.left, 0.1f, groundLayer);
-		return raycastHit.collider != null;
-	}
 
 	public bool canAttack()
     {
