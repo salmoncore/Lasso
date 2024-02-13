@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,34 +18,26 @@ public class Projectile : MonoBehaviour
 	{
 		anim = GetComponent<Animator>();
 		boxCollider = GetComponent<BoxCollider2D>();
-		player = GetComponent<Rigidbody2D>();
 	}
 
 	private void Update()
 	{
-		// Print the player's position for debugging purposes
-		if (player != null)
-		{
-			Debug.Log("Player Position: " + player.position);
-		}
-		else
-		{
-			Debug.Log("Player Rigidbody2D is not assigned!");
-		}
-
 		if (hit) { return; }
 
-		float movementSpeed = speed * Time.deltaTime * direction;
+		float movementSpeed = (speed + Mathf.Abs(player.velocity.x)) * Time.deltaTime * direction;
 		transform.Translate(movementSpeed, 0, 0);
 
-		// If player Rigidbody2D is correctly assigned and not null, check the distance
-		if (player != null)
+		Debug.Log("Player Position: " + player.position);
+		Debug.Log("Projectile Position: " + transform.position);
+
+		float distanceFromPlayer = Vector2.Distance(player.position, transform.position);
+
+		Debug.Log("Distance: " + distanceFromPlayer);
+
+		if (distanceFromPlayer > lassoDistance)
 		{
-			float distanceFromPlayer = Vector2.Distance(player.position, transform.position);
-			if (distanceFromPlayer > lassoDistance)
-			{
-				Deactivate();
-			}
+			Debug.Log("YUP");
+			Deactivate();
 		}
 	}
 
@@ -74,8 +67,7 @@ public class Projectile : MonoBehaviour
 
 	private void Deactivate()
 	{
-		boxCollider.enabled = false;
-		anim.SetTrigger("Hit");
+
 		gameObject.SetActive(false);
 	}
 }
