@@ -259,5 +259,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackCooldown: 1
-  firePoint: {fileID: 0}
+  firePoint: {fileID: 5272109558195561118}
   lassoObj: {fileID: 0}

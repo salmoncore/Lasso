@@ -227,6 +227,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5272109558195561118, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.000000029802322
+      objectReference: {fileID: 0}
     - target: {fileID: 7976362101839270549, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
       propertyPath: m_Icon
       value: 
@@ -768,7 +772,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  lassoDistance: 0.01
+  lassoDistance: 3
   player: {fileID: 1167554349}
 --- !u!50 &1167554349 stripped
 Rigidbody2D:
