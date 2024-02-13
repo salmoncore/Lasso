@@ -44,23 +44,53 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    private Vector2 GetAttackDirectionFromInput()
-    {
-        // Right Stick Input
-        float horizontal = Input.GetAxis("RightStickHorizontal");
-        float vertical = Input.GetAxis("RightStickVertical");
+	private Vector2 GetAttackDirectionFromInput()
+	{
+		float horizontal = Input.GetAxis("RightStickHorizontal");
+		float vertical = Input.GetAxis("RightStickVertical");
 
-        // IJKL Input (Checking RS Deadzone)
-        if (Mathf.Approximately(horizontal, 0f) && Mathf.Approximately(vertical, 0f))
-        { 
-            horizontal = (Input.GetKey(KeyCode.L) ? 1 : 0) - (Input.GetKey(KeyCode.J) ? 1 : 0);
-            vertical = (Input.GetKey(KeyCode.I) ? 1 : 0) - (Input.GetKey(KeyCode.K) ? 1 : 0);
-        }
+		bool isRightStickInDeadzone = Mathf.Approximately(horizontal, 0f) && Mathf.Approximately(vertical, 0f);
+		bool noKeyboardInput = !Input.GetKey(KeyCode.I) && !Input.GetKey(KeyCode.J) && !Input.GetKey(KeyCode.K) && !Input.GetKey(KeyCode.L);
 
-        return new Vector2(horizontal, vertical);
-    }
+		Vector2 direction = Vector2.zero;
 
-    private bool LassoReady() 
+		if (!isRightStickInDeadzone)
+		{
+			// Determine the direction of the joystick input
+			if (Mathf.Abs(horizontal) > Mathf.Abs(vertical))
+			{
+				direction = new Vector2(Mathf.Sign(horizontal), 0);
+			}
+			else if (Mathf.Abs(vertical) > Mathf.Abs(horizontal))
+			{
+				direction = new Vector2(0, Mathf.Sign(vertical));
+			}
+			else if (!Mathf.Approximately(horizontal, 0f))
+			{
+				direction = new Vector2(Mathf.Sign(horizontal), 0);
+			}
+		}
+		else if (noKeyboardInput)
+		{
+			direction = new Vector2(Mathf.Sign(transform.localScale.x), 0);
+		}
+		else
+		{
+			horizontal = (Input.GetKey(KeyCode.L) ? 1 : 0) - (Input.GetKey(KeyCode.J) ? 1 : 0);
+			vertical = (Input.GetKey(KeyCode.I) ? 1 : 0) - (Input.GetKey(KeyCode.K) ? 1 : 0);
+			direction = new Vector2(horizontal, vertical);
+		}
+
+		if (direction != Vector2.zero)
+		{
+			direction.Normalize();
+		}
+		return direction;
+	}
+
+
+
+	private bool LassoReady() 
     { 
         return (lassoObj.activeInHierarchy) ? false : true;
     }
