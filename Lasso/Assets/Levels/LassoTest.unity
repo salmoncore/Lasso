@@ -329,10 +329,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 8175422417261843334, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 681815122}
+    m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
 --- !u!114 &226934503 stripped
@@ -346,11 +343,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94955b756e2d6814b90589e613c2fc07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &226934504 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8175422417261843334, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
-  m_PrefabInstance: {fileID: 226934501}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &305948428
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -577,37 +569,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &681815121
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 681815122}
-  m_Layer: 0
-  m_Name: firePoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &681815122
+--- !u!4 &681815122 stripped
 Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 5272109558195561118, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
+  m_PrefabInstance: {fileID: 226934501}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 681815121}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.12, y: -0.025, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 226934504}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1120988475
 GameObject:
   m_ObjectHideFlags: 0
@@ -802,7 +768,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  lifetime: 0
+  lassoDistance: 0.001
+  player: {fileID: 1167554349}
+--- !u!50 &1167554349 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 2114736059195305176, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
+  m_PrefabInstance: {fileID: 226934501}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1415573026
 GameObject:
   m_ObjectHideFlags: 0
