@@ -11,6 +11,7 @@ public class Projectile : MonoBehaviour
 	private float direction;
 	private float verticalDirection;
 	private bool hit;
+	private Vector2 playerVelocity;
 
 	private BoxCollider2D boxCollider;
 	private Animator anim;
@@ -23,21 +24,17 @@ public class Projectile : MonoBehaviour
 
 	private void Update()
 	{
-		if (hit) { return; }
+		if (hit) return;
 
-		float movementSpeed = (speed + Mathf.Abs(player.velocity.x)) * Time.deltaTime * direction;
-		transform.Translate(movementSpeed, 0, 0);
+		float horizontalMovementSpeed = (speed + playerVelocity.x) * Time.deltaTime * direction;
+		float verticalMovementSpeed = (speed + playerVelocity.y) * Time.deltaTime * verticalDirection;
 
-		Debug.Log("Player Position: " + player.position);
-		Debug.Log("Projectile Position: " + transform.position);
+		transform.Translate(horizontalMovementSpeed, verticalMovementSpeed, 0);
 
 		float distanceFromPlayer = Vector2.Distance(player.position, transform.position);
 
-		Debug.Log("Distance: " + distanceFromPlayer);
-
 		if (distanceFromPlayer > lassoDistance)
 		{
-			Debug.Log("YUP");
 			Deactivate();
 		}
 	}
@@ -69,11 +66,13 @@ public class Projectile : MonoBehaviour
 
 		this.direction = direction.x;
 		this.verticalDirection = direction.y;
+
+		this.playerVelocity.x = Mathf.Abs(player.velocity.x);
+		this.playerVelocity.y = Mathf.Abs(player.velocity.y);
 	}
 
 	private void Deactivate()
 	{
-
 		gameObject.SetActive(false);
 	}
 }
