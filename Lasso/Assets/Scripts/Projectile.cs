@@ -9,6 +9,7 @@ public class Projectile : MonoBehaviour
 	[SerializeField] private float lassoDistance;
 	[SerializeField] private Rigidbody2D player;
 	private float direction;
+	private float verticalDirection;
 	private bool hit;
 
 	private BoxCollider2D boxCollider;
@@ -51,21 +52,23 @@ public class Projectile : MonoBehaviour
 		}
 	}
 
-	public void SetDirection(float _direction)
+	public void SetDirection(Vector2 direction)
 	{
-		direction = _direction;
+		direction.Normalize();
+
 		gameObject.SetActive(true);
 		hit = false;
 		boxCollider.enabled = true;
 
 		float localScaleX = transform.localScale.x;
-
-		if (Mathf.Sign(localScaleX) != _direction)
+		if (Mathf.Sign(localScaleX) != direction.x)
 		{
 			localScaleX = -localScaleX;
 		}
-
 		transform.localScale = new Vector3(localScaleX, transform.localScale.y, transform.localScale.z);
+
+		this.direction = direction.x;
+		this.verticalDirection = direction.y;
 	}
 
 	private void Deactivate()

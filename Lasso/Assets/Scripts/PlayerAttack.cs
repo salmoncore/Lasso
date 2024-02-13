@@ -34,9 +34,30 @@ public class PlayerAttack : MonoBehaviour
         if (LassoReady())
         {
 			anim.SetTrigger("attack");
-			lassoObj.transform.position = firePoint.position;
-            lassoObj.GetComponent<Projectile>().SetDirection(Mathf.Sign(transform.localScale.x));
+
+            // Get direction from right stick or IJKL
+            Vector2 attackDirection = GetAttackDirectionFromInput();
+            lassoObj.transform.position = firePoint.position;
+
+            // Set the direction of the projectile
+            lassoObj.GetComponent<Projectile>().SetDirection(attackDirection);
         }
+    }
+
+    private Vector2 GetAttackDirectionFromInput()
+    {
+        // Right Stick Input
+        float horizontal = Input.GetAxis("RightStickHorizontal");
+        float vertical = Input.GetAxis("RightStickVertical");
+
+        // IJKL Input (Checking RS Deadzone)
+        if (Mathf.Approximately(horizontal, 0f) && Mathf.Approximately(vertical, 0f))
+        { 
+            horizontal = (Input.GetKey(KeyCode.L) ? 1 : 0) - (Input.GetKey(KeyCode.J) ? 1 : 0);
+            vertical = (Input.GetKey(KeyCode.I) ? 1 : 0) - (Input.GetKey(KeyCode.K) ? 1 : 0);
+        }
+
+        return new Vector2(horizontal, vertical);
     }
 
     private bool LassoReady() 

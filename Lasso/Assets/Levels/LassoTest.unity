@@ -284,10 +284,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1120988475}
     - target: {fileID: 8576370348177537165, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
-      propertyPath: firePoint
-      value: 
-      objectReference: {fileID: 681815122}
-    - target: {fileID: 8576370348177537165, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
       propertyPath: lassoPool.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -573,11 +569,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &681815122 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5272109558195561118, guid: 358bcbac73eb91b4e9089639944a796d, type: 3}
-  m_PrefabInstance: {fileID: 226934501}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1120988475
 GameObject:
   m_ObjectHideFlags: 0
