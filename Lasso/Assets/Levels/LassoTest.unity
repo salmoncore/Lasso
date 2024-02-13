@@ -768,7 +768,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  lassoDistance: 0.001
+  lassoDistance: 0.01
   player: {fileID: 1167554349}
 --- !u!50 &1167554349 stripped
 Rigidbody2D:
