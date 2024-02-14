@@ -76,7 +76,7 @@ public class Projectile : MonoBehaviour
 		while (t < enemyTravelTime)
 		{
 			t += Time.deltaTime;
-			// Update playerPosition each frame to ensure it's current
+			
 			playerPosition = player.position;
 			enemy.transform.position = Vector2.Lerp(startPosition, playerPosition, t / enemyTravelTime);
 			yield return null;
@@ -85,11 +85,8 @@ public class Projectile : MonoBehaviour
 		// Ensure enemy position is exactly at the player's current position after loop
 		enemy.transform.position = player.position;
 
-		// Disable captured enemy
-		// enemy.SetActive(false);
-
-		// Optionally, handle the enemy being captured here, such as disabling its sprite renderer
-		// enemy.GetComponent<SpriteRenderer>().enabled = false;
+		enemy.GetComponent<SpriteRenderer>().enabled = false;
+		enemy.SetActive(false);
 	}
 
 	public void SetDirection(Vector2 direction)
