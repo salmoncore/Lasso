@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Ground
   - Enemy
+  - LassoProjectile
+  - EnemyProjectile
   layers:
   - Default
   - TransparentFX

@@ -8,10 +8,13 @@ public class Projectile : MonoBehaviour
 	[SerializeField] private float speed;
 	[SerializeField] private float lassoDistance;
 	[SerializeField] private Rigidbody2D player;
+	[SerializeField] private float enemyTravelTime = 1f;
+	private GameObject capturedEnemy = null;
 	private float direction;
 	private float verticalDirection;
 	private bool hit;
 	private Vector2 playerVelocity;
+	private Vector2 playerPosition;
 
 	private BoxCollider2D boxCollider;
 	private Animator anim;
@@ -25,6 +28,8 @@ public class Projectile : MonoBehaviour
 	private void Update()
 	{
 		if (hit) return;
+
+		playerPosition = player.position;
 
 		float horizontalMovementSpeed = (speed + playerVelocity.x) * Time.deltaTime * direction;
 		float verticalMovementSpeed = (speed + playerVelocity.y) * Time.deltaTime * verticalDirection;
@@ -41,12 +46,50 @@ public class Projectile : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
-		if (collision.tag == "Enemy" || collision.tag == "Ground")
+		if (collision.tag == "Ground")
 		{
 			hit = true;
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
 		}
+		else if (collision.tag == "Enemy")
+		{
+			hit = true;
+			boxCollider.enabled = false;
+			anim.SetTrigger("Hit");
+
+			capturedEnemy = collision.gameObject;
+			StartCoroutine(CaptureEnemy(capturedEnemy));
+		}
+	}
+
+	private IEnumerator CaptureEnemy(GameObject enemy)
+	{
+		enemy.GetComponent<Collider2D>().enabled = false;
+
+		// Hitstun?
+
+		// Move enemy towards player
+		Vector2 startPosition = enemy.transform.position;
+
+		float t = 0f;
+		while (t < enemyTravelTime)
+		{
+			t += Time.deltaTime;
+			// Update playerPosition each frame to ensure it's current
+			playerPosition = player.position;
+			enemy.transform.position = Vector2.Lerp(startPosition, playerPosition, t / enemyTravelTime);
+			yield return null;
+		}
+
+		// Ensure enemy position is exactly at the player's current position after loop
+		enemy.transform.position = player.position;
+
+		// Disable captured enemy
+		// enemy.SetActive(false);
+
+		// Optionally, handle the enemy being captured here, such as disabling its sprite renderer
+		// enemy.GetComponent<SpriteRenderer>().enabled = false;
 	}
 
 	public void SetDirection(Vector2 direction)

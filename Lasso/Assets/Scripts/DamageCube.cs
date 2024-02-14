@@ -6,11 +6,16 @@ public class DamageCube : MonoBehaviour
 {
     [SerializeField] private int damage;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+	private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Player")
         {
             collision.GetComponent<Health>().TakeDamage(damage);
+        }
+
+        if (collision.tag == "LassoProjectile")
+        {
+            /// Where do I go from here?
         }
     }
 }
