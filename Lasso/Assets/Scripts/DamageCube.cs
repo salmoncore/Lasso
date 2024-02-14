@@ -12,10 +12,5 @@ public class DamageCube : MonoBehaviour
         {
             collision.GetComponent<Health>().TakeDamage(damage);
         }
-
-        if (collision.tag == "LassoProjectile")
-        {
-            /// Where do I go from here?
-        }
     }
 }

@@ -44,6 +44,30 @@ public class Projectile : MonoBehaviour
 		}
 	}
 
+	public bool HasCapturedEnemy()
+	{
+		return capturedEnemy != null;
+	}
+
+	public void ThrowCapturedEnemy()
+	{
+		if (capturedEnemy != null)
+		{
+			capturedEnemy.tag = "EnemyProjectile";
+			capturedEnemy.GetComponent<SpriteRenderer>().enabled = true;
+			capturedEnemy.SetActive(true);
+			capturedEnemy.transform.position = player.position;
+			capturedEnemy.GetComponent<Collider2D>().enabled = true;
+
+			float horizontalMovementSpeed = (speed + playerVelocity.x) * Time.deltaTime * direction;
+			float verticalMovementSpeed = (speed + playerVelocity.y) * Time.deltaTime * verticalDirection;
+
+			capturedEnemy.GetComponent<Rigidbody2D>().AddForce(new Vector2(horizontalMovementSpeed, verticalMovementSpeed), ForceMode2D.Impulse);
+
+			capturedEnemy = null;
+		}
+	}
+
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
 		if (collision.tag == "Ground")
@@ -69,7 +93,6 @@ public class Projectile : MonoBehaviour
 
 		// Hitstun?
 
-		// Move enemy towards player
 		Vector2 startPosition = enemy.transform.position;
 
 		float t = 0f;
@@ -82,7 +105,6 @@ public class Projectile : MonoBehaviour
 			yield return null;
 		}
 
-		// Ensure enemy position is exactly at the player's current position after loop
 		enemy.transform.position = player.position;
 
 		enemy.GetComponent<SpriteRenderer>().enabled = false;
