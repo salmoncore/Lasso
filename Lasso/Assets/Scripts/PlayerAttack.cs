@@ -27,24 +27,27 @@ public class PlayerAttack : MonoBehaviour
         cooldownTimer += Time.deltaTime;
     }
 
-    private void Attack()
-    {
-        cooldownTimer = 0;
+	private void Attack()
+	{
+		cooldownTimer = 0;
 
-        if (LassoReady())
-        {
+		// Check if the projectile (lasso) has a captured enemy
+		if (lassoObj.GetComponent<Projectile>().HasCapturedEnemy())
+		{
+			// Throw the captured enemy
+			lassoObj.GetComponent<Projectile>().ThrowCapturedEnemy();
+		}
+		else if (LassoReady())
+		{
 			anim.SetTrigger("attack");
 
-            // Get direction from right stick or IJKL
-            Vector2 attackDirection = GetAttackDirectionFromInput();
-            lassoObj.transform.position = firePoint.position;
+			// Instantiate the lasso projectile or activate it
+			lassoObj.transform.position = firePoint.position;
+			lassoObj.GetComponent<Projectile>().SetDirection(GetAttackDirection());
+		}
+	}
 
-            // Set the direction of the projectile
-            lassoObj.GetComponent<Projectile>().SetDirection(attackDirection);
-        }
-    }
-
-	private Vector2 GetAttackDirectionFromInput()
+	private Vector2 GetAttackDirection()
 	{
 		float horizontal = Input.GetAxis("RightStickHorizontal");
 		float vertical = Input.GetAxis("RightStickVertical");
@@ -87,8 +90,6 @@ public class PlayerAttack : MonoBehaviour
 		}
 		return direction;
 	}
-
-
 
 	private bool LassoReady() 
     { 
