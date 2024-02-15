@@ -62,6 +62,10 @@ public class Projectile : MonoBehaviour
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
 			enemyRigidbody.velocity = newDirection.normalized * speed;
 
+			// TODO: Attach WallCollisionHandler to enemies
+			WallCollisionHandler handler = capturedEnemy.AddComponent<WallCollisionHandler>();
+			handler.Initialize(speed);
+
 			capturedEnemy = null;
 		}
 	}
