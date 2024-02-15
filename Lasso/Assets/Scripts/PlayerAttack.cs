@@ -31,19 +31,18 @@ public class PlayerAttack : MonoBehaviour
 	{
 		cooldownTimer = 0;
 
-		// Check if the projectile (lasso) has a captured enemy
+		Vector2 attackDirection = GetAttackDirection();
+
 		if (lassoObj.GetComponent<Projectile>().HasCapturedEnemy())
 		{
-			// Throw the captured enemy
-			lassoObj.GetComponent<Projectile>().ThrowCapturedEnemy();
+			lassoObj.GetComponent<Projectile>().ThrowCapturedEnemy(attackDirection);
 		}
 		else if (LassoReady())
 		{
 			anim.SetTrigger("attack");
-
-			// Instantiate the lasso projectile or activate it
 			lassoObj.transform.position = firePoint.position;
-			lassoObj.GetComponent<Projectile>().SetDirection(GetAttackDirection());
+
+			lassoObj.GetComponent<Projectile>().SetDirection(attackDirection);
 		}
 	}
 

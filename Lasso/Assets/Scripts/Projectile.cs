@@ -49,7 +49,7 @@ public class Projectile : MonoBehaviour
 		return capturedEnemy != null;
 	}
 
-	public void ThrowCapturedEnemy()
+	public void ThrowCapturedEnemy(Vector2 newDirection)
 	{
 		if (capturedEnemy != null)
 		{
@@ -59,10 +59,8 @@ public class Projectile : MonoBehaviour
 			capturedEnemy.transform.position = player.position;
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
 
-			float horizontalMovementSpeed = (speed + playerVelocity.x) * Time.deltaTime * direction;
-			float verticalMovementSpeed = (speed + playerVelocity.y) * Time.deltaTime * verticalDirection;
-
-			capturedEnemy.GetComponent<Rigidbody2D>().AddForce(new Vector2(horizontalMovementSpeed, verticalMovementSpeed), ForceMode2D.Impulse);
+			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
+			enemyRigidbody.velocity = newDirection.normalized * speed;
 
 			capturedEnemy = null;
 		}

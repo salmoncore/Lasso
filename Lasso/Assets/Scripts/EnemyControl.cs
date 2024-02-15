@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class EnemyControl : MonoBehaviour
 {
-    [SerializeField] private int damage = 1;
     public GameObject pointA;
     public GameObject pointB;
     private Rigidbody2D rb;
