@@ -6,17 +6,32 @@ public class Health : MonoBehaviour
 {
     // Note that there are 3 hearts in the UI. Any more will require a UI change.
     [SerializeField] private int startingHealth = 3;
-    public int currentHealth { get; private set; }
+	[SerializeField] private int damage = 1;
+	[SerializeField] private int heal = 1;
+	public int currentHealth { get; private set; }
     private Animator anim;
     private bool dead;
 
-    private void Awake()
+	private void Awake()
     {
         currentHealth = startingHealth;
         anim = GetComponent<Animator>();
     }
 
-    public void TakeDamage(int _damage) 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+		if (collision.tag == "Enemy")
+        {
+			TakeDamage(damage);
+		}
+        else if (collision.tag == "Health")
+        {
+			Heal(heal);
+			Destroy(collision.gameObject);
+		}
+	}
+
+    public void TakeDamage(int _damage) // TODO: Does this need to be public anymore?
     {
         // Clamp the health to be between 0 and startingHealth
         currentHealth = Mathf.Clamp(currentHealth - _damage, 0, startingHealth);
@@ -37,9 +52,9 @@ public class Health : MonoBehaviour
         }
     }
 
-    public void Heal(int _heal)
-    {
-        if (currentHealth > 0) // Player healable
+    public void Heal(int _heal) // TODO: Does this need to be public anymore?
+	{
+        if (currentHealth > 0)
         {
             // Clamp the health to be between 0 and startingHealth
             currentHealth = Mathf.Clamp(currentHealth + _heal, 1, startingHealth);
