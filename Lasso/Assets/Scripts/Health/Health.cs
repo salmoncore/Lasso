@@ -14,12 +14,14 @@ public class Health : MonoBehaviour
     [SerializeField] private float invincibilityDurationSeconds;
     [SerializeField] private float invincibilityDeltaTime;
     [SerializeField] private GameObject player;
+    private Rigidbody2D body;
 
     private void Awake()
     {
         currentHealth = startingHealth;
         anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player");
+        body = GetComponent<Rigidbody2D>();
     }
 
     public void TakeDamage(int _damage) 
@@ -40,6 +42,7 @@ public class Health : MonoBehaviour
             { 
                 anim.SetTrigger("die");
                 GetComponent<PlayerMovement>().enabled = false;
+                body.velocity = new Vector2(0, 0);
                 dead = true;
                 return;
             }
