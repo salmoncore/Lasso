@@ -66,6 +66,10 @@ public class Projectile : MonoBehaviour
 			WallCollisionHandler handler = capturedEnemy.AddComponent<WallCollisionHandler>();
 			handler.Initialize(speed);
 
+			// Set the enemy's layer to "ThrownEnemies" so it can't collide with the player and other enemies
+			capturedEnemy.layer = LayerMask.NameToLayer("ThrownEnemies");
+			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false;
+
 			capturedEnemy = null;
 		}
 	}

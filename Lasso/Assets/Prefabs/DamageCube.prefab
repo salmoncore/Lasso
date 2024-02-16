@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2252322030281401740}
   - component: {fileID: 2754641953047731494}
   - component: {fileID: 8895365142260285412}
+  - component: {fileID: 4883663257279326622}
   m_Layer: 0
   m_Name: DamageCube
   m_TagString: Enemy
@@ -116,7 +117,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -171,3 +172,15 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &4883663257279326622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1022901966611659797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bbdf4607ef771f4eab0e756fa226d36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
