@@ -11,9 +11,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpSpeed = 11.5f;
     [SerializeField] private bool jump = false;
     [SerializeField] private bool jumpCancel = false;
-    [SerializeField] private float groundCheckSize = 0.5f;
+    [SerializeField] private float boxCrop = 0.5f;
     [SerializeField] private LayerMask groundLayer;
-    private Rigidbody2D body;
+	[SerializeField] private float accelerationTime = 0.2f; // Time to reach full speed
+	private float accelSmoothing;
+	private Rigidbody2D body;
     private Animator anim;
     private BoxCollider2D boxCollider;
 
@@ -26,31 +28,40 @@ public class PlayerMovement : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
     }
 
-    private void Update()
-    {
-        float horizontalInput = Input.GetAxis("Horizontal");
+	private void Update()
+	{
+		float horizontalInput = Input.GetAxis("Horizontal");
+		bool grounded = isGrounded();
+		bool collidingLeft = isCollidingLeft();
+		bool collidingRight = isCollidingRight();
 
-        // Setting the velocity of the Rigidbody2D component to the input axis on the X axis
-        body.velocity = new Vector2(horizontalInput * speed, body.velocity.y);
+		float targetVelocityX = 0;
+		if (!(collidingLeft && horizontalInput < 0) && !(collidingRight && horizontalInput > 0))
+		{
+			targetVelocityX = horizontalInput * speed;
+		}
 
-        // Flipping the sprite based on the input axis
-        flipSprite(horizontalInput);
+		body.velocity = new Vector2(
+			Mathf.SmoothDamp(body.velocity.x, targetVelocityX, ref accelSmoothing, accelerationTime),
+			body.velocity.y
+		);
 
-        // Jumping
-        if (Input.GetButtonDown("Jump") && isGrounded()) {
-            jump = true;
-        } 
-        
-        if (Input.GetButtonUp("Jump") && !isGrounded()) {
-            jumpCancel = true;
-        }
+		if (Input.GetButtonDown("Jump") && grounded)
+		{
+			jump = true;
+		}
 
-        // Setting the animation parameters
-        anim.SetBool("run", horizontalInput != 0);
-        anim.SetBool("grounded", isGrounded());
-    }
+		if (Input.GetButtonUp("Jump") && !grounded)
+		{
+			jumpCancel = true;
+		}
 
-    void flipSprite(float horizontalInput)
+		flipSprite(horizontalInput);
+		anim.SetBool("run", horizontalInput != 0);
+		anim.SetBool("grounded", grounded);
+	}
+
+	void flipSprite(float horizontalInput)
     {
 		if (horizontalInput > 0.01f)
 		{
@@ -79,9 +90,29 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded()
     {
         Vector2 boxCastSize = boxCollider.bounds.size;
-        boxCastSize.x -= groundCheckSize; // Reduce the width of the BoxCast
+        boxCastSize.x -= boxCrop;
 
         RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
+        return raycastHit.collider != null;
+    }
+
+    // Use boxcast to check if player is colliding on the left
+    private bool isCollidingLeft()
+    {
+		Vector2 boxCastSize = boxCollider.bounds.size;
+		boxCastSize.y -= boxCrop;
+
+		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.left, 0.1f, groundLayer);
+		return raycastHit.collider != null;
+	}
+
+    // Use boxcast to check if player is colliding on the right
+    private bool isCollidingRight()
+    {
+        Vector2 boxCastSize = boxCollider.bounds.size;
+        boxCastSize.y -= boxCrop;
+
+        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.right, 0.1f, groundLayer);
         return raycastHit.collider != null;
     }
 
