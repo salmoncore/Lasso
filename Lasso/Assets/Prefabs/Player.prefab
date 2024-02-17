@@ -179,10 +179,11 @@ MonoBehaviour:
   jumpSpeed: 11.5
   jump: 0
   jumpCancel: 0
-  groundCheckSize: 0
+  boxCrop: 0.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
+  accelerationTime: 0.08
 --- !u!95 &1338571996898890693
 Animator:
   serializedVersion: 5
@@ -217,6 +218,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingHealth: 3
+  invincibilityDurationSeconds: 0
+  invincibilityDeltaTime: 0
+  player: {fileID: 0}
 --- !u!114 &8576370348177537165
 MonoBehaviour:
   m_ObjectHideFlags: 0
