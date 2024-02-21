@@ -55,7 +55,6 @@ public class EnemyControl : MonoBehaviour
 
 	public void Stun()
 	{
-        Debug.Log("Stunned");
         isStunned = true;
         rb.velocity = new Vector2(0, 0);
         anim.SetBool("isRunning", false);
