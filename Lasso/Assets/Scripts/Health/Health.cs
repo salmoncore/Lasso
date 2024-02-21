@@ -56,7 +56,6 @@ public class Health : MonoBehaviour
 	{
         if (currentHealth > 0)
         {
-            // Clamp the health to be between 0 and startingHealth
             currentHealth = Mathf.Clamp(currentHealth + _heal, 1, startingHealth);
 
             // TODO: Set heal animation
