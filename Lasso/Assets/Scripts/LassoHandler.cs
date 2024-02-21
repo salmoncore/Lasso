@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WallCollisionHandler : MonoBehaviour
+public class LassoHandler : MonoBehaviour
 {
 	private float initialSpeed;
 

@@ -62,8 +62,8 @@ public class Projectile : MonoBehaviour
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
 			enemyRigidbody.velocity = newDirection.normalized * speed;
 
-			// TODO: Attach WallCollisionHandler to enemies
-			WallCollisionHandler handler = capturedEnemy.AddComponent<WallCollisionHandler>();
+			// TODO: Attach LassoHandler to enemies
+			LassoHandler handler = capturedEnemy.AddComponent<LassoHandler>();
 			handler.Initialize(speed);
 
 			// Set the enemy's layer to "ThrownEnemies" so it can't collide with the player and other enemies
