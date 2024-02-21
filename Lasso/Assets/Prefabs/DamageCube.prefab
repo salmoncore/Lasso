@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2754641953047731494}
   - component: {fileID: 8895365142260285412}
   - component: {fileID: 4883663257279326622}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: DamageCube
   m_TagString: Enemy
   m_Icon: {fileID: 0}

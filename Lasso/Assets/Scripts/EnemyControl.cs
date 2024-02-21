@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.Dependencies.NCalc;
@@ -11,6 +12,7 @@ public class EnemyControl : MonoBehaviour
     private Animator anim;
     private Transform currentPoint;
     public float speed;
+    private bool isStunned = false;
 
     void Start()
     {
@@ -23,6 +25,12 @@ public class EnemyControl : MonoBehaviour
     void Update()
     {
         Vector2 point = currentPoint.position - transform.position;
+
+        if (isStunned)
+        {
+			return;
+		}
+
         if(currentPoint == pointB.transform)
         {
             rb.velocity = new Vector2(speed, 0);
@@ -44,6 +52,22 @@ public class EnemyControl : MonoBehaviour
             currentPoint = pointB.transform;
         }
     }
+
+	public void Stun()
+	{
+        Debug.Log("Stunned");
+        isStunned = true;
+        rb.velocity = new Vector2(0, 0);
+        anim.SetBool("isRunning", false);
+        StartCoroutine(StunTimer());
+	}
+
+    IEnumerator StunTimer()
+    {
+		yield return new WaitForSeconds(2);
+		anim.SetBool("isRunning", true);
+        isStunned = false;
+	}
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

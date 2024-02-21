@@ -10,6 +10,7 @@ TagManager:
   - LassoProjectile
   - EnemyProjectile
   - Health
+  - CrumpledEnemy
   layers:
   - Default
   - TransparentFX
@@ -17,11 +18,11 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Enemies
   - Ground
   - ThrownEnemies
-  - 
+  - CrumpledEnemies
   - 
   - 
   - 

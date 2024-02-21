@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4144986528301848229}
   - component: {fileID: 3519514327566681255}
   - component: {fileID: 3065587701788614415}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: crow_enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -166,7 +166,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b85b76648924d49b3eda6c823d8f0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 1
   pointA: {fileID: 0}
   pointB: {fileID: 0}
   speed: 2
