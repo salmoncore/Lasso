@@ -5,7 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - Enemy
   - Platform
+  - LassoProjectile
+  - EnemyProjectile
+  - Health
+  - CrumpledEnemy
   layers:
   - Default
   - TransparentFX
@@ -13,11 +18,11 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Enemies
   - Ground
-  - 
-  - 
+  - ThrownEnemies
+  - CrumpledEnemies
   - 
   - 
   - 
