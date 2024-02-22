@@ -18,6 +18,10 @@ public class PlayerMovement : MonoBehaviour
 	private Rigidbody2D body;
     private Animator anim;
     private BoxCollider2D boxCollider;
+    private float coyoteTime = 0.2f;
+    private float coyoteTimeCounter;
+    private float jumpBufferTime = 0.2f;
+    private float jumpBufferCounter;
 
     // Awake is called when the script instance is being loaded
     private void Awake()
@@ -46,13 +50,28 @@ public class PlayerMovement : MonoBehaviour
 			body.velocity.y
 		);
 
-		if (Input.GetButtonDown("Jump") && grounded)
-		{
+        // coyote time stuff with jump
+        if (grounded) {
+            coyoteTimeCounter = coyoteTime;
+        } else {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+
+        // jump buffer
+        if (Input.GetButtonDown("Jump")) {
+            jumpBufferCounter = jumpBufferTime;
+        } else {
+            jumpBufferCounter -= Time.deltaTime;
+        }
+
+        // jumping with coyote time and jump buffer
+		if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f) {
+            jumpBufferCounter = 0f;
 			jump = true;
 		}
 
-		if (Input.GetButtonUp("Jump") && !grounded)
-		{
+		if (Input.GetButtonUp("Jump") && !grounded) {
+            coyoteTimeCounter = 0f;
 			jumpCancel = true;
 		}
 
