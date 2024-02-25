@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.Dependencies.NCalc;
@@ -5,13 +6,13 @@ using UnityEngine;
 
 public class EnemyControl : MonoBehaviour
 {
-    [SerializeField] private int damage = 1;
     public GameObject pointA;
     public GameObject pointB;
     private Rigidbody2D rb;
     private Animator anim;
     private Transform currentPoint;
     public float speed;
+    private bool isStunned = false;
 
     void Start()
     {
@@ -24,6 +25,12 @@ public class EnemyControl : MonoBehaviour
     void Update()
     {
         Vector2 point = currentPoint.position - transform.position;
+
+        if (isStunned)
+        {
+			return;
+		}
+
         if(currentPoint == pointB.transform)
         {
             rb.velocity = new Vector2(speed, 0);
@@ -46,13 +53,24 @@ public class EnemyControl : MonoBehaviour
         }
     }
 
+	public void Stun()
+	{
+        isStunned = true;
+        rb.velocity = new Vector2(0, 0);
+        anim.SetBool("isRunning", false);
+        StartCoroutine(StunTimer());
+	}
+
+    IEnumerator StunTimer()
+    {
+		yield return new WaitForSeconds(2);
+		anim.SetBool("isRunning", true);
+        isStunned = false;
+	}
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Player")
-        {
-            Debug.Log("Ya");
-            collision.GetComponent<Health>().TakeDamage(damage);
-        }
+
     }
 
     private void flip()

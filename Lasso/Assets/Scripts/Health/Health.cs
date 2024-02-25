@@ -6,7 +6,9 @@ public class Health : MonoBehaviour
 {
     // Note that there are 3 hearts in the UI. Any more will require a UI change.
     [SerializeField] private int startingHealth = 3;
-    public int currentHealth { get; private set; }
+	[SerializeField] private int damage = 1;
+	[SerializeField] private int heal = 1;
+	public int currentHealth { get; private set; }
     private Animator anim;
     private bool dead;
     private bool isInvincible = false;
@@ -16,7 +18,7 @@ public class Health : MonoBehaviour
     [SerializeField] private GameObject player;
     private Rigidbody2D body;
 
-    private void Awake()
+	private void Awake()
     {
         currentHealth = startingHealth;
         anim = GetComponent<Animator>();
@@ -24,7 +26,20 @@ public class Health : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
     }
 
-    public void TakeDamage(int _damage) 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+		if (collision.tag == "Enemy")
+        {
+			TakeDamage(damage);
+		}
+        else if (collision.tag == "Health")
+        {
+			Heal(heal);
+			Destroy(collision.gameObject);
+		}
+	}
+
+    public void TakeDamage(int _damage) // TODO: Does this need to be public anymore?
     {
         if (isInvincible) return;
 
@@ -40,7 +55,7 @@ public class Health : MonoBehaviour
         {
             if (!dead)
             { 
-                anim.SetTrigger("die");
+                anim.SetBool("dead", true);
                 GetComponent<PlayerMovement>().enabled = false;
                 body.velocity = new Vector2(0, 0);
                 dead = true;
@@ -51,11 +66,10 @@ public class Health : MonoBehaviour
         StartCoroutine(BecomeTemporarilyInvincible());
     }
 
-    public void Heal(int _heal)
-    {
-        if (currentHealth > 0) // Player healable
+    public void Heal(int _heal) // TODO: Does this need to be public anymore?
+	{
+        if (currentHealth > 0)
         {
-            // Clamp the health to be between 0 and startingHealth
             currentHealth = Mathf.Clamp(currentHealth + _heal, 1, startingHealth);
 
             // TODO: Set heal animation
