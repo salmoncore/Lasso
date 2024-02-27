@@ -6,6 +6,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
 	[SerializeField] private float speed;
+	[SerializeField] private float kickback;
 	[SerializeField] private float lassoFlightTime;
 	[SerializeField] private Rigidbody2D player;
 	[SerializeField] private float enemyTravelTime = 1f;
@@ -64,15 +65,16 @@ public class Projectile : MonoBehaviour
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
 			enemyRigidbody.velocity = newDirection.normalized * speed;
 
-			// TODO: Attach LassoHandler to enemies
+			// Make sure to attach the LassoHandler script to the enemy!
 			LassoHandler handler = capturedEnemy.AddComponent<LassoHandler>();
 			handler.Initialize(speed);
 
-			// Set the enemy's layer to "ThrownEnemies" so it can't collide with the player and other enemies
 			capturedEnemy.layer = LayerMask.NameToLayer("ThrownEnemies");
 			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false;
 
 			capturedEnemy = null;
+
+			player.velocity = -newDirection.normalized * kickback;
 		}
 	}
 
