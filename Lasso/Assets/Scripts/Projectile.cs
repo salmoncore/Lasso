@@ -6,7 +6,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
 	[SerializeField] private float speed;
-	[SerializeField] private float lassoDistance;
+	[SerializeField] private float lassoFlightTime;
 	[SerializeField] private Rigidbody2D player;
 	[SerializeField] private float enemyTravelTime = 1f;
 	private GameObject capturedEnemy = null;
@@ -15,6 +15,7 @@ public class Projectile : MonoBehaviour
 	private bool hit;
 	private Vector2 playerVelocity;
 	private Vector2 playerPosition;
+	private float lassoTimer;
 
 	private BoxCollider2D boxCollider;
 	private Animator anim;
@@ -23,6 +24,7 @@ public class Projectile : MonoBehaviour
 	{
 		anim = GetComponent<Animator>();
 		boxCollider = GetComponent<BoxCollider2D>();
+		lassoTimer = lassoFlightTime;
 	}
 
 	private void Update()
@@ -36,11 +38,11 @@ public class Projectile : MonoBehaviour
 
 		transform.Translate(horizontalMovementSpeed, verticalMovementSpeed, 0);
 
-		float distanceFromPlayer = Vector2.Distance(player.position, transform.position);
-
-		if (distanceFromPlayer > lassoDistance)
+		lassoTimer -= Time.deltaTime;
+		if (lassoTimer <= 0)
 		{
 			Deactivate();
+			lassoTimer = lassoFlightTime;
 		}
 	}
 
@@ -78,12 +80,14 @@ public class Projectile : MonoBehaviour
 	{
 		if (collision.tag == "Ground")
 		{
+			lassoTimer = lassoFlightTime;
 			hit = true;
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
 		}
 		else if (collision.tag == "Enemy")
 		{
+			lassoTimer = lassoFlightTime;
 			hit = true;
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
