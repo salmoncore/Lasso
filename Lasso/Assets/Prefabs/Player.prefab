@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d37234c0b6928040a8b49a47329c692, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 9
+  speed: 4.5
   jumpShortSpeed: 4
   jumpSpeed: 11.5
   jump: 0
@@ -215,7 +215,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  accelerationTime: 0.08
+  accelerationTime: 0.15
 --- !u!95 &1338571996898890693
 Animator:
   serializedVersion: 5
@@ -250,11 +250,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingHealth: 3
-  invincibilityDurationSeconds: 0
-  invincibilityDeltaTime: 0
-  player: {fileID: 0}
   damage: 1
   heal: 1
+  invincibilityDurationSeconds: 1.5
+  invincibilityDeltaTime: 0.15
+  player: {fileID: 7976362101839270549}
 --- !u!114 &8576370348177537165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,6 +267,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a37b6007d5ee25b4d882a34d4365285e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackCooldown: 1
+  attackCooldown: 0.7
   firePoint: {fileID: 5272109558195561118}
   lassoObj: {fileID: 0}

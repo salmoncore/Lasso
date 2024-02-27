@@ -6,15 +6,17 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
 	[SerializeField] private float speed;
-	[SerializeField] private float lassoDistance;
+	[SerializeField] private float kickback;
+	[SerializeField] private float lassoFlightTime;
 	[SerializeField] private Rigidbody2D player;
 	[SerializeField] private float enemyTravelTime = 1f;
 	private GameObject capturedEnemy = null;
-	private float direction;
+	private float lateralDirection;
 	private float verticalDirection;
 	private bool hit;
 	private Vector2 playerVelocity;
 	private Vector2 playerPosition;
+	private float lassoTimer;
 
 	private BoxCollider2D boxCollider;
 	private Animator anim;
@@ -23,24 +25,22 @@ public class Projectile : MonoBehaviour
 	{
 		anim = GetComponent<Animator>();
 		boxCollider = GetComponent<BoxCollider2D>();
+		lassoTimer = lassoFlightTime;
 	}
 
 	private void Update()
 	{
 		if (hit) return;
 
-		playerPosition = player.position;
+		Vector2 movement = new Vector2(speed * lateralDirection, speed * verticalDirection);
+		movement += player.velocity;
+		transform.Translate(movement * Time.deltaTime);
 
-		float horizontalMovementSpeed = (speed + playerVelocity.x) * Time.deltaTime * direction;
-		float verticalMovementSpeed = (speed + playerVelocity.y) * Time.deltaTime * verticalDirection;
-
-		transform.Translate(horizontalMovementSpeed, verticalMovementSpeed, 0);
-
-		float distanceFromPlayer = Vector2.Distance(player.position, transform.position);
-
-		if (distanceFromPlayer > lassoDistance)
+		lassoTimer -= Time.deltaTime;
+		if (lassoTimer <= 0)
 		{
 			Deactivate();
+			lassoTimer = lassoFlightTime;
 		}
 	}
 
@@ -60,17 +60,19 @@ public class Projectile : MonoBehaviour
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
 
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
-			enemyRigidbody.velocity = newDirection.normalized * speed;
 
-			// TODO: Attach LassoHandler to enemies
+			enemyRigidbody.velocity = newDirection.normalized * speed + player.velocity;
+
+			// Make sure to attach the LassoHandler script to the enemy!
 			LassoHandler handler = capturedEnemy.AddComponent<LassoHandler>();
 			handler.Initialize(speed);
 
-			// Set the enemy's layer to "ThrownEnemies" so it can't collide with the player and other enemies
 			capturedEnemy.layer = LayerMask.NameToLayer("ThrownEnemies");
 			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false;
 
 			capturedEnemy = null;
+
+			player.velocity = -newDirection.normalized * kickback;
 		}
 	}
 
@@ -78,12 +80,14 @@ public class Projectile : MonoBehaviour
 	{
 		if (collision.tag == "Ground")
 		{
+			lassoTimer = lassoFlightTime;
 			hit = true;
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
 		}
 		else if (collision.tag == "Enemy")
 		{
+			lassoTimer = lassoFlightTime;
 			hit = true;
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
@@ -132,7 +136,7 @@ public class Projectile : MonoBehaviour
 		}
 		transform.localScale = new Vector3(localScaleX, transform.localScale.y, transform.localScale.z);
 
-		this.direction = direction.x;
+		this.lateralDirection = direction.x;
 		this.verticalDirection = direction.y;
 
 		this.playerVelocity.x = Mathf.Abs(player.velocity.x);
