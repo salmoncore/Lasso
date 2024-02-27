@@ -215,7 +215,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  accelerationTime: 0.08
+  accelerationTime: 0.15
 --- !u!95 &1338571996898890693
 Animator:
   serializedVersion: 5
