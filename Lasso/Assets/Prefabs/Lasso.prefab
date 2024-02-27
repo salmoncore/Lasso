@@ -101,7 +101,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 9
-  lassoFlightTime: 0.75
+  lassoFlightTime: 0.25
   player: {fileID: 0}
   enemyTravelTime: 0.25
 --- !u!61 &2849236961195942030
