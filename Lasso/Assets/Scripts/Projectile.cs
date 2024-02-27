@@ -11,7 +11,7 @@ public class Projectile : MonoBehaviour
 	[SerializeField] private Rigidbody2D player;
 	[SerializeField] private float enemyTravelTime = 1f;
 	private GameObject capturedEnemy = null;
-	private float direction;
+	private float lateralDirection;
 	private float verticalDirection;
 	private bool hit;
 	private Vector2 playerVelocity;
@@ -32,12 +32,9 @@ public class Projectile : MonoBehaviour
 	{
 		if (hit) return;
 
-		playerPosition = player.position;
-
-		float horizontalMovementSpeed = (speed + playerVelocity.x) * Time.deltaTime * direction;
-		float verticalMovementSpeed = (speed + playerVelocity.y) * Time.deltaTime * verticalDirection;
-
-		transform.Translate(horizontalMovementSpeed, verticalMovementSpeed, 0);
+		Vector2 movement = new Vector2(speed * lateralDirection, speed * verticalDirection);
+		movement += player.velocity;
+		transform.Translate(movement * Time.deltaTime);
 
 		lassoTimer -= Time.deltaTime;
 		if (lassoTimer <= 0)
@@ -63,7 +60,8 @@ public class Projectile : MonoBehaviour
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
 
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
-			enemyRigidbody.velocity = newDirection.normalized * speed;
+
+			enemyRigidbody.velocity = newDirection.normalized * speed + player.velocity;
 
 			// Make sure to attach the LassoHandler script to the enemy!
 			LassoHandler handler = capturedEnemy.AddComponent<LassoHandler>();
@@ -138,7 +136,7 @@ public class Projectile : MonoBehaviour
 		}
 		transform.localScale = new Vector3(localScaleX, transform.localScale.y, transform.localScale.z);
 
-		this.direction = direction.x;
+		this.lateralDirection = direction.x;
 		this.verticalDirection = direction.y;
 
 		this.playerVelocity.x = Mathf.Abs(player.velocity.x);
