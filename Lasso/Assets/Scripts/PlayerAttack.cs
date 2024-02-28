@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,7 +20,7 @@ public class PlayerAttack : MonoBehaviour
 
 	private void Update()
 	{
-		if (Input.GetKeyDown(";") && (cooldownTimer > attackCooldown) && playerMovement.canAttack())
+		if (Input.GetButtonDown("Fire") && (cooldownTimer > attackCooldown) && playerMovement.canAttack())
         {
             Attack();
         }
@@ -48,45 +49,27 @@ public class PlayerAttack : MonoBehaviour
 
 	private Vector2 GetAttackDirection()
 	{
-		float horizontal = Input.GetAxis("RightStickHorizontal");
-		float vertical = Input.GetAxis("RightStickVertical");
+		Vector2 direction = new Vector2(Input.GetAxis("RightStickHorizontal"), Input.GetAxis("RightStickVertical"));
 
-		bool isRightStickInDeadzone = Mathf.Approximately(horizontal, 0f) && Mathf.Approximately(vertical, 0f);
-		bool noKeyboardInput = !Input.GetKey(KeyCode.I) && !Input.GetKey(KeyCode.J) && !Input.GetKey(KeyCode.K) && !Input.GetKey(KeyCode.L);
-
-		Vector2 direction = Vector2.zero;
-
-		if (!isRightStickInDeadzone)
+		if (direction == Vector2.zero)
 		{
-			// Determine the direction of the joystick input
-			if (Mathf.Abs(horizontal) > Mathf.Abs(vertical))
-			{
-				direction = new Vector2(Mathf.Sign(horizontal), 0);
-			}
-			else if (Mathf.Abs(vertical) > Mathf.Abs(horizontal))
-			{
-				direction = new Vector2(0, Mathf.Sign(vertical));
-			}
-			else if (!Mathf.Approximately(horizontal, 0f))
-			{
-				direction = new Vector2(Mathf.Sign(horizontal), 0);
-			}
+			direction = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 		}
-		else if (noKeyboardInput)
+
+		if (direction == Vector2.zero)
 		{
 			direction = new Vector2(Mathf.Sign(transform.localScale.x), 0);
 		}
+
+		if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+		{
+			direction.y = 0;
+		}
 		else
 		{
-			horizontal = (Input.GetKey(KeyCode.L) ? 1 : 0) - (Input.GetKey(KeyCode.J) ? 1 : 0);
-			vertical = (Input.GetKey(KeyCode.I) ? 1 : 0) - (Input.GetKey(KeyCode.K) ? 1 : 0);
-			direction = new Vector2(horizontal, vertical);
+			direction.x = 0;
 		}
 
-		if (direction != Vector2.zero)
-		{
-			direction.Normalize();
-		}
 		return direction;
 	}
 

@@ -88,6 +88,9 @@ public class Projectile : MonoBehaviour
 			// May not be necessary anymore, just in case
 			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false; 
 
+			// Apply gravity scale 1 to thrown enemy
+			enemyRigidbody.gravityScale = 1;
+
 			capturedEnemy = null;
 
 			// Projectile Kickback

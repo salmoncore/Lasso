@@ -34,7 +34,8 @@ public class PlayerMovement : MonoBehaviour
 
 	private void Update()
 	{
-		float horizontalInput = Input.GetAxis("Horizontal");
+        float horizontalInput = Input.GetAxis("Horizontal");
+
 		bool grounded = isGrounded();
 		bool collidingLeft = isCollidingLeft();
 		bool collidingRight = isCollidingRight();
@@ -118,7 +119,6 @@ public class PlayerMovement : MonoBehaviour
         return raycastHit.collider != null;
     }
 
-    // Use boxcast to check if player is colliding on the left
     private bool isCollidingLeft()
     {
 		Vector2 boxCastSize = boxCollider.bounds.size;
@@ -128,7 +128,6 @@ public class PlayerMovement : MonoBehaviour
 		return raycastHit.collider != null;
 	}
 
-    // Use boxcast to check if player is colliding on the right
     private bool isCollidingRight()
     {
         Vector2 boxCastSize = boxCollider.bounds.size;
