@@ -91,7 +91,7 @@ public class Health : MonoBehaviour
     }
 
     private IEnumerator BecomeTemporarilyInvincible() {
-        Debug.Log("Player turned invincible!");
+        // Debug.Log("Player turned invincible!");
         isInvincible = true;
 
         for (float i = 0; i < invincibilityDurationSeconds; i += invincibilityDeltaTime) {
@@ -103,7 +103,7 @@ public class Health : MonoBehaviour
             yield return new WaitForSeconds(invincibilityDeltaTime);
         }
 
-        Debug.Log("Player is no longer invincible!");
+        // Debug.Log("Player is no longer invincible!");
         TurnOnSpriteRenderer();
         isInvincible = false;
     }

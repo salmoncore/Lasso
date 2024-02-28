@@ -79,6 +79,7 @@ public class Projectile : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
+		// PS the lasso projectile is the trigger here lmao
 		if (collision.tag == "Ground")
 		{
 			lassoTimer = lassoFlightTime;

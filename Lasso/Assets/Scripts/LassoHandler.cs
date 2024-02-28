@@ -15,23 +15,12 @@ public class LassoHandler : MonoBehaviour
 
 	void OnCollisionEnter2D(Collision2D collision)
 	{
-		if (collision.gameObject.CompareTag("Ground"))
-		{
-			Vector2 normal = collision.GetContact(0).normal;
-			if (Mathf.Abs(normal.y) <= 0.1f)
-			{
-				Rigidbody2D rb = GetComponent<Rigidbody2D>();
-				rb.velocity = new Vector2(0, rb.velocity.y);
+		// PS this is for when the projectile becomes not a trigger and needs to have gravity applied. 
 
-				rb.gravityScale = 1;
-			}
-		}
-		else if (collision.gameObject.CompareTag("Interactable"))
-		{
-			Rigidbody2D rb = GetComponent<Rigidbody2D>();
-			rb.velocity = Vector2.zero;
-			rb.gravityScale = 1;
-		}
+		Rigidbody2D rb = GetComponent<Rigidbody2D>();
+		rb.velocity = new Vector2(0, rb.velocity.y);
+
+		rb.gravityScale = 1;
 	}
 
 	void OnTriggerEnter2D(Collider2D collision)
