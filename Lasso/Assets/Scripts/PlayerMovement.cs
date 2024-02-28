@@ -34,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
 
 	private void Update()
 	{
-        float horizontalInput = Input.GetAxis("Horizontal") + Input.GetAxis("LeftStickHorizontal");
+        float horizontalInput = Input.GetAxis("Horizontal");
         // rewrite the above line to make it so that the horizontal input is only 1, and not a sum of two inputs
 
 		bool grounded = isGrounded();
