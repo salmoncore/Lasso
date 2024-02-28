@@ -54,6 +54,7 @@ public class Projectile : MonoBehaviour
 		if (capturedEnemy != null)
 		{
 			capturedEnemy.tag = "EnemyProjectile";
+			capturedEnemy.layer = LayerMask.NameToLayer("ThrownEnemies");
 			capturedEnemy.GetComponent<SpriteRenderer>().enabled = true;
 			capturedEnemy.SetActive(true);
 			capturedEnemy.transform.position = player.position;
@@ -64,9 +65,11 @@ public class Projectile : MonoBehaviour
 
 			enemyRigidbody.velocity = newDirection.normalized * speed + player.velocity;
 
-			// Make sure to attach the LassoHandler script to the enemy!
-			LassoHandler handler = capturedEnemy.AddComponent<LassoHandler>();
-			handler.Initialize(speed);
+			if (!capturedEnemy.TryGetComponent<LassoHandler>(out LassoHandler handler))
+			{
+				handler = capturedEnemy.AddComponent<LassoHandler>();
+				handler.Initialize(speed);
+			}
 
 			// If it exists, disable the EnemyControl script
 			if (capturedEnemy.TryGetComponent<EnemyControl>(out EnemyControl enemyControl))
@@ -74,9 +77,7 @@ public class Projectile : MonoBehaviour
 				enemyControl.enabled = false;
 			}
 
-			capturedEnemy.layer = LayerMask.NameToLayer("ThrownEnemies");
-
-			// May not be necessary anymore
+			// May not be necessary anymore, just in case
 			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false; 
 
 			capturedEnemy = null;
