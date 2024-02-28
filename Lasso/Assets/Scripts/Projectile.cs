@@ -53,31 +53,51 @@ public class Projectile : MonoBehaviour
 	{
 		if (capturedEnemy != null)
 		{
-			capturedEnemy.tag = "EnemyProjectile";
+			if (capturedEnemy.tag == "Fragile" || capturedEnemy.tag == "Enemy")
+			{
+				capturedEnemy.tag = "FragileProjectile";
+			}
+			else if (capturedEnemy.tag == "Sturdy")
+			{
+				capturedEnemy.tag = "SturdyProjectile";
+			}
+			capturedEnemy.layer = LayerMask.NameToLayer("Projectiles");
 			capturedEnemy.GetComponent<SpriteRenderer>().enabled = true;
 			capturedEnemy.SetActive(true);
 			capturedEnemy.transform.position = player.position;
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
+			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+			capturedEnemy.GetComponent<Rigidbody2D>().gravityScale = 0;
 
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
 
 			enemyRigidbody.velocity = newDirection.normalized * speed + player.velocity;
 
-			// Make sure to attach the LassoHandler script to the enemy!
-			LassoHandler handler = capturedEnemy.AddComponent<LassoHandler>();
-			handler.Initialize(speed);
+			if (!capturedEnemy.TryGetComponent<LassoHandler>(out LassoHandler handler))
+			{
+				handler = capturedEnemy.AddComponent<LassoHandler>();
+				handler.Initialize(speed);
+			}
 
-			capturedEnemy.layer = LayerMask.NameToLayer("ThrownEnemies");
-			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false;
+			// If it exists, disable the EnemyControl script
+			if (capturedEnemy.TryGetComponent<EnemyControl>(out EnemyControl enemyControl))
+			{
+				enemyControl.enabled = false;
+			}
+
+			// May not be necessary anymore, just in case
+			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false; 
 
 			capturedEnemy = null;
 
+			// Projectile Kickback
 			player.velocity = -newDirection.normalized * kickback;
 		}
 	}
 
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
+		// PS the lasso projectile is the trigger here lmao
 		if (collision.tag == "Ground")
 		{
 			lassoTimer = lassoFlightTime;
@@ -85,7 +105,7 @@ public class Projectile : MonoBehaviour
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
 		}
-		else if (collision.tag == "Enemy")
+		else if (collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy")
 		{
 			lassoTimer = lassoFlightTime;
 			hit = true;
