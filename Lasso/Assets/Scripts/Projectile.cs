@@ -72,6 +72,7 @@ public class Projectile : MonoBehaviour
 
 			capturedEnemy = null;
 
+			// Projectile Kickback
 			player.velocity = -newDirection.normalized * kickback;
 		}
 	}
@@ -85,7 +86,7 @@ public class Projectile : MonoBehaviour
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
 		}
-		else if (collision.tag == "Enemy")
+		else if (collision.tag == "Enemy" || collision.tag == "Interactable")
 		{
 			lassoTimer = lassoFlightTime;
 			hit = true;
