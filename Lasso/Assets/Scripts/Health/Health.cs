@@ -77,10 +77,11 @@ public class Health : MonoBehaviour
                 GetComponent<PlayerMovement>().enabled = false;
                 GetComponent<PlayerAttack>().enabled = false;
                 body.velocity = new Vector2(0, 0);
+                body.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
                 dead = true;
                 return;
             }
-        }
+		}
 
         StartCoroutine(BecomeTemporarilyInvincible());
     }
