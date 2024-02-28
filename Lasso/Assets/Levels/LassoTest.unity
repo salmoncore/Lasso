@@ -868,15 +868,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1022901966611659797, guid: 875714c3b07f7ac4492807297a485fbb, type: 3}
       propertyPath: m_Name
-      value: InteractableCube
+      value: FragileCube
       objectReference: {fileID: 0}
     - target: {fileID: 8019928167049816054, guid: 875714c3b07f7ac4492807297a485fbb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3
+      value: 4.64
       objectReference: {fileID: 0}
     - target: {fileID: 8019928167049816054, guid: 875714c3b07f7ac4492807297a485fbb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.5
+      value: -3.56
       objectReference: {fileID: 0}
     - target: {fileID: 8019928167049816054, guid: 875714c3b07f7ac4492807297a485fbb, type: 3}
       propertyPath: m_LocalPosition.z

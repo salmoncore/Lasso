@@ -15,45 +15,50 @@ public class LassoHandler : MonoBehaviour
 
 	void OnCollisionEnter2D(Collision2D collision)
 	{
-		// PS this is for when the projectile becomes not a trigger and needs to have gravity applied. 
+		//Debug.Log("Collision with " + collision.gameObject.name + " with tag " + collision.gameObject.tag + " and layer " + LayerMask.LayerToName(collision.gameObject.layer) + " on " + gameObject.name + " with tag " + gameObject.tag + " and layer " + LayerMask.LayerToName(gameObject.layer));
 
-		if (collision.gameObject.CompareTag("Ground"))
+		// collision.gameObject is the object that this object collided with.
+		// gameobject.tag is the tag of the script's gameobject.		
+
+		if ((collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Enemy") ||
+			collision.gameObject.CompareTag("Fragile") || collision.gameObject.CompareTag("Sturdy")) && 
+			(gameObject.CompareTag("FragileProjectile") || gameObject.CompareTag("SturdyProjectile")))
 		{
+			// Apply gravity to the projectile
 			GetComponent<Rigidbody2D>().gravityScale = 3;
-		}
 
-		if (collision.gameObject.CompareTag("EnemyProjectile"))
-		{
-			// If the enemy that was hit has a stun method, call it.
-			if (collision.gameObject.CompareTag("EnemyProjectile") && gameObject.TryGetComponent<EnemyControl>(out EnemyControl hitEnemyControl))
+			// Apply physics to the target, if it's an enemy, fragile or sturdy object
+			if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("Fragile") || collision.gameObject.CompareTag("Sturdy"))
+			{
+				// Unfix the collided object's constraints, and apply gravity
+				collision.gameObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+				collision.gameObject.GetComponent<Rigidbody2D>().gravityScale = 3;
+			}
+
+			// If the target is an enemy, and it has an EnemyControl script, call the Stun method
+			if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.TryGetComponent<EnemyControl>(out EnemyControl hitEnemyControl))
 			{
 				hitEnemyControl.Stun();
 			}
-			if (collision.gameObject.CompareTag("Interactable"))
+
+			// If the projectile is fragile and has an EnemyControl script, disable it
+			if (gameObject.CompareTag("FragileProjectile") && gameObject.TryGetComponent<EnemyControl>(out EnemyControl projectileEnemyControl))
 			{
-				return;
+				projectileEnemyControl.enabled = false;
+				// GetComponent<Animator>().enabled = false;
 			}
 
-			// This might be something you'd want to be conditional.
-			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
-			GetComponent<Rigidbody2D>().gravityScale = 3;
-
-			// Change the projectile's tag and layer to crumpled, and enable physics on the projectile
-			collision.gameObject.tag = "CrumpledEnemy";
-			collision.gameObject.layer = LayerMask.NameToLayer("CrumpledEnemies");
-
-			// If the collision.gameObject has a EnemyControl script, disable it.
-			//if (gameObject.TryGetComponent<EnemyControl>(out EnemyControl projectileEnemyControl))
-			//{
-			//	projectileEnemyControl.enabled = false;
-			//}
-
-			collision.gameObject.GetComponent<Collider2D>().isTrigger = false;
-			collision.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-			collision.gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
+			// If the projectile's tag is FragileProjectile, change the tag to Breaking and the layer to Breaking
+			if (gameObject.CompareTag("FragileProjectile"))
+			{
+				gameObject.tag = "Breaking";
+				gameObject.layer = LayerMask.NameToLayer("Breaking");
+			}
+			else if (gameObject.CompareTag("SturdyProjectile"))
+			{
+				gameObject.tag = "Sturdy";
+				gameObject.layer = LayerMask.NameToLayer("Interactive");
+			}
 		}
-
-		// TODO: This is probably a good spot to begin the funny bounce and fall out of stage thing!
 	}
-
 }

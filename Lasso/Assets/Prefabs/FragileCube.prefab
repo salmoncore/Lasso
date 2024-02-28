@@ -15,8 +15,8 @@ GameObject:
   - component: {fileID: 8895365142260285412}
   - component: {fileID: 4883663257279326622}
   m_Layer: 11
-  m_Name: InteractableCube
-  m_TagString: Interactable
+  m_Name: FragileCube
+  m_TagString: Fragile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -160,7 +160,7 @@ Rigidbody2D:
   m_Mass: 0.0001
   m_LinearDrag: 0
   m_AngularDrag: 0
-  m_GravityScale: 3
+  m_GravityScale: 2.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2

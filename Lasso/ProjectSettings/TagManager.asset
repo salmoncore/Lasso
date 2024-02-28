@@ -8,10 +8,13 @@ TagManager:
   - Enemy
   - Platform
   - LassoProjectile
-  - EnemyProjectile
   - Health
-  - CrumpledEnemy
-  - Interactable
+  - Fragile
+  - Sturdy
+  - FragileProjectile
+  - SturdyProjectile
+  - Breaking
+  - Interactive
   layers:
   - Default
   - TransparentFX
@@ -22,9 +25,9 @@ TagManager:
   - Player
   - Enemies
   - Ground
-  - ThrownEnemies
-  - CrumpledEnemies
-  - Interactable
+  - Projectiles
+  - Breaking
+  - Interactive
   - 
   - 
   - 

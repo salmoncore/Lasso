@@ -53,8 +53,15 @@ public class Projectile : MonoBehaviour
 	{
 		if (capturedEnemy != null)
 		{
-			capturedEnemy.tag = "EnemyProjectile";
-			capturedEnemy.layer = LayerMask.NameToLayer("ThrownEnemies");
+			if (capturedEnemy.tag == "Fragile" || capturedEnemy.tag == "Enemy")
+			{
+				capturedEnemy.tag = "FragileProjectile";
+			}
+			else if (capturedEnemy.tag == "Sturdy")
+			{
+				capturedEnemy.tag = "SturdyProjectile";
+			}
+			capturedEnemy.layer = LayerMask.NameToLayer("Projectiles");
 			capturedEnemy.GetComponent<SpriteRenderer>().enabled = true;
 			capturedEnemy.SetActive(true);
 			capturedEnemy.transform.position = player.position;
@@ -97,7 +104,7 @@ public class Projectile : MonoBehaviour
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
 		}
-		else if (collision.tag == "Enemy" || collision.tag == "Interactable")
+		else if (collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy")
 		{
 			lassoTimer = lassoFlightTime;
 			hit = true;
