@@ -6,11 +6,36 @@ using UnityEngine;
 public class LassoHandler : MonoBehaviour
 {
 	private float initialSpeed;
+	private bool breakqueue = false;
 
 	public void Initialize(float speed)
 	{
 		initialSpeed = speed;
-		GetComponent<Rigidbody2D>().gravityScale = 0;
+		//GetComponent<Rigidbody2D>().gravityScale = 0;
+	}
+
+	private void Update()
+	{
+		// Check if the object has the "Breaking" tag, and it's downwards velocity is 0
+		if (gameObject.CompareTag("Breaking") && GetComponent<Rigidbody2D>().velocity.y <= .05f)
+		{
+			if (!breakqueue)
+			{
+				// Set the horizontal velocity to 0 and vertical velocity to -50
+				GetComponent<Rigidbody2D>().velocity = new Vector2(0, -2.5f);
+
+				// Set opacity of the sprite to 50%
+				Color color = GetComponent<SpriteRenderer>().color;
+				color.a = 0.5f;
+				GetComponent<SpriteRenderer>().color = color;
+
+				GetComponent<Collider2D>().enabled = false;
+			}
+
+			// After 5 seconds, destroy the gameobject
+			Destroy(gameObject, 3);
+			breakqueue = true;
+		}
 	}
 
 	void OnCollisionEnter2D(Collision2D collision)
@@ -24,8 +49,6 @@ public class LassoHandler : MonoBehaviour
 			collision.gameObject.CompareTag("Fragile") || collision.gameObject.CompareTag("Sturdy")) && 
 			(gameObject.CompareTag("FragileProjectile") || gameObject.CompareTag("SturdyProjectile")))
 		{
-			// Apply gravity to the projectile
-			GetComponent<Rigidbody2D>().gravityScale = 3;
 
 			// Apply physics to the target, if it's an enemy, fragile or sturdy object
 			if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("Fragile") || collision.gameObject.CompareTag("Sturdy"))
