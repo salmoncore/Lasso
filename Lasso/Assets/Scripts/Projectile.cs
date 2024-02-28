@@ -67,6 +67,7 @@ public class Projectile : MonoBehaviour
 			capturedEnemy.transform.position = player.position;
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
 			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+			capturedEnemy.GetComponent<Rigidbody2D>().gravityScale = 0;
 
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
 
