@@ -58,6 +58,7 @@ public class Projectile : MonoBehaviour
 			capturedEnemy.SetActive(true);
 			capturedEnemy.transform.position = player.position;
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
+			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
 
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
 
@@ -67,8 +68,16 @@ public class Projectile : MonoBehaviour
 			LassoHandler handler = capturedEnemy.AddComponent<LassoHandler>();
 			handler.Initialize(speed);
 
+			// If it exists, disable the EnemyControl script
+			if (capturedEnemy.TryGetComponent<EnemyControl>(out EnemyControl enemyControl))
+			{
+				enemyControl.enabled = false;
+			}
+
 			capturedEnemy.layer = LayerMask.NameToLayer("ThrownEnemies");
-			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false;
+
+			// May not be necessary anymore
+			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false; 
 
 			capturedEnemy = null;
 

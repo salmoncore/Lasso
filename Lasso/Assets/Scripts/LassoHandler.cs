@@ -17,39 +17,43 @@ public class LassoHandler : MonoBehaviour
 	{
 		// PS this is for when the projectile becomes not a trigger and needs to have gravity applied. 
 
-		Rigidbody2D rb = GetComponent<Rigidbody2D>();
-		rb.velocity = new Vector2(0, rb.velocity.y);
+		if (collision.gameObject.CompareTag("Ground"))
+		{
+			GetComponent<Rigidbody2D>().gravityScale = 3;
+		}
 
-		rb.gravityScale = 1;
-	}
-
-	void OnTriggerEnter2D(Collider2D collision)
-	{
-		// Occurs when a projectile hits an enemy. 
-		// collision.gameObject is the object that hit the enemy.
-		// The purpose of this method is to check if the projectile is an enemy projectile and if so, stun the enemy, while enabling physics on the projectile and changing it's tag and layer to crumpled
-
-		// Check to see if the projectile is an enemy projectile
 		if (collision.gameObject.CompareTag("EnemyProjectile"))
 		{
 			// If the enemy that was hit has a stun method, call it.
-			if (collision.gameObject.CompareTag("EnemyProjectile") && gameObject.TryGetComponent<EnemyControl>(out EnemyControl enemyControl))
+			if (collision.gameObject.CompareTag("EnemyProjectile") && gameObject.TryGetComponent<EnemyControl>(out EnemyControl hitEnemyControl))
 			{
-				enemyControl.Stun();
+				hitEnemyControl.Stun();
 			}
 			if (collision.gameObject.CompareTag("Interactable"))
 			{
 				return;
 			}
 
+			// This might be something you'd want to be conditional.
+			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+			GetComponent<Rigidbody2D>().gravityScale = 3;
+
 			// Change the projectile's tag and layer to crumpled, and enable physics on the projectile
 			collision.gameObject.tag = "CrumpledEnemy";
 			collision.gameObject.layer = LayerMask.NameToLayer("CrumpledEnemies");
+
+			// If the collision.gameObject has a EnemyControl script, disable it.
+			//if (gameObject.TryGetComponent<EnemyControl>(out EnemyControl projectileEnemyControl))
+			//{
+			//	projectileEnemyControl.enabled = false;
+			//}
 
 			collision.gameObject.GetComponent<Collider2D>().isTrigger = false;
 			collision.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 			collision.gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
 		}
+
+		// TODO: This is probably a good spot to begin the funny bounce and fall out of stage thing!
 	}
 
 }

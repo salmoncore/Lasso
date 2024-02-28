@@ -16,7 +16,9 @@ public class Health : MonoBehaviour
     [SerializeField] private float invincibilityDurationSeconds;
     [SerializeField] private float invincibilityDeltaTime;
     [SerializeField] private GameObject player;
+    [SerializeField] private float kickback = 30;
     private Rigidbody2D body;
+    private bool isEnemyToTheRight;
 
 	private void Awake()
     {
@@ -26,20 +28,26 @@ public class Health : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-		if (collision.tag == "Enemy")
+	private void OnCollisionEnter2D(Collision2D collision)
+	{
+		// check the tag of the object we collided with
+        if (collision.gameObject.tag == "Enemy")
         {
 			TakeDamage(damage);
+            isEnemyToTheRight = collision.transform.position.x > transform.position.x;
 		}
-        else if (collision.tag == "Health")
-        {
+	}
+
+	private void OnTriggerEnter2D(Collider2D collision)
+	{
+		if (collision.gameObject.tag == "Health")
+		{
 			Heal(heal);
 			Destroy(collision.gameObject);
 		}
 	}
 
-    public void TakeDamage(int _damage) // TODO: Does this need to be public anymore?
+	public void TakeDamage(int _damage) // TODO: Does this need to be public anymore?
     {
         if (isInvincible) return;
 
@@ -49,7 +57,17 @@ public class Health : MonoBehaviour
         if (currentHealth > 0) // Player hurt
         {
             anim.SetTrigger("hurt");
-            // TODO: Needs iframes
+
+            // When the player is hurt, knock them back to the left or the right in the opposite direction of the enemy
+            if (isEnemyToTheRight)
+            {
+				body.velocity = new Vector2(kickback, kickback);
+			}
+			else
+            {
+				body.velocity = new Vector2(-kickback, kickback);
+			}
+
         }
         else // Player dead lol
         {
@@ -57,6 +75,7 @@ public class Health : MonoBehaviour
             { 
                 anim.SetBool("dead", true);
                 GetComponent<PlayerMovement>().enabled = false;
+                GetComponent<PlayerAttack>().enabled = false;
                 body.velocity = new Vector2(0, 0);
                 dead = true;
                 return;

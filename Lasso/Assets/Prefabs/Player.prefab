@@ -255,6 +255,7 @@ MonoBehaviour:
   invincibilityDurationSeconds: 1.5
   invincibilityDeltaTime: 0.15
   player: {fileID: 7976362101839270549}
+  kickback: 10
 --- !u!114 &8576370348177537165
 MonoBehaviour:
   m_ObjectHideFlags: 0
