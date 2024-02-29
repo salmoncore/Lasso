@@ -135,6 +135,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Platform No_Guide
       objectReference: {fileID: 0}
+    - target: {fileID: 1276118129942474549, guid: 5746f8b30f85af449b26185da0034bee, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1276118129942474549, guid: 5746f8b30f85af449b26185da0034bee, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
     - target: {fileID: 1945130631966520719, guid: 5746f8b30f85af449b26185da0034bee, type: 3}
       propertyPath: m_LocalPosition.x
       value: -8.233973
@@ -412,10 +420,10 @@ MonoBehaviour:
   jumpSpeed: 11.5
   jump: 0
   jumpCancel: 0
-  boxCrop: 0.5
+  boxCrop: 0
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   accelerationTime: 0.2
 --- !u!50 &1498116140
 Rigidbody2D:
@@ -526,8 +534,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -214756210, y: 5735.561}
-  m_Size: {x: 12723.74, y: 0.0074395016}
+  m_Offset: {x: -170142160, y: 4544.0723}
+  m_Size: {x: 12521.662, y: 0.008718318}
   m_Direction: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
