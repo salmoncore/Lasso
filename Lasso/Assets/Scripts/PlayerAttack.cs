@@ -41,6 +41,8 @@ public class PlayerAttack : MonoBehaviour
 		else if (LassoReady())
 		{
 			anim.SetTrigger("attack");
+			anim.SetTrigger("isAttacking");
+
 			lassoObj.transform.position = firePoint.position;
 
 			lassoObj.GetComponent<Projectile>().SetDirection(attackDirection);
