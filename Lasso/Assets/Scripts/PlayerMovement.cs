@@ -77,6 +77,12 @@ public class PlayerMovement : MonoBehaviour
 		}
 
 		flipSprite(horizontalInput);
+
+        anim.SetBool("isRunning", horizontalInput != 0);
+        anim.SetBool("isGrounded", grounded);
+        anim.SetBool("isFalling", !grounded);
+
+        // Leaving this in for the sprite animations
 		anim.SetBool("run", horizontalInput != 0);
 		anim.SetBool("grounded", grounded);
 	}
@@ -84,24 +90,35 @@ public class PlayerMovement : MonoBehaviour
 	void flipSprite(float horizontalInput)
     {
         Vector3 currentScale = transform.localScale;
-		if (horizontalInput > 0.01f && currentScale.x < 0)
+		if (horizontalInput > 0.01f && currentScale.z < 0)
 		{
             // flip horizontally to the right - FOR THE 3D MODEL, THIS MUST BE CHANGED TO THE CURRENTSCALE OF THE Z
-            transform.localScale = new Vector3(Mathf.Abs(currentScale.x), currentScale.y, currentScale.z);
+            transform.localScale = new Vector3(currentScale.x, currentScale.y, Mathf.Abs(currentScale.z));
         }
-		else if (horizontalInput < -0.01f && currentScale.x > 0)
+		else if (horizontalInput < -0.01f && currentScale.z > 0)
 		{
             // flip horizontally to the left - FOR THE 3D MODEL, THIS MUST BE CHANGED TO THE CURRENTSCALE OF THE Z
-            transform.localScale = new Vector3(-Mathf.Abs(currentScale.x), currentScale.y, currentScale.z);
+            transform.localScale = new Vector3(currentScale.x, currentScale.y, -Mathf.Abs(currentScale.z));
         }
 	}
 
     void FixedUpdate() {
         // Normal jump at full speed
-        if (jump) {
+        if (jump)
+        {
             body.velocity = new Vector2(body.velocity.x, jumpSpeed);
             jump = false;
+
+            // Start the isJumping animation and have it finish before setting it to false
+            anim.SetBool("isJumping", true);
+            StartCoroutine(StopJumping());
         }
+
+        IEnumerator StopJumping()
+        {
+			yield return new WaitForSeconds(0.5f);
+			anim.SetBool("isJumping", false);
+		}
 
         if (jumpCancel) {
             if (body.velocity.y > jumpShortSpeed)
@@ -112,12 +129,12 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded()
     {
-        Vector2 boxCastSize = boxCollider.bounds.size;
-        boxCastSize.x -= boxCrop;
-
-        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
-        return raycastHit.collider != null;
-    }
+		Vector2 boxCastSize = boxCollider.bounds.size;
+		boxCastSize.x -= boxCrop;
+		
+		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
+		return raycastHit.collider != null;
+	}
 
     private bool isCollidingLeft()
     {
