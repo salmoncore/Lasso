@@ -80,6 +80,7 @@ public class PlayerMovement : MonoBehaviour
 
         anim.SetBool("isRunning", horizontalInput != 0);
         anim.SetBool("isGrounded", grounded);
+        anim.SetBool("isFalling", !grounded);
 
         // Leaving this in for the sprite animations
 		anim.SetBool("run", horizontalInput != 0);
@@ -103,10 +104,21 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate() {
         // Normal jump at full speed
-        if (jump) {
+        if (jump)
+        {
             body.velocity = new Vector2(body.velocity.x, jumpSpeed);
             jump = false;
+
+            // Start the isJumping animation and have it finish before setting it to false
+            anim.SetBool("isJumping", true);
+            StartCoroutine(StopJumping());
         }
+
+        IEnumerator StopJumping()
+        {
+			yield return new WaitForSeconds(0.5f);
+			anim.SetBool("isJumping", false);
+		}
 
         if (jumpCancel) {
             if (body.velocity.y > jumpShortSpeed)

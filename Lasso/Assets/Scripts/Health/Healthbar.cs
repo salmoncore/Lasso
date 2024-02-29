@@ -11,7 +11,12 @@ public class Healthbar : MonoBehaviour
 
     private void Start()
     {
-        playerHealth = GameObject.Find("Player").GetComponent<Health>();
+        //playerHealth = GameObject.Find("Player").GetComponent<Health>();
+
+        if (playerHealth == null)
+        {
+			playerHealth = GameObject.Find("BanditPC").GetComponent<Health>();
+		}
     }
 
     private void Update()
