@@ -56,8 +56,7 @@ public class Health : MonoBehaviour
 
         if (currentHealth > 0) // Player hurt
         {
-            anim.SetBool("isHit", true);
-
+            anim.SetTrigger("isHit");
             anim.SetTrigger("hurt");
 
             // When the player is hurt, knock them back to the left or the right in the opposite direction of the enemy

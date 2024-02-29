@@ -90,15 +90,15 @@ public class PlayerMovement : MonoBehaviour
 	void flipSprite(float horizontalInput)
     {
         Vector3 currentScale = transform.localScale;
-		if (horizontalInput > 0.01f && currentScale.x < 0)
+		if (horizontalInput > 0.01f && currentScale.z < 0)
 		{
             // flip horizontally to the right - FOR THE 3D MODEL, THIS MUST BE CHANGED TO THE CURRENTSCALE OF THE Z
-            transform.localScale = new Vector3(Mathf.Abs(currentScale.x), currentScale.y, currentScale.z);
+            transform.localScale = new Vector3(currentScale.x, currentScale.y, Mathf.Abs(currentScale.z));
         }
-		else if (horizontalInput < -0.01f && currentScale.x > 0)
+		else if (horizontalInput < -0.01f && currentScale.z > 0)
 		{
             // flip horizontally to the left - FOR THE 3D MODEL, THIS MUST BE CHANGED TO THE CURRENTSCALE OF THE Z
-            transform.localScale = new Vector3(-Mathf.Abs(currentScale.x), currentScale.y, currentScale.z);
+            transform.localScale = new Vector3(currentScale.x, currentScale.y, -Mathf.Abs(currentScale.z));
         }
 	}
 
