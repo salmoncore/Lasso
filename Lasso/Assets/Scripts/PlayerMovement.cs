@@ -77,6 +77,11 @@ public class PlayerMovement : MonoBehaviour
 		}
 
 		flipSprite(horizontalInput);
+
+        anim.SetBool("isRunning", horizontalInput != 0);
+        anim.SetBool("isGrounded", grounded);
+
+        // Leaving this in for the sprite animations
 		anim.SetBool("run", horizontalInput != 0);
 		anim.SetBool("grounded", grounded);
 	}
@@ -112,12 +117,12 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded()
     {
-        Vector2 boxCastSize = boxCollider.bounds.size;
-        boxCastSize.x -= boxCrop;
-
-        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
-        return raycastHit.collider != null;
-    }
+		Vector2 boxCastSize = boxCollider.bounds.size;
+		boxCastSize.x -= boxCrop;
+		
+		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
+		return raycastHit.collider != null;
+	}
 
     private bool isCollidingLeft()
     {
