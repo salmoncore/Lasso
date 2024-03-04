@@ -9,11 +9,16 @@ public class PauseManager : MonoBehaviour
     public GameObject pauseMenuUI, optionsMenuUI;
     public GameObject resumeButton, optionsFirstButton, optionsClosedButton;
     public bool isPaused = false;
+    public GameManagerScript gameManager;
+
+    private void Awake() {
+        gameManager = FindObjectOfType<GameManagerScript>();
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) {
+        if (Input.GetKeyDown(KeyCode.Escape) && !gameManager.isDead) {
             if (isPaused) {
                 resume();
             } else {
