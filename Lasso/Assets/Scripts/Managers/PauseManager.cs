@@ -6,9 +6,9 @@ using UnityEngine.EventSystems;
 
 public class PauseManager : MonoBehaviour
 {
-    public GameObject pauseMenuUI;
-    public GameObject resumeButton, optionsButton, mainMenuButton, quitButton;
-    public static bool isPaused = false;
+    public GameObject pauseMenuUI, optionsMenuUI;
+    public GameObject resumeButton, optionsFirstButton, optionsClosedButton;
+    public bool isPaused = false;
 
     // Update is called once per frame
     void Update()
@@ -24,6 +24,7 @@ public class PauseManager : MonoBehaviour
 
     public void resume() {
         pauseMenuUI.SetActive(false);
+        optionsMenuUI.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
         Debug.Log("Resume");
@@ -41,13 +42,26 @@ public class PauseManager : MonoBehaviour
         isPaused = true;
     }
 
-    public void options() {
-        Debug.Log("Options");
+    public void openOptions() {
+        pauseMenuUI.SetActive(false);
+        optionsMenuUI.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(optionsFirstButton);
+        Debug.Log("Options Open");
+    }
+
+    public void closeOptions() {
+        optionsMenuUI.SetActive(false);
+        pauseMenuUI.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(optionsClosedButton);
+        Debug.Log("Options Close");
     }
 
     public void mainMenu() {
         Debug.Log("Main Menu");
         pauseMenuUI.SetActive(false);
+        optionsMenuUI.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
         SceneManager.LoadScene("MainMenu");
@@ -56,6 +70,7 @@ public class PauseManager : MonoBehaviour
     public void quit() {
         Debug.Log("Quit");
         pauseMenuUI.SetActive(false);
+        optionsMenuUI.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
         Application.Quit();

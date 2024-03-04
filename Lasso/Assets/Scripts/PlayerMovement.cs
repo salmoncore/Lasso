@@ -22,11 +22,13 @@ public class PlayerMovement : MonoBehaviour
     private float coyoteTimeCounter;
     private float jumpBufferTime = 0.2f;
     private float jumpBufferCounter;
+    public PauseManager pause;
 
     // Awake is called when the script instance is being loaded
     private void Awake()
     {
         // Grab references from game object
+        pause = FindObjectOfType<PauseManager>();
         body = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
@@ -34,57 +36,62 @@ public class PlayerMovement : MonoBehaviour
 
 	private void Update()
 	{
-        float horizontalInput = Input.GetAxis("Horizontal");
+        float horizontalInput;
 
 		bool grounded = isGrounded();
 		bool collidingLeft = isCollidingLeft();
 		bool collidingRight = isCollidingRight();
 
-		float targetVelocityX = 0;
-		if (!(collidingLeft && horizontalInput < 0) && !(collidingRight && horizontalInput > 0))
-		{
-			targetVelocityX = horizontalInput * speed;
-		}
-
-		body.velocity = new Vector2(
-			Mathf.SmoothDamp(body.velocity.x, targetVelocityX, ref accelSmoothing, accelerationTime),
-			body.velocity.y
-		);
-
-        // coyote time stuff with jump
-        if (grounded) {
-            coyoteTimeCounter = coyoteTime;
+        if (pause.isPaused) {
+            
         } else {
-            coyoteTimeCounter -= Time.deltaTime;
+            horizontalInput = Input.GetAxis("Horizontal");
+            float targetVelocityX = 0;
+            if (!(collidingLeft && horizontalInput < 0) && !(collidingRight && horizontalInput > 0))
+            {
+                targetVelocityX = horizontalInput * speed;
+            }
+
+            body.velocity = new Vector2(
+                Mathf.SmoothDamp(body.velocity.x, targetVelocityX, ref accelSmoothing, accelerationTime),
+                body.velocity.y
+            );
+
+            // coyote time stuff with jump
+            if (grounded) {
+                coyoteTimeCounter = coyoteTime;
+            } else {
+                coyoteTimeCounter -= Time.deltaTime;
+            }
+
+            // jump buffer
+            if (Input.GetButtonDown("Jump")) {
+                jumpBufferCounter = jumpBufferTime;
+            } else {
+                jumpBufferCounter -= Time.deltaTime;
+            }
+
+            // jumping with coyote time and jump buffer
+            if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f) {
+                jumpBufferCounter = 0f;
+                jump = true;
+            }
+
+            if (Input.GetButtonUp("Jump") && !grounded) {
+                coyoteTimeCounter = 0f;
+                jumpCancel = true;
+            }
+
+            flipSprite(horizontalInput);
+
+            anim.SetBool("isRunning", horizontalInput != 0);
+            anim.SetBool("isGrounded", grounded);
+            anim.SetBool("isFalling", !grounded);
+
+            // Leaving this in for the sprite animations
+            anim.SetBool("run", horizontalInput != 0);
+            anim.SetBool("grounded", grounded);
         }
-
-        // jump buffer
-        if (Input.GetButtonDown("Jump")) {
-            jumpBufferCounter = jumpBufferTime;
-        } else {
-            jumpBufferCounter -= Time.deltaTime;
-        }
-
-        // jumping with coyote time and jump buffer
-		if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f) {
-            jumpBufferCounter = 0f;
-			jump = true;
-		}
-
-		if (Input.GetButtonUp("Jump") && !grounded) {
-            coyoteTimeCounter = 0f;
-			jumpCancel = true;
-		}
-
-		flipSprite(horizontalInput);
-
-        anim.SetBool("isRunning", horizontalInput != 0);
-        anim.SetBool("isGrounded", grounded);
-        anim.SetBool("isFalling", !grounded);
-
-        // Leaving this in for the sprite animations
-		anim.SetBool("run", horizontalInput != 0);
-		anim.SetBool("grounded", grounded);
 	}
 
 	void flipSprite(float horizontalInput)
