@@ -417,8 +417,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.6462822, z: -0, w: 0.76309854}
   m_LocalPosition: {x: -2.3298697, y: 1.5725293, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5459417212567722267}
   - {fileID: 7941455303221939113}
@@ -539,7 +539,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  accelerationTime: 0.2
+  accelerationTime: 0.08
 --- !u!114 &4050361699889438055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -558,7 +558,7 @@ MonoBehaviour:
   invincibilityDurationSeconds: 0
   invincibilityDeltaTime: 0
   player: {fileID: 4339423823873643327}
-  kickback: 30
+  kickback: 3
 --- !u!114 &6240431339188903362
 MonoBehaviour:
   m_ObjectHideFlags: 0
