@@ -15,7 +15,6 @@ public class Projectile : MonoBehaviour
 	private float verticalDirection;
 	private bool hit;
 	private Vector2 playerVelocity;
-	private Vector2 playerPosition;
 	private float lassoTimer;
 
 	private BoxCollider2D boxCollider;
@@ -64,7 +63,7 @@ public class Projectile : MonoBehaviour
 			capturedEnemy.layer = LayerMask.NameToLayer("Projectiles");
 			capturedEnemy.GetComponent<SpriteRenderer>().enabled = true;
 			capturedEnemy.SetActive(true);
-			capturedEnemy.transform.position = player.position;
+			capturedEnemy.transform.position = GetFirePoint();
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
 			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
 			capturedEnemy.GetComponent<Rigidbody2D>().gravityScale = 0;
@@ -133,8 +132,7 @@ public class Projectile : MonoBehaviour
 		{
 			t += Time.deltaTime;
 			
-			playerPosition = player.position;
-			enemy.transform.position = Vector2.Lerp(startPosition, playerPosition, t / enemyTravelTime);
+			enemy.transform.position = Vector2.Lerp(startPosition, GetFirePoint(), t / enemyTravelTime);
 			yield return null;
 		}
 
@@ -142,6 +140,20 @@ public class Projectile : MonoBehaviour
 
 		enemy.GetComponent<SpriteRenderer>().enabled = false;
 		enemy.SetActive(false);
+	}
+
+	public Vector2 GetFirePoint()
+	{
+		Transform firePoint = player.transform.Find("firePoint");
+		if (firePoint != null)
+		{
+			return firePoint.position;
+		}
+		else
+		{
+			Debug.LogError("firePoint not found. Check Unity inspector.");
+			return player.position;
+		}
 	}
 
 	public void SetDirection(Vector2 direction)

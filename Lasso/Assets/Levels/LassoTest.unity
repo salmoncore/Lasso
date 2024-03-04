@@ -900,6 +900,18 @@ PrefabInstance:
       propertyPath: lassoObj
       value: 
       objectReference: {fileID: 1359461606}
+    - target: {fileID: 7032792929907884500, guid: 73fc6d9317acd45418bcdd24927b08fe, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7032792929907884500, guid: 73fc6d9317acd45418bcdd24927b08fe, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.260804
+      objectReference: {fileID: 0}
+    - target: {fileID: 7032792929907884500, guid: 73fc6d9317acd45418bcdd24927b08fe, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.24317217
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
