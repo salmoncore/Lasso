@@ -558,7 +558,7 @@ MonoBehaviour:
   invincibilityDurationSeconds: 0
   invincibilityDeltaTime: 0
   player: {fileID: 4339423823873643327}
-  kickback: 3
+  kickback: 15
 --- !u!114 &6240431339188903362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -571,7 +571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a37b6007d5ee25b4d882a34d4365285e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackCooldown: 0
+  attackCooldown: 0.7
   firePoint: {fileID: 7032792929907884500}
   lassoObj: {fileID: 0}
 --- !u!1 &4451820470743090023
