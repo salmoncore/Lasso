@@ -539,6 +539,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
+  interactiveLayer:
+    serializedVersion: 2
+    m_Bits: 2048
   accelerationTime: 0.08
 --- !u!114 &4050361699889438055
 MonoBehaviour:

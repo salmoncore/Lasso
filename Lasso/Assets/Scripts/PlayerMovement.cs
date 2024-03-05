@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool jumpCancel = false;
     [SerializeField] private float boxCrop = 0.5f;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask interactiveLayer;
 	[SerializeField] private float accelerationTime = 0.2f; // Time to reach full speed
 	private float accelSmoothing;
 	private Rigidbody2D body;
@@ -37,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
 
 		bool grounded = isGrounded();
+        bool onObject = isOnObject();
 		bool collidingLeft = isCollidingLeft();
 		bool collidingRight = isCollidingRight();
 
@@ -52,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
 		);
 
         // coyote time stuff with jump
-        if (grounded) {
+        if (grounded || onObject) {
             coyoteTimeCounter = coyoteTime;
         } else {
             coyoteTimeCounter -= Time.deltaTime;
@@ -71,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
 			jump = true;
 		}
 
-		if (Input.GetButtonUp("Jump") && !grounded) {
+		if (Input.GetButtonUp("Jump") && (!grounded || !onObject)) {
             coyoteTimeCounter = 0f;
 			jumpCancel = true;
 		}
@@ -79,12 +81,12 @@ public class PlayerMovement : MonoBehaviour
 		flipSprite(horizontalInput);
 
         anim.SetBool("isRunning", horizontalInput != 0);
-        anim.SetBool("isGrounded", grounded);
-        anim.SetBool("isFalling", !grounded);
+        anim.SetBool("isGrounded", (grounded || onObject));
+        anim.SetBool("isFalling", (!grounded && !onObject));
 
         // Leaving this in for the sprite animations
 		anim.SetBool("run", horizontalInput != 0);
-		anim.SetBool("grounded", grounded);
+		anim.SetBool("grounded", grounded || onObject);
 	}
 
 	void flipSprite(float horizontalInput)
@@ -133,6 +135,15 @@ public class PlayerMovement : MonoBehaviour
 		boxCastSize.x -= boxCrop;
 		
 		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
+		return raycastHit.collider != null;
+	}
+
+    private bool isOnObject()
+    {
+		Vector2 boxCastSize = boxCollider.bounds.size;
+		boxCastSize.x -= boxCrop;
+
+		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, interactiveLayer);
 		return raycastHit.collider != null;
 	}
 
