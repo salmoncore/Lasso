@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2849236961195942030}
   - component: {fileID: 6571280793905566630}
   - component: {fileID: 1423409692718665332}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Lasso
   m_TagString: LassoProjectile
   m_Icon: {fileID: 0}

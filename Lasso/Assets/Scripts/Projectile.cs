@@ -66,7 +66,6 @@ public class Projectile : MonoBehaviour
 			capturedEnemy.transform.position = GetFirePoint();
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
 			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
-			capturedEnemy.GetComponent<Rigidbody2D>().gravityScale = 0;
 
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
 
@@ -107,7 +106,8 @@ public class Projectile : MonoBehaviour
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
 		}
-		else if (collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy")
+		else if (collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy" ||
+				 collision.tag == "FragileProjectile" || collision.tag == "SturdyProjectile")
 		{
 			lassoTimer = lassoFlightTime;
 			hit = true;
