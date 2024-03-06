@@ -53,6 +53,7 @@ public class LassoHandler : MonoBehaviour
 				{
 					Collided.GetComponent<EnemyControl>().Stun();
 				}
+				Reset();
 			}
 		}
 	}
