@@ -87,7 +87,7 @@ public class Projectile : MonoBehaviour
 			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false; 
 
 			// Apply gravity scale 1 to thrown enemy, may not be necessary anymore
-			enemyRigidbody.gravityScale = 1.5f;
+			enemyRigidbody.gravityScale = 1.5f; // Make this enumerable
 
 			capturedEnemy = null;
 

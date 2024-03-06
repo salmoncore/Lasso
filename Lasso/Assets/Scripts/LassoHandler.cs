@@ -7,19 +7,18 @@ public class LassoHandler : MonoBehaviour
 {
 	private GameObject Projectile;
 	private GameObject Collided;
-	private bool isOnGround = false;
-	private bool isDestroyed = false;
+	private bool isOnGround;
 
 	public void Initialize(float speed)
 	{
 		Projectile = null;
 		Collided = null;
+		isOnGround = false;
 	}
 
 	private void Update()
 	{
-		// Null check for the projectile and collided variables
-		if (!(Projectile == null) && !(Collided == null) && !isDestroyed)
+		if (!(Projectile == null) && !(Collided == null))
 		{
 			// PS this line always faces down so don't worry if rotation is unlocked
 			RaycastHit2D hit = Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f);
@@ -36,20 +35,15 @@ public class LassoHandler : MonoBehaviour
 			// If the projectile has stopped sliding
 			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 0.1f && isOnGround)
 			{
-				// If the projectile is a fragile projectile
 				if (Projectile.CompareTag("FragileProjectile"))
 				{
-					// Begin break coroutine
 					StartCoroutine(Break());
-					isDestroyed = true;
-					return;
 				}
-				// If the projectile is a sturdy projectile
 				else if (Projectile.CompareTag("SturdyProjectile"))
 				{
-					// Set the tag to "Sturdy" and the layer to "Interactive"
 					Projectile.tag = "Sturdy";
 					Projectile.layer = LayerMask.NameToLayer("Interactive");
+					Reset();
 				}
 			}
 			else if ((Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("SturdyProjectile")) && Collided.CompareTag("Enemy"))
@@ -65,7 +59,8 @@ public class LassoHandler : MonoBehaviour
 
 	private IEnumerator Break()
 	{
-		Debug.Log("Breaking");
+		Projectile.tag = "Breaking";
+		Projectile.layer = LayerMask.NameToLayer("Breaking");
 		Projectile.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 2.5f);
 		Projectile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
 		Projectile.GetComponent<Collider2D>().enabled = false;
@@ -74,18 +69,26 @@ public class LassoHandler : MonoBehaviour
 		Destroy(Projectile);
 	}
 
+	public void Reset()
+	{
+		Projectile = null;
+		Collided = null;
+		isOnGround = false;
+	}
+
 	void OnCollisionEnter2D(Collision2D collision)
 	{
 		// collision.gameObject is the object that this object collided with.
 		// gameobject.tag is the tag of the script's gameobject.		
 
-		// Check and see if this object is a projectile
 		if (gameObject.CompareTag("FragileProjectile") || gameObject.CompareTag("SturdyProjectile"))
 		{
-			// If it is, set the projectile to the collided object
 			Projectile = gameObject;
-			// Set the collided object to the object that this object collided with
 			Collided = collision.gameObject;
+		}
+		else
+		{
+			Reset();
 		}
 	}
 }
