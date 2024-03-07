@@ -6,10 +6,14 @@ using UnityEngine.EventSystems;
 
 public class MainMenuManager : MonoBehaviour
 {
-    public GameObject playButton, optionsButton, quitButton, creditsButton;
+    public GameObject optionsMenuUI, mainMenuUI;
+    public GameObject playButton, optionsFirstButton, optionsClosedButton;
+    public GameObject inputManager;
     // Start is called before the first frame update
     void Start()
     {
+        inputManager.SetActive(true);
+        optionsMenuUI.SetActive(false);
         // clear selected object
         EventSystem.current.SetSelectedGameObject(null);
 
@@ -28,9 +32,20 @@ public class MainMenuManager : MonoBehaviour
         Debug.Log("Play");
     }
 
-    public void options() {
-        //SceneManager.LoadScene("MainMenu");
-        Debug.Log("Options");
+    public void openOptions() {
+        mainMenuUI.SetActive(false);
+        optionsMenuUI.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(optionsFirstButton);
+        Debug.Log("Options open");
+    }
+
+    public void closeOptions() {
+        optionsMenuUI.SetActive(false);
+        mainMenuUI.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(optionsClosedButton);
+        Debug.Log("Options closed");
     }
 
     public void quit() {

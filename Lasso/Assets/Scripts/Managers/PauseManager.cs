@@ -10,10 +10,7 @@ public class PauseManager : MonoBehaviour
     public GameObject resumeButton, optionsFirstButton, optionsClosedButton;
     public bool isPaused = false;
     public GameManagerScript gameManager;
-
-    private void Awake() {
-        gameManager = FindObjectOfType<GameManagerScript>();
-    }
+    public GameObject inputManager;
 
     // Update is called once per frame
     void Update()
@@ -28,6 +25,7 @@ public class PauseManager : MonoBehaviour
     }
 
     public void resume() {
+        inputManager.SetActive(false);
         pauseMenuUI.SetActive(false);
         optionsMenuUI.SetActive(false);
         Time.timeScale = 1f;
@@ -37,6 +35,7 @@ public class PauseManager : MonoBehaviour
 
     public void pause() {
         Debug.Log("Paused");
+        inputManager.SetActive(true);
         // clear selected object
         EventSystem.current.SetSelectedGameObject(null);
 
