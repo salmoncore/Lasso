@@ -8,6 +8,8 @@ public class LassoHandler : MonoBehaviour
 	private GameObject Projectile;
 	private GameObject Collided;
 	private bool isOnGround;
+	private bool isOnInteractive;
+	private bool isOnEnemy;
 
 	public void Initialize(float speed)
 	{
@@ -20,20 +22,22 @@ public class LassoHandler : MonoBehaviour
 	{
 		if (!(Projectile == null) && !(Collided == null))
 		{
-			// PS this line always faces down so don't worry if rotation is unlocked
-			RaycastHit2D hit = Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f);
+			// PS the raycast lines always face down so don't worry if rotation is unlocked
 
-			if (hit.collider != null)
-			{
-				isOnGround = true;
-			}
-			else
-			{
-				isOnGround = false;
-			}
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f, LayerMask.GetMask("Ground")).collider != null)
+			{ isOnGround = true; }
+			else { isOnGround = false; }
+
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f, LayerMask.GetMask("Interactive")).collider != null)
+			{ isOnInteractive = true; }
+			else { isOnInteractive = false;	}
+
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f, LayerMask.GetMask("Enemy")).collider != null)
+			{ isOnEnemy = true;	}
+			else { isOnEnemy = false; }
 
 			// If the projectile has stopped sliding
-			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 0.1f && isOnGround)
+			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 0.1f && (isOnGround || isOnInteractive || isOnEnemy))
 			{
 				if (Projectile.CompareTag("FragileProjectile"))
 				{
@@ -47,7 +51,11 @@ public class LassoHandler : MonoBehaviour
 				}
 			}
 			else if ((Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("SturdyProjectile")) && Collided.CompareTag("Enemy"))
-			{ 
+			{
+				Collided.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+				Collided.GetComponent<Rigidbody2D>().gravityScale = 1.5f;
+				Collided.GetComponent<BoxCollider2D>().isTrigger = false;
+
 				// Check if the collided object has an EnemyControl script, call the Stun method
 				if (Collided.GetComponent<EnemyControl>() != null)
 				{
@@ -75,6 +83,8 @@ public class LassoHandler : MonoBehaviour
 		Projectile = null;
 		Collided = null;
 		isOnGround = false;
+		isOnInteractive = false;
+		isOnEnemy = false;
 	}
 
 	void OnCollisionEnter2D(Collision2D collision)
