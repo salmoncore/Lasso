@@ -15,7 +15,6 @@ public class Projectile : MonoBehaviour
 	private float verticalDirection;
 	private bool hit;
 	private Vector2 playerVelocity;
-	private Vector2 playerPosition;
 	private float lassoTimer;
 
 	private BoxCollider2D boxCollider;
@@ -64,10 +63,9 @@ public class Projectile : MonoBehaviour
 			capturedEnemy.layer = LayerMask.NameToLayer("Projectiles");
 			capturedEnemy.GetComponent<SpriteRenderer>().enabled = true;
 			capturedEnemy.SetActive(true);
-			capturedEnemy.transform.position = player.position;
+			capturedEnemy.transform.position = GetFirePoint();
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
 			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
-			capturedEnemy.GetComponent<Rigidbody2D>().gravityScale = 0;
 
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
 
@@ -88,8 +86,8 @@ public class Projectile : MonoBehaviour
 			// May not be necessary anymore, just in case
 			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false; 
 
-			// Apply gravity scale 1 to thrown enemy
-			enemyRigidbody.gravityScale = 1;
+			// Apply gravity scale 1 to thrown enemy, may not be necessary anymore
+			enemyRigidbody.gravityScale = 1.5f; // Make this enumerable
 
 			capturedEnemy = null;
 
@@ -108,7 +106,8 @@ public class Projectile : MonoBehaviour
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
 		}
-		else if (collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy")
+		else if (collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy" ||
+				 collision.tag == "FragileProjectile" || collision.tag == "SturdyProjectile")
 		{
 			lassoTimer = lassoFlightTime;
 			hit = true;
@@ -133,8 +132,7 @@ public class Projectile : MonoBehaviour
 		{
 			t += Time.deltaTime;
 			
-			playerPosition = player.position;
-			enemy.transform.position = Vector2.Lerp(startPosition, playerPosition, t / enemyTravelTime);
+			enemy.transform.position = Vector2.Lerp(startPosition, GetFirePoint(), t / enemyTravelTime);
 			yield return null;
 		}
 
@@ -142,6 +140,20 @@ public class Projectile : MonoBehaviour
 
 		enemy.GetComponent<SpriteRenderer>().enabled = false;
 		enemy.SetActive(false);
+	}
+
+	public Vector2 GetFirePoint()
+	{
+		Transform firePoint = player.transform.Find("firePoint");
+		if (firePoint != null)
+		{
+			return firePoint.position;
+		}
+		else
+		{
+			Debug.LogError("firePoint not found. Check Unity inspector.");
+			return player.position;
+		}
 	}
 
 	public void SetDirection(Vector2 direction)

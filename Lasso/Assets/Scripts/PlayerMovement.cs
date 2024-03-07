@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool jumpCancel = false;
     [SerializeField] private float boxCrop = 0.5f;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask interactiveLayer;
 	[SerializeField] private float accelerationTime = 0.2f; // Time to reach full speed
 	private float accelSmoothing;
 	private Rigidbody2D body;
@@ -39,11 +40,13 @@ public class PlayerMovement : MonoBehaviour
         float horizontalInput;
 
 		bool grounded = isGrounded();
+        bool onObject = isOnObject();
 		bool collidingLeft = isCollidingLeft();
 		bool collidingRight = isCollidingRight();
 
+
         if (pause.isPaused) {
-            
+
         } else {
             horizontalInput = Input.GetAxis("Horizontal");
             float targetVelocityX = 0;
@@ -140,6 +143,15 @@ public class PlayerMovement : MonoBehaviour
 		boxCastSize.x -= boxCrop;
 		
 		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
+		return raycastHit.collider != null;
+	}
+
+    private bool isOnObject()
+    {
+		Vector2 boxCastSize = boxCollider.bounds.size;
+		boxCastSize.x -= boxCrop;
+
+		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, interactiveLayer);
 		return raycastHit.collider != null;
 	}
 

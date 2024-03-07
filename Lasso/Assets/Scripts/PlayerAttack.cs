@@ -36,6 +36,9 @@ public class PlayerAttack : MonoBehaviour
 
 		if (lassoObj.GetComponent<Projectile>().HasCapturedEnemy())
 		{
+			anim.SetTrigger("attack");
+			anim.SetTrigger("isAttacking");
+
 			lassoObj.GetComponent<Projectile>().ThrowCapturedEnemy(attackDirection);
 		}
 		else if (LassoReady())
@@ -60,7 +63,7 @@ public class PlayerAttack : MonoBehaviour
 
 		if (direction == Vector2.zero)
 		{
-			direction = new Vector2(Mathf.Sign(transform.localScale.x), 0);
+			direction = new Vector2(Mathf.Sign(transform.localScale.z), 0);
 		}
 
 		if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
