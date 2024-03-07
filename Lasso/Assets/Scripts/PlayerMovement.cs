@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -25,6 +26,8 @@ public class PlayerMovement : MonoBehaviour
     private float jumpBufferCounter;
     public PauseManager pause;
 
+    private PlayerInput playerInput;
+
     // Awake is called when the script instance is being loaded
     private void Awake()
     {
@@ -33,6 +36,28 @@ public class PlayerMovement : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
+
+        playerInput = GetComponent<PlayerInput>();
+        playerInput.onActionTriggered += PlayerInput_onActionTriggered;
+    }
+
+    private void PlayerInput_onActionTriggered(InputAction.CallbackContext context)
+    {
+		if (context.action.name == playerInput.actions["Jump"].name)
+        {
+			if (context.performed)
+            {
+                Debug.Log("Jumped");
+				jumpBufferCounter = jumpBufferTime;
+			}
+
+			if (context.canceled && !isGrounded())
+            {
+				Debug.Log("Jump Cancelled");
+				coyoteTimeCounter = 0f;
+				jumpCancel = true;
+			}
+		}
     }
 
 	private void Update()
@@ -43,7 +68,6 @@ public class PlayerMovement : MonoBehaviour
         bool onObject = isOnObject();
 		bool collidingLeft = isCollidingLeft();
 		bool collidingRight = isCollidingRight();
-
 
         if (pause.isPaused) {
 
@@ -65,24 +89,13 @@ public class PlayerMovement : MonoBehaviour
                 coyoteTimeCounter = coyoteTime;
             } else {
                 coyoteTimeCounter -= Time.deltaTime;
-            }
+				jumpBufferCounter -= Time.deltaTime;
+			}
 
-            // jump buffer
-            if (Input.GetButtonDown("Jump")) {
-                jumpBufferCounter = jumpBufferTime;
-            } else {
-                jumpBufferCounter -= Time.deltaTime;
-            }
-
-            // jumping with coyote time and jump buffer
-            if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f) {
+			// jumping with coyote time and jump buffer
+			if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f) {
                 jumpBufferCounter = 0f;
                 jump = true;
-            }
-
-            if (Input.GetButtonUp("Jump") && !grounded) {
-                coyoteTimeCounter = 0f;
-                jumpCancel = true;
             }
 
             flipSprite(horizontalInput);
