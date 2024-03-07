@@ -47,13 +47,11 @@ public class PlayerMovement : MonoBehaviour
         {
 			if (context.performed)
             {
-                Debug.Log("Jumped");
 				jumpBufferCounter = jumpBufferTime;
 			}
 
 			if (context.canceled && !isGrounded())
             {
-				Debug.Log("Jump Cancelled");
 				coyoteTimeCounter = 0f;
 				jumpCancel = true;
 			}
