@@ -19,6 +19,7 @@ public class Health : MonoBehaviour
     [SerializeField] private float kickback = 30;
     private Rigidbody2D body;
     private bool isEnemyToTheRight;
+    public GameManagerScript gameManager;
 
 	private void Awake()
     {
@@ -74,6 +75,7 @@ public class Health : MonoBehaviour
         {
             if (!dead)
             { 
+                gameManager.gameOver();
                 anim.SetBool("dead", true);
                 GetComponent<PlayerMovement>().enabled = false;
                 GetComponent<PlayerAttack>().enabled = false;
