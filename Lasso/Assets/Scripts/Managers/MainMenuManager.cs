@@ -24,7 +24,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void play() {
-        SceneManager.LoadScene("klevel");
+        SceneManager.LoadScene("Demo");
         Debug.Log("Play");
     }
 
