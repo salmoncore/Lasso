@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -11,18 +12,42 @@ public class PlayerAttack : MonoBehaviour
 	private Animator anim;
     private PlayerMovement playerMovement;
     private float cooldownTimer = Mathf.Infinity;
+	private bool fireFlag = false;
+	private bool buttonReleased = true;
 
-    private void Awake()
+	private PlayerInput playerInput;
+
+	private void Awake()
     {
 		anim = GetComponent<Animator>();
         playerMovement = GetComponent<PlayerMovement>();
+
+		playerInput = GetComponent<PlayerInput>();
+		playerInput.onActionTriggered += PlayerInput_onActionTriggered;
+	}
+
+	private void PlayerInput_onActionTriggered(InputAction.CallbackContext context)
+	{
+		if (context.action.name == playerInput.actions["Attack"].name)
+		{
+			if (context.performed && buttonReleased)
+			{
+				fireFlag = true;
+				buttonReleased = false;
+			}
+			else if (context.canceled)
+			{
+				buttonReleased = true;
+			}
+		}
 	}
 
 	private void Update()
 	{
-		if (Input.GetButtonDown("Fire") && (cooldownTimer > attackCooldown) && playerMovement.canAttack())
+		if (fireFlag && (cooldownTimer > attackCooldown) && playerMovement.canAttack())
         {
             Attack();
+			fireFlag = false;
         }
 
         cooldownTimer += Time.deltaTime;
