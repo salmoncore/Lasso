@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool jumpCancel = false;
     [SerializeField] private float boxCrop = 0.5f;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask interactiveLayer;
 	[SerializeField] private float accelerationTime = 0.2f; // Time to reach full speed
 	private float accelSmoothing;
 	private Rigidbody2D body;
@@ -22,82 +24,167 @@ public class PlayerMovement : MonoBehaviour
     private float coyoteTimeCounter;
     private float jumpBufferTime = 0.2f;
     private float jumpBufferCounter;
+    public PauseManager pause;
+
+    private PlayerInput playerInput;
+    private Vector2 movementDirection;
 
     // Awake is called when the script instance is being loaded
     private void Awake()
     {
         // Grab references from game object
+        pause = FindObjectOfType<PauseManager>();
         body = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
+
+        playerInput = GetComponent<PlayerInput>();
+        playerInput.onActionTriggered += PlayerInput_onActionTriggered;
     }
+
+	private void OnEnable()
+	{
+		playerInput.onControlsChanged += PlayerInput_onControlsChanged;
+	}
+
+    private void OnDisable()
+    {
+		playerInput.onControlsChanged -= PlayerInput_onControlsChanged;
+	}
+
+	private void PlayerInput_onControlsChanged(PlayerInput obj)
+	{
+        // Nintendo switch pro controller xinput/hid input fix
+		var gamepads = Gamepad.all;
+		foreach (var gamepad in gamepads)
+		{
+			// Check if the current gamepad is a Nintendo Switch Pro Controller
+			if (gamepad.description.interfaceName == "HID" &&
+				gamepad.description.manufacturer.Contains("Nintendo"))
+			{
+				//Debug.Log($"Nintendo Switch Pro Controller detected: {gamepad}");
+
+				// Loop through all gamepads again to find any XInput device activated at the same time
+				foreach (var otherGamepad in gamepads)
+				{
+					// Check if the other gamepad is an XInput device and not the same as the current gamepad
+					if (otherGamepad != gamepad &&
+						otherGamepad.description.interfaceName == "XInput" &&
+						Math.Abs(otherGamepad.lastUpdateTime - gamepad.lastUpdateTime) < 0.1)
+					{
+						// Log and disable the XInput device
+						//Debug.Log($"Disabling XInput device due to Nintendo Switch Pro Controller detection: {otherGamepad}");
+						InputSystem.DisableDevice(otherGamepad);
+					}
+				}
+			}
+		}
+	}
+
+	private void PlayerInput_onActionTriggered(InputAction.CallbackContext context)
+    {
+		if (context.action.name == playerInput.actions["Jump"].name)
+        {
+			if (context.performed)
+            {
+				jumpBufferCounter = jumpBufferTime;
+			}
+
+			if (context.canceled && !isGrounded() && !isOnObject())
+            {
+				coyoteTimeCounter = 0f;
+				jumpCancel = true;
+			}
+		}
+
+		if (context.action.name == playerInput.actions["Movement"].name)
+		{
+			movementDirection = context.ReadValue<Vector2>();
+		}
+	}
 
 	private void Update()
 	{
-		float horizontalInput = Input.GetAxis("Horizontal");
+        float horizontalInput;
+
 		bool grounded = isGrounded();
+        bool onObject = isOnObject();
 		bool collidingLeft = isCollidingLeft();
 		bool collidingRight = isCollidingRight();
 
-		float targetVelocityX = 0;
-		if (!(collidingLeft && horizontalInput < 0) && !(collidingRight && horizontalInput > 0))
-		{
-			targetVelocityX = horizontalInput * speed;
-		}
+        if (pause.isPaused) {
 
-		body.velocity = new Vector2(
-			Mathf.SmoothDamp(body.velocity.x, targetVelocityX, ref accelSmoothing, accelerationTime),
-			body.velocity.y
-		);
-
-        // coyote time stuff with jump
-        if (grounded) {
-            coyoteTimeCounter = coyoteTime;
         } else {
-            coyoteTimeCounter -= Time.deltaTime;
+            horizontalInput = movementDirection.x;
+            float targetVelocityX = 0;
+            if (!(collidingLeft && horizontalInput < 0) && !(collidingRight && horizontalInput > 0))
+            {
+                targetVelocityX = horizontalInput * speed;
+            }
+
+            body.velocity = new Vector2(
+                Mathf.SmoothDamp(body.velocity.x, targetVelocityX, ref accelSmoothing, accelerationTime),
+                body.velocity.y
+            );
+
+            // coyote time stuff with jump
+            if (grounded || onObject) {
+                coyoteTimeCounter = coyoteTime;
+            } else {
+                coyoteTimeCounter -= Time.deltaTime;
+				jumpBufferCounter -= Time.deltaTime;
+			}
+
+			// jumping with coyote time and jump buffer
+			if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f) {
+                jumpBufferCounter = 0f;
+                jump = true;
+            }
+
+            flipSprite(horizontalInput);
+
+            anim.SetBool("isRunning", horizontalInput != 0);
+            anim.SetBool("isGrounded", grounded || onObject);
+            anim.SetBool("isFalling", !grounded && !onObject);
+
+            // Leaving this in for the sprite animations
+            anim.SetBool("run", horizontalInput != 0);
+            anim.SetBool("grounded", grounded || onObject);
         }
-
-        // jump buffer
-        if (Input.GetButtonDown("Jump")) {
-            jumpBufferCounter = jumpBufferTime;
-        } else {
-            jumpBufferCounter -= Time.deltaTime;
-        }
-
-        // jumping with coyote time and jump buffer
-		if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f) {
-            jumpBufferCounter = 0f;
-			jump = true;
-		}
-
-		if (Input.GetButtonUp("Jump") && !grounded) {
-            coyoteTimeCounter = 0f;
-			jumpCancel = true;
-		}
-
-		flipSprite(horizontalInput);
-		anim.SetBool("run", horizontalInput != 0);
-		anim.SetBool("grounded", grounded);
 	}
 
 	void flipSprite(float horizontalInput)
     {
-		if (horizontalInput > 0.01f)
+        Vector3 currentScale = transform.localScale;
+		if (horizontalInput > 0.01f && currentScale.z < 0)
 		{
-			transform.localScale = new Vector3(6, 6, 1);
-		}
-		else if (horizontalInput < -0.01f)
+            // flip horizontally to the right - FOR THE 3D MODEL, THIS MUST BE CHANGED TO THE CURRENTSCALE OF THE Z
+            transform.localScale = new Vector3(currentScale.x, currentScale.y, Mathf.Abs(currentScale.z));
+        }
+		else if (horizontalInput < -0.01f && currentScale.z > 0)
 		{
-			transform.localScale = new Vector3(-6, 6, 1);
-		}
+            // flip horizontally to the left - FOR THE 3D MODEL, THIS MUST BE CHANGED TO THE CURRENTSCALE OF THE Z
+            transform.localScale = new Vector3(currentScale.x, currentScale.y, -Mathf.Abs(currentScale.z));
+        }
 	}
 
     void FixedUpdate() {
         // Normal jump at full speed
-        if (jump) {
+        if (jump)
+        {
             body.velocity = new Vector2(body.velocity.x, jumpSpeed);
             jump = false;
+
+            // Start the isJumping animation and have it finish before setting it to false
+            anim.SetBool("isJumping", true);
+            StartCoroutine(StopJumping());
         }
+
+        IEnumerator StopJumping()
+        {
+			yield return new WaitForSeconds(0.5f);
+			anim.SetBool("isJumping", false);
+		}
 
         if (jumpCancel) {
             if (body.velocity.y > jumpShortSpeed)
@@ -108,14 +195,22 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded()
     {
-        Vector2 boxCastSize = boxCollider.bounds.size;
-        boxCastSize.x -= boxCrop;
+		Vector2 boxCastSize = boxCollider.bounds.size;
+		boxCastSize.x -= boxCrop;
+		
+		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
+		return raycastHit.collider != null;
+	}
 
-        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
-        return raycastHit.collider != null;
-    }
+    private bool isOnObject()
+    {
+		Vector2 boxCastSize = boxCollider.bounds.size;
+		boxCastSize.x -= boxCrop;
 
-    // Use boxcast to check if player is colliding on the left
+		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, interactiveLayer);
+		return raycastHit.collider != null;
+	}
+
     private bool isCollidingLeft()
     {
 		Vector2 boxCastSize = boxCollider.bounds.size;
@@ -125,7 +220,6 @@ public class PlayerMovement : MonoBehaviour
 		return raycastHit.collider != null;
 	}
 
-    // Use boxcast to check if player is colliding on the right
     private bool isCollidingRight()
     {
         Vector2 boxCastSize = boxCollider.bounds.size;

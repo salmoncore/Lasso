@@ -6,15 +6,16 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
 	[SerializeField] private float speed;
-	[SerializeField] private float lassoDistance;
+	[SerializeField] private float kickback;
+	[SerializeField] private float lassoFlightTime;
 	[SerializeField] private Rigidbody2D player;
 	[SerializeField] private float enemyTravelTime = 1f;
 	private GameObject capturedEnemy = null;
-	private float direction;
+	private float lateralDirection;
 	private float verticalDirection;
 	private bool hit;
 	private Vector2 playerVelocity;
-	private Vector2 playerPosition;
+	private float lassoTimer;
 
 	private BoxCollider2D boxCollider;
 	private Animator anim;
@@ -23,24 +24,22 @@ public class Projectile : MonoBehaviour
 	{
 		anim = GetComponent<Animator>();
 		boxCollider = GetComponent<BoxCollider2D>();
+		lassoTimer = lassoFlightTime;
 	}
 
 	private void Update()
 	{
 		if (hit) return;
 
-		playerPosition = player.position;
+		Vector2 movement = new Vector2(speed * lateralDirection, speed * verticalDirection);
+		movement += player.velocity;
+		transform.Translate(movement * Time.deltaTime);
 
-		float horizontalMovementSpeed = (speed + playerVelocity.x) * Time.deltaTime * direction;
-		float verticalMovementSpeed = (speed + playerVelocity.y) * Time.deltaTime * verticalDirection;
-
-		transform.Translate(horizontalMovementSpeed, verticalMovementSpeed, 0);
-
-		float distanceFromPlayer = Vector2.Distance(player.position, transform.position);
-
-		if (distanceFromPlayer > lassoDistance)
+		lassoTimer -= Time.deltaTime;
+		if (lassoTimer <= 0)
 		{
 			Deactivate();
+			lassoTimer = lassoFlightTime;
 		}
 	}
 
@@ -53,37 +52,65 @@ public class Projectile : MonoBehaviour
 	{
 		if (capturedEnemy != null)
 		{
-			capturedEnemy.tag = "EnemyProjectile";
+			if (capturedEnemy.tag == "Fragile" || capturedEnemy.tag == "Enemy")
+			{
+				capturedEnemy.tag = "FragileProjectile";
+			}
+			else if (capturedEnemy.tag == "Sturdy")
+			{
+				capturedEnemy.tag = "SturdyProjectile";
+			}
+			capturedEnemy.layer = LayerMask.NameToLayer("Projectiles");
 			capturedEnemy.GetComponent<SpriteRenderer>().enabled = true;
 			capturedEnemy.SetActive(true);
-			capturedEnemy.transform.position = player.position;
+			capturedEnemy.transform.position = GetFirePoint();
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
+			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
 
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
-			enemyRigidbody.velocity = newDirection.normalized * speed;
 
-			// TODO: Attach LassoHandler to enemies
-			LassoHandler handler = capturedEnemy.AddComponent<LassoHandler>();
-			handler.Initialize(speed);
+			enemyRigidbody.velocity = newDirection.normalized * speed + player.velocity;
 
-			// Set the enemy's layer to "ThrownEnemies" so it can't collide with the player and other enemies
-			capturedEnemy.layer = LayerMask.NameToLayer("ThrownEnemies");
-			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false;
+			if (!capturedEnemy.TryGetComponent<LassoHandler>(out LassoHandler handler))
+			{
+				handler = capturedEnemy.AddComponent<LassoHandler>();
+				handler.Initialize(speed);
+			}
+
+			// If it exists, disable the EnemyControl script
+			if (capturedEnemy.TryGetComponent<EnemyControl>(out EnemyControl enemyControl))
+			{
+				enemyControl.enabled = false;
+			}
+
+			// May not be necessary anymore, just in case
+			capturedEnemy.GetComponent<BoxCollider2D>().isTrigger = false; 
+
+			// Apply gravity scale 1 to thrown enemy, may not be necessary anymore
+			enemyRigidbody.gravityScale = 1.5f; // Make this enumerable
 
 			capturedEnemy = null;
+
+			// Projectile Kickback
+			player.velocity = -newDirection.normalized * kickback;
 		}
 	}
 
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
+		Debug.Log("Projectile hit " + collision.tag);
+		// PS the lasso projectile is the trigger here lmao
 		if (collision.tag == "Ground")
 		{
+			lassoTimer = lassoFlightTime;
 			hit = true;
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
 		}
-		else if (collision.tag == "Enemy")
+		else if ((collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy" ||
+				 collision.tag == "FragileProjectile" || collision.tag == "SturdyProjectile") && capturedEnemy == null)
 		{
+			lassoTimer = lassoFlightTime;
 			hit = true;
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
@@ -106,8 +133,7 @@ public class Projectile : MonoBehaviour
 		{
 			t += Time.deltaTime;
 			
-			playerPosition = player.position;
-			enemy.transform.position = Vector2.Lerp(startPosition, playerPosition, t / enemyTravelTime);
+			enemy.transform.position = Vector2.Lerp(startPosition, GetFirePoint(), t / enemyTravelTime);
 			yield return null;
 		}
 
@@ -115,6 +141,20 @@ public class Projectile : MonoBehaviour
 
 		enemy.GetComponent<SpriteRenderer>().enabled = false;
 		enemy.SetActive(false);
+	}
+
+	public Vector2 GetFirePoint()
+	{
+		Transform firePoint = player.transform.Find("firePoint");
+		if (firePoint != null)
+		{
+			return firePoint.position;
+		}
+		else
+		{
+			Debug.LogError("firePoint not found. Check Unity inspector.");
+			return player.position;
+		}
 	}
 
 	public void SetDirection(Vector2 direction)
@@ -132,7 +172,7 @@ public class Projectile : MonoBehaviour
 		}
 		transform.localScale = new Vector3(localScaleX, transform.localScale.y, transform.localScale.z);
 
-		this.direction = direction.x;
+		this.lateralDirection = direction.x;
 		this.verticalDirection = direction.y;
 
 		this.playerVelocity.x = Mathf.Abs(player.velocity.x);

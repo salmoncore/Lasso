@@ -16,7 +16,10 @@ public class Health : MonoBehaviour
     [SerializeField] private float invincibilityDurationSeconds;
     [SerializeField] private float invincibilityDeltaTime;
     [SerializeField] private GameObject player;
+    [SerializeField] private float kickback = 30;
     private Rigidbody2D body;
+    private bool isEnemyToTheRight;
+    public GameManagerScript gameManager;
 
 	private void Awake()
     {
@@ -26,20 +29,26 @@ public class Health : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-		if (collision.tag == "Enemy")
+	private void OnCollisionEnter2D(Collision2D collision)
+	{
+		// check the tag of the object we collided with
+        if (collision.gameObject.tag == "Enemy")
         {
 			TakeDamage(damage);
+            isEnemyToTheRight = collision.transform.position.x > transform.position.x;
 		}
-        else if (collision.tag == "Health")
-        {
+	}
+
+	private void OnTriggerEnter2D(Collider2D collision)
+	{
+		if (collision.gameObject.tag == "Health")
+		{
 			Heal(heal);
 			Destroy(collision.gameObject);
 		}
 	}
 
-    public void TakeDamage(int _damage) // TODO: Does this need to be public anymore?
+	public void TakeDamage(int _damage) // TODO: Does this need to be public anymore?
     {
         if (isInvincible) return;
 
@@ -48,22 +57,38 @@ public class Health : MonoBehaviour
 
         if (currentHealth > 0) // Player hurt
         {
+            anim.SetTrigger("isHit");
             anim.SetTrigger("hurt");
-            // TODO: Needs iframes
+
+            // When the player is hurt, knock them back to the left or the right in the opposite direction of the enemy
+            if (isEnemyToTheRight)
+            {
+				body.velocity = new Vector2(kickback, kickback);
+			}
+			else
+            {
+				body.velocity = new Vector2(-kickback, kickback);
+			}
+
         }
         else // Player dead lol
         {
             if (!dead)
             { 
+                gameManager.gameOver();
                 anim.SetBool("dead", true);
                 GetComponent<PlayerMovement>().enabled = false;
+                GetComponent<PlayerAttack>().enabled = false;
                 body.velocity = new Vector2(0, 0);
+                body.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
                 dead = true;
                 return;
             }
-        }
+		}
 
-        StartCoroutine(BecomeTemporarilyInvincible());
+        // TODO: Fix this later please god
+
+        //StartCoroutine(BecomeTemporarilyInvincible());
     }
 
     public void Heal(int _heal) // TODO: Does this need to be public anymore?
@@ -88,24 +113,50 @@ public class Health : MonoBehaviour
         {
             Heal(1);
         }
-    }
+	}
 
     private IEnumerator BecomeTemporarilyInvincible() {
-        Debug.Log("Player turned invincible!");
+        // Debug.Log("Player turned invincible!");
         isInvincible = true;
 
         for (float i = 0; i < invincibilityDurationSeconds; i += invincibilityDeltaTime) {
             if (render) {
-                TurnOffSpriteRenderer();
+                
+                // Determine if there's a sprite renderer or a mesh renderer
+                if (player.GetComponent<SpriteRenderer>() != null)
+                {
+					TurnOffSpriteRenderer();
+				} else
+                {
+					TurnOffMeshRenderer();
+				}
+
+                //TurnOffSpriteRenderer();
             } else {
-                TurnOnSpriteRenderer();
-            }
+                //TurnOnSpriteRenderer();
+
+				if (player.GetComponent<SpriteRenderer>() != null)
+				{
+					TurnOnSpriteRenderer();
+				}
+				else
+				{
+					TurnOnMeshRenderer();
+				}
+			}
             yield return new WaitForSeconds(invincibilityDeltaTime);
         }
 
-        Debug.Log("Player is no longer invincible!");
-        TurnOnSpriteRenderer();
-        isInvincible = false;
+		// Debug.Log("Player is no longer invincible!");
+		if (player.GetComponent<SpriteRenderer>() != null)
+		{
+			TurnOnSpriteRenderer();
+		}
+		else
+		{
+			TurnOnMeshRenderer();
+		}
+		isInvincible = false;
     }
 
     void MethodThatTriggersInvulnerability() {
@@ -123,4 +174,16 @@ public class Health : MonoBehaviour
         player.GetComponent<SpriteRenderer>().enabled = true;
         render = true;
     }
+
+    private void TurnOffMeshRenderer()
+    {
+        player.GetComponent<SkinnedMeshRenderer>().enabled = false;
+        render = false;
+    }
+
+    private void TurnOnMeshRenderer()
+    {
+		player.GetComponent<SkinnedMeshRenderer>().enabled = true;
+        render = true;
+	}
 }

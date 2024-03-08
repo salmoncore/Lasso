@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2849236961195942030}
   - component: {fileID: 6571280793905566630}
   - component: {fileID: 1423409692718665332}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Lasso
   m_TagString: LassoProjectile
   m_Icon: {fileID: 0}
@@ -100,10 +100,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26e73e7ec28cf174f9c3f2fd1c358efe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 9
-  lassoDistance: 3
+  speed: 10
+  kickback: 10
+  lassoFlightTime: 0.25
   player: {fileID: 0}
-  enemyTravelTime: 0.25
+  enemyTravelTime: 0.15
 --- !u!61 &2849236961195942030
 BoxCollider2D:
   m_ObjectHideFlags: 0
