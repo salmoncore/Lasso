@@ -7,11 +7,12 @@ using UnityEngine.EventSystems;
 public class CreditManager : MonoBehaviour
 {
     public GameObject backButton;
+    public GameObject inputManager;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        inputManager.SetActive(true);
     }
 
     // Update is called once per frame

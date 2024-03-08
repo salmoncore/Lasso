@@ -10,6 +10,7 @@ public class GameManagerScript : MonoBehaviour
     public GameObject gameOverUI;
     public GameObject restartButton, mainMenuButton, quitButton;
     public bool isDead = false;
+    public GameObject inputManager;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +27,7 @@ public class GameManagerScript : MonoBehaviour
         // stop time on death
         isDead = true;
         Time.timeScale = 0f;
+        inputManager.SetActive(true);
         gameOverUI.SetActive(true);
         // clear selected object
         EventSystem.current.SetSelectedGameObject(null);
