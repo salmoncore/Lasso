@@ -27,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     public PauseManager pause;
 
     private PlayerInput playerInput;
+    private Vector2 movementDirection;
 
     // Awake is called when the script instance is being loaded
     private void Awake()
@@ -56,7 +57,12 @@ public class PlayerMovement : MonoBehaviour
 				jumpCancel = true;
 			}
 		}
-    }
+
+		if (context.action.name == playerInput.actions["Movement"].name)
+		{
+			movementDirection = context.ReadValue<Vector2>();
+		}
+	}
 
 	private void Update()
 	{
@@ -70,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
         if (pause.isPaused) {
 
         } else {
-            horizontalInput = Input.GetAxis("Horizontal");
+            horizontalInput = movementDirection.x;
             float targetVelocityX = 0;
             if (!(collidingLeft && horizontalInput < 0) && !(collidingRight && horizontalInput > 0))
             {
