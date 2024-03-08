@@ -98,6 +98,7 @@ public class Projectile : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
+		Debug.Log("Projectile hit " + collision.tag);
 		// PS the lasso projectile is the trigger here lmao
 		if (collision.tag == "Ground")
 		{
@@ -106,8 +107,8 @@ public class Projectile : MonoBehaviour
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
 		}
-		else if (collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy" ||
-				 collision.tag == "FragileProjectile" || collision.tag == "SturdyProjectile")
+		else if ((collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy" ||
+				 collision.tag == "FragileProjectile" || collision.tag == "SturdyProjectile") && capturedEnemy == null)
 		{
 			lassoTimer = lassoFlightTime;
 			hit = true;
