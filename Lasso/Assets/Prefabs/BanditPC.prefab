@@ -401,9 +401,9 @@ GameObject:
   - component: {fileID: 4050361699889438055}
   - component: {fileID: 6240431339188903362}
   - component: {fileID: 5007141239840492368}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BanditPC
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

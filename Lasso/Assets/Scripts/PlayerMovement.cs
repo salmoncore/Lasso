@@ -90,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
 				jumpBufferCounter = jumpBufferTime;
 			}
 
-			if (context.canceled && !isGrounded())
+			if (context.canceled && !isGrounded() && !isOnObject())
             {
 				coyoteTimeCounter = 0f;
 				jumpCancel = true;
@@ -128,7 +128,7 @@ public class PlayerMovement : MonoBehaviour
             );
 
             // coyote time stuff with jump
-            if (grounded) {
+            if (grounded || onObject) {
                 coyoteTimeCounter = coyoteTime;
             } else {
                 coyoteTimeCounter -= Time.deltaTime;
@@ -144,12 +144,12 @@ public class PlayerMovement : MonoBehaviour
             flipSprite(horizontalInput);
 
             anim.SetBool("isRunning", horizontalInput != 0);
-            anim.SetBool("isGrounded", grounded);
-            anim.SetBool("isFalling", !grounded);
+            anim.SetBool("isGrounded", grounded || onObject);
+            anim.SetBool("isFalling", !grounded && !onObject);
 
             // Leaving this in for the sprite animations
             anim.SetBool("run", horizontalInput != 0);
-            anim.SetBool("grounded", grounded);
+            anim.SetBool("grounded", grounded || onObject);
         }
 	}
 
