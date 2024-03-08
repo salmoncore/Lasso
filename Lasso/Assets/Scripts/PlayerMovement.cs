@@ -42,7 +42,46 @@ public class PlayerMovement : MonoBehaviour
         playerInput.onActionTriggered += PlayerInput_onActionTriggered;
     }
 
-    private void PlayerInput_onActionTriggered(InputAction.CallbackContext context)
+	private void OnEnable()
+	{
+		playerInput.onControlsChanged += PlayerInput_onControlsChanged;
+	}
+
+    private void OnDisable()
+    {
+		playerInput.onControlsChanged -= PlayerInput_onControlsChanged;
+	}
+
+	private void PlayerInput_onControlsChanged(PlayerInput obj)
+	{
+        // Nintendo switch pro controller xinput/hid input fix
+		var gamepads = Gamepad.all;
+		foreach (var gamepad in gamepads)
+		{
+			// Check if the current gamepad is a Nintendo Switch Pro Controller
+			if (gamepad.description.interfaceName == "HID" &&
+				gamepad.description.manufacturer.Contains("Nintendo"))
+			{
+				//Debug.Log($"Nintendo Switch Pro Controller detected: {gamepad}");
+
+				// Loop through all gamepads again to find any XInput device activated at the same time
+				foreach (var otherGamepad in gamepads)
+				{
+					// Check if the other gamepad is an XInput device and not the same as the current gamepad
+					if (otherGamepad != gamepad &&
+						otherGamepad.description.interfaceName == "XInput" &&
+						Math.Abs(otherGamepad.lastUpdateTime - gamepad.lastUpdateTime) < 0.1)
+					{
+						// Log and disable the XInput device
+						//Debug.Log($"Disabling XInput device due to Nintendo Switch Pro Controller detection: {otherGamepad}");
+						InputSystem.DisableDevice(otherGamepad);
+					}
+				}
+			}
+		}
+	}
+
+	private void PlayerInput_onActionTriggered(InputAction.CallbackContext context)
     {
 		if (context.action.name == playerInput.actions["Jump"].name)
         {
