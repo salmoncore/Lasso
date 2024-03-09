@@ -61,10 +61,21 @@ public class Projectile : MonoBehaviour
 				capturedEnemy.tag = "SturdyProjectile";
 			}
 			capturedEnemy.layer = LayerMask.NameToLayer("Projectiles");
-			capturedEnemy.GetComponent<SpriteRenderer>().enabled = true;
+
+			if (capturedEnemy.GetComponent<SpriteRenderer>() != null)
+			{
+				capturedEnemy.GetComponent<SpriteRenderer>().enabled = true;
+			}
+			else if (capturedEnemy.GetComponent<MeshRenderer>() != null)
+			{
+				capturedEnemy.GetComponent<MeshRenderer>().enabled = true;
+			}
+
 			capturedEnemy.SetActive(true);
 			capturedEnemy.transform.position = GetFirePoint();
+
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
+
 			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
 
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
@@ -139,7 +150,15 @@ public class Projectile : MonoBehaviour
 
 		enemy.transform.position = player.position;
 
-		enemy.GetComponent<SpriteRenderer>().enabled = false;
+		if (enemy.GetComponent<SpriteRenderer>() != null)
+		{
+			enemy.GetComponent<SpriteRenderer>().enabled = false;
+		}
+		else if (enemy.GetComponent<MeshRenderer>() != null)
+		{
+			enemy.GetComponent<MeshRenderer>().enabled = false;
+		}
+
 		enemy.SetActive(false);
 	}
 

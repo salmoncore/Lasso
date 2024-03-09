@@ -24,20 +24,26 @@ public class LassoHandler : MonoBehaviour
 		{
 			// PS the raycast lines always face down so don't worry if rotation is unlocked
 
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f, LayerMask.GetMask("Ground")).collider != null)
+			// Distance from the center to make sure the raycast can always reach the ground
+			float distance = Projectile.GetComponent<BoxCollider2D>().bounds.extents.y;
+
+			// Draw debug raycast
+			Debug.DrawRay(Projectile.transform.position, Vector2.down * (0.5f + distance), Color.red);
+
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f + distance, LayerMask.GetMask("Ground")).collider != null)
 			{ isOnGround = true; }
 			else { isOnGround = false; }
 
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f, LayerMask.GetMask("Interactive")).collider != null)
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f + distance, LayerMask.GetMask("Interactive")).collider != null)
 			{ isOnInteractive = true; }
 			else { isOnInteractive = false;	}
 
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f, LayerMask.GetMask("Enemy")).collider != null)
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f + distance, LayerMask.GetMask("Enemies")).collider != null)
 			{ isOnEnemy = true;	}
 			else { isOnEnemy = false; }
 
 			// If the projectile has stopped sliding
-			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 0.1f && (isOnGround || isOnInteractive || isOnEnemy))
+			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 0.2f && (isOnGround || isOnInteractive || isOnEnemy))
 			{
 				if (Projectile.CompareTag("FragileProjectile"))
 				{
@@ -71,7 +77,16 @@ public class LassoHandler : MonoBehaviour
 		Projectile.tag = "Breaking";
 		Projectile.layer = LayerMask.NameToLayer("Breaking");
 		Projectile.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 2.5f);
-		Projectile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
+
+		if (Projectile.TryGetComponent<SpriteRenderer>(out SpriteRenderer spriteRenderer))
+		{
+			spriteRenderer.color = new Color(1, 1, 1, 0.5f);
+		}
+		else if (Projectile.TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
+		{
+			meshRenderer.material.color = new Color(1, 1, 1, 0.5f);
+		}
+
 		Projectile.GetComponent<Collider2D>().enabled = false;
 
 		yield return new WaitForSeconds(5f);
