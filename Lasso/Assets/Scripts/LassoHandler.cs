@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class LassoHandler : MonoBehaviour
@@ -84,13 +85,23 @@ public class LassoHandler : MonoBehaviour
 		}
 		else if (Projectile.TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
 		{
-			meshRenderer.material.color = new Color(1, 1, 1, 0.5f);
+			// Changing the alpha doesn't seem to work here so I'm gonna do this silly thing
+			StartCoroutine(SpinProjectile());
 		}
 
 		Projectile.GetComponent<Collider2D>().enabled = false;
 
 		yield return new WaitForSeconds(5f);
 		Destroy(Projectile);
+	}
+
+	private IEnumerator SpinProjectile()
+	{
+		while (true)
+		{
+			Projectile.transform.Rotate(1, 1, 1);
+			yield return new WaitForSeconds(0.01f);
+		}
 	}
 
 	public void Reset()
