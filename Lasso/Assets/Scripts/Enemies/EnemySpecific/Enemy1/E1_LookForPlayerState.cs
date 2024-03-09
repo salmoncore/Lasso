@@ -38,6 +38,9 @@ public class E1_LookForPlayerState : LookForPlayerState
         {
             stateMachine.ChangeState(enemy.moveState);
         }
+
+        //TODO: transiotn
+
     }
 
     public override void PhysicsUpdate()
