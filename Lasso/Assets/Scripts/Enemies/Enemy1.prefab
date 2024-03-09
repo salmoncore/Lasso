@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2451150902616314549}
   - component: {fileID: 5260512779550289485}
-  - component: {fileID: 7646740034750909696}
   m_Layer: 7
   m_Name: Enemy1
   m_TagString: Enemy
@@ -60,18 +59,6 @@ MonoBehaviour:
   stunStateData: {fileID: 11400000, guid: 82edc90d009dcb049a22f9dc8b56a015, type: 2}
   deadStateData: {fileID: 11400000, guid: fe3ad9ede735ca64eb688a332ff33ccc, type: 2}
   meleeAttackPosition: {fileID: 400164011815190099}
---- !u!114 &7646740034750909696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1122498142459416924}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbf37689ec273134fb9cf8d1080df546, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1501586714601446512
 GameObject:
   m_ObjectHideFlags: 0
