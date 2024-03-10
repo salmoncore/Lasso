@@ -1709,10 +1709,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 99614324586317997, guid: b6af0903268a6894aaa849048d09d224, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2158668729118377934, guid: b6af0903268a6894aaa849048d09d224, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
