@@ -16,6 +16,12 @@ public class Projectile : MonoBehaviour
 	private bool hit;
 	private Vector2 playerVelocity;
 	private float lassoTimer;
+	private LineRenderer lineRenderer;
+
+	private GameObject attachPoint;
+
+	private Vector2 lineTrim;
+	private bool isRetrieving = false;
 
 	private BoxCollider2D boxCollider;
 	private Animator anim;
@@ -25,11 +31,38 @@ public class Projectile : MonoBehaviour
 		anim = GetComponent<Animator>();
 		boxCollider = GetComponent<BoxCollider2D>();
 		lassoTimer = lassoFlightTime;
+
+		lineRenderer = gameObject.AddComponent<LineRenderer>();
+		// Set the line renderer's material to a brown color
+		lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+		lineRenderer.startColor = new Color(0.24f, 0.09f, 0.0f, 1f);
+		lineRenderer.endColor = new Color(0.24f, 0.09f, 0.0f, 1f);
+		lineRenderer.startWidth = 0.1f;
+		lineRenderer.endWidth = 0.2f;
+		lineRenderer.positionCount = 2;
+		lineRenderer.enabled = false;
 	}
 
 	private void Update()
 	{
-		if (hit) return;
+		if (isRetrieving) return;
+
+		if (hit)
+		{
+			lineRenderer.enabled = false;
+			return;
+		}
+
+		lineRenderer.SetPosition(0, GetFirePoint());
+
+		// Find the position of the child node's child node "attachPoint" and set it as the lasso's position
+		//attachPoint = transform.GetChild(0).Find("AttachPoint").gameObject;
+		///Vector2 lassoPosition = attachPoint.transform.position;
+
+		Vector2 lassoPosition = transform.position;
+		lassoPosition -= lineTrim;
+		lineRenderer.SetPosition(1, lassoPosition);
+		lineRenderer.enabled = true;
 
 		Vector2 movement = new Vector2(speed * lateralDirection, speed * verticalDirection);
 		movement += player.velocity;
@@ -38,9 +71,32 @@ public class Projectile : MonoBehaviour
 		lassoTimer -= Time.deltaTime;
 		if (lassoTimer <= 0)
 		{
-			Deactivate();
+			RetrieveLassoStart();
 			lassoTimer = lassoFlightTime;
 		}
+	}
+
+	private void RetrieveLassoStart()
+	{
+		StartCoroutine(RetrieveLasso());
+	}
+
+	private IEnumerator RetrieveLasso()
+	{
+		isRetrieving = true;
+
+		Vector2 startPosition = transform.position;
+		Vector2 endPosition = GetFirePoint();
+		float t = 0f;
+		while (t < 1)
+		{
+			t += Time.deltaTime * speed;
+			transform.position = Vector2.Lerp(startPosition, endPosition, t);
+			yield return null;
+		}
+
+		isRetrieving = false;
+		Deactivate();
 	}
 
 	public bool HasCapturedEnemy()
@@ -117,11 +173,6 @@ public class Projectile : MonoBehaviour
 			hit = true;
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
-
-			//if (transform.GetChild(0).rotation.z != 90)
-			//{
-			//	transform.GetChild(0).Rotate(0, 0, -90);
-			//}
 		}
 		else if ((collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy" ||
 				 collision.tag == "FragileProjectile" || collision.tag == "SturdyProjectile") && capturedEnemy == null)
@@ -133,11 +184,6 @@ public class Projectile : MonoBehaviour
 
 			capturedEnemy = collision.gameObject;
 			StartCoroutine(CaptureEnemy(capturedEnemy));
-
-			//if (transform.GetChild(0).rotation.z != 90)
-			//{
-			//	transform.GetChild(0).Rotate(0, 0, -90);
-			//}
 		}
 	}
 
@@ -154,6 +200,7 @@ public class Projectile : MonoBehaviour
 		{
 			t += Time.deltaTime;
 			
+			transform.position = Vector2.Lerp(startPosition, GetFirePoint(), t / enemyTravelTime);
 			enemy.transform.position = Vector2.Lerp(startPosition, GetFirePoint(), t / enemyTravelTime);
 			yield return null;
 		}
@@ -170,6 +217,7 @@ public class Projectile : MonoBehaviour
 		}
 
 		enemy.SetActive(false);
+		Deactivate();
 	}
 
 	public Vector2 GetFirePoint()
@@ -204,33 +252,26 @@ public class Projectile : MonoBehaviour
 		this.lateralDirection = direction.x;
 		this.verticalDirection = direction.y;
 
-		//if (direction.y != 0 && transform.GetChild(0).rotation.z == 90)
-		//{
-		//	transform.GetChild(0).Rotate(0, 0, 90);
-		//}
-
-		// If travelling negative on the x axis, rotate the child 180 degrees
-		// If travelling positive on the x axis, rotate the child 0 degrees
-		// If travelling positive on the y axis, rotate the child 90 degrees
-		// If travelling negative on the y axis, rotate the child -90 degrees
-		// Use euler angles to rotate the child
-		if (direction.x < 0)
+		if (direction.x < 0) // Left
 		{
 			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, 90);
+			lineTrim = new Vector2(-0.35f, -0.02f);
 		}
-		else if (direction.x > 0)
+		else if (direction.x > 0) // Right 
 		{
 			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, -90);
+			lineTrim = new Vector2(0.35f, 0);
 		}
-		else if (direction.y > 0)
+		else if (direction.y > 0) // Up
 		{
 			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, 0);
+			lineTrim = new Vector2(0, 0.35f);
 		}
-		else if (direction.y < 0)
+		else if (direction.y < 0) // Down
 		{
 			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, 180);
+			lineTrim = new Vector2(0, -0.35f);
 		}
-
 
 		this.playerVelocity.x = Mathf.Abs(player.velocity.x);
 		this.playerVelocity.y = Mathf.Abs(player.velocity.y);
@@ -239,10 +280,5 @@ public class Projectile : MonoBehaviour
 	private void Deactivate()
 	{
 		gameObject.SetActive(false);
-
-		//if (transform.GetChild(0).rotation.z != 90)
-		//{
-		//	transform.GetChild(0).Rotate(0, 0, -90);
-		//}
 	}
 }

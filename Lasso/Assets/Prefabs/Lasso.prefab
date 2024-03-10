@@ -159,18 +159,6 @@ PrefabInstance:
       value: LassoObj
       objectReference: {fileID: 0}
     - target: {fileID: 6778236887175228698, guid: daeff89ee87c6854b98168155461f477, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 6778236887175228698, guid: daeff89ee87c6854b98168155461f477, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 6778236887175228698, guid: daeff89ee87c6854b98168155461f477, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 6778236887175228698, guid: daeff89ee87c6854b98168155461f477, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
