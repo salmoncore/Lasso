@@ -58,7 +58,7 @@ public class PlayerAttack : MonoBehaviour
 	private void Update()
 	{
 		if (pause.isPaused) {
-
+			fireFlag = false;
 		} else {
 			if (fireFlag && (cooldownTimer > attackCooldown) && playerMovement.canAttack())
 			{
