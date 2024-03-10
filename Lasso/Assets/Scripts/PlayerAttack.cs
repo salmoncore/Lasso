@@ -18,6 +18,7 @@ public class PlayerAttack : MonoBehaviour
 	private Vector2 movementDirection;
 
 	private PlayerInput playerInput;
+	public PauseManager pause;
 
 	private void Awake()
     {
@@ -56,13 +57,17 @@ public class PlayerAttack : MonoBehaviour
 
 	private void Update()
 	{
-		if (fireFlag && (cooldownTimer > attackCooldown) && playerMovement.canAttack())
-        {
-            Attack();
-			fireFlag = false;
-        }
+		if (pause.isPaused) {
 
-        cooldownTimer += Time.deltaTime;
+		} else {
+			if (fireFlag && (cooldownTimer > attackCooldown) && playerMovement.canAttack())
+			{
+				Attack();
+				fireFlag = false;
+			}
+
+			cooldownTimer += Time.deltaTime;
+		}
     }
 
 	private void Attack()
