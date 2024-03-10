@@ -2240,6 +2240,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9026094276908541867, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
+      propertyPath: pause
+      value: 
+      objectReference: {fileID: 2023089615}
+    - target: {fileID: 9026094276908541867, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
       propertyPath: lassoObj
       value: 
       objectReference: {fileID: 1149226618}
