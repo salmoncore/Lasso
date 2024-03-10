@@ -173,6 +173,7 @@ public class Projectile : MonoBehaviour
 			hit = true;
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
+			RetrieveLassoStart();
 		}
 		else if ((collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy" ||
 				 collision.tag == "FragileProjectile" || collision.tag == "SturdyProjectile") && capturedEnemy == null)
