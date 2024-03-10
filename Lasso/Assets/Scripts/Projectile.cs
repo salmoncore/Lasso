@@ -37,15 +37,19 @@ public class Projectile : MonoBehaviour
 		lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
 		lineRenderer.startColor = new Color(0.24f, 0.09f, 0.0f, 1f);
 		lineRenderer.endColor = new Color(0.24f, 0.09f, 0.0f, 1f);
-		lineRenderer.startWidth = 0.1f;
-		lineRenderer.endWidth = 0.2f;
+		lineRenderer.startWidth = 0.06f;
+		lineRenderer.endWidth = 0.14f;
 		lineRenderer.positionCount = 2;
 		lineRenderer.enabled = false;
 	}
 
 	private void Update()
 	{
-		if (isRetrieving) return;
+		if (isRetrieving)
+		{ 
+			lineRenderer.enabled = false;
+			return;
+		}
 
 		if (hit)
 		{
@@ -54,10 +58,6 @@ public class Projectile : MonoBehaviour
 		}
 
 		lineRenderer.SetPosition(0, GetFirePoint());
-
-		// Find the position of the child node's child node "attachPoint" and set it as the lasso's position
-		//attachPoint = transform.GetChild(0).Find("AttachPoint").gameObject;
-		///Vector2 lassoPosition = attachPoint.transform.position;
 
 		Vector2 lassoPosition = transform.position;
 		lassoPosition -= lineTrim;
@@ -255,22 +255,22 @@ public class Projectile : MonoBehaviour
 		if (direction.x < 0) // Left
 		{
 			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, 90);
-			lineTrim = new Vector2(-0.35f, -0.02f);
+			lineTrim = new Vector2(-0.5f, 0.04f);
 		}
 		else if (direction.x > 0) // Right 
 		{
 			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, -90);
-			lineTrim = new Vector2(0.35f, 0);
+			lineTrim = new Vector2(0.5f, -0.04f);
 		}
 		else if (direction.y > 0) // Up
 		{
 			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, 0);
-			lineTrim = new Vector2(0, 0.35f);
+			lineTrim = new Vector2(-0.04f, 0.5f);
 		}
 		else if (direction.y < 0) // Down
 		{
 			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, 180);
-			lineTrim = new Vector2(0, -0.35f);
+			lineTrim = new Vector2(0.04f, -0.5f);
 		}
 
 		this.playerVelocity.x = Mathf.Abs(player.velocity.x);
