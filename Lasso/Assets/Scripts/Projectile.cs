@@ -117,6 +117,11 @@ public class Projectile : MonoBehaviour
 			hit = true;
 			boxCollider.enabled = false;
 			anim.SetTrigger("Hit");
+
+			//if (transform.GetChild(0).rotation.z != 90)
+			//{
+			//	transform.GetChild(0).Rotate(0, 0, -90);
+			//}
 		}
 		else if ((collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy" ||
 				 collision.tag == "FragileProjectile" || collision.tag == "SturdyProjectile") && capturedEnemy == null)
@@ -128,6 +133,11 @@ public class Projectile : MonoBehaviour
 
 			capturedEnemy = collision.gameObject;
 			StartCoroutine(CaptureEnemy(capturedEnemy));
+
+			//if (transform.GetChild(0).rotation.z != 90)
+			//{
+			//	transform.GetChild(0).Rotate(0, 0, -90);
+			//}
 		}
 	}
 
@@ -194,6 +204,34 @@ public class Projectile : MonoBehaviour
 		this.lateralDirection = direction.x;
 		this.verticalDirection = direction.y;
 
+		//if (direction.y != 0 && transform.GetChild(0).rotation.z == 90)
+		//{
+		//	transform.GetChild(0).Rotate(0, 0, 90);
+		//}
+
+		// If travelling negative on the x axis, rotate the child 180 degrees
+		// If travelling positive on the x axis, rotate the child 0 degrees
+		// If travelling positive on the y axis, rotate the child 90 degrees
+		// If travelling negative on the y axis, rotate the child -90 degrees
+		// Use euler angles to rotate the child
+		if (direction.x < 0)
+		{
+			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, 90);
+		}
+		else if (direction.x > 0)
+		{
+			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, -90);
+		}
+		else if (direction.y > 0)
+		{
+			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, 0);
+		}
+		else if (direction.y < 0)
+		{
+			transform.GetChild(0).rotation = Quaternion.Euler(0, 0, 180);
+		}
+
+
 		this.playerVelocity.x = Mathf.Abs(player.velocity.x);
 		this.playerVelocity.y = Mathf.Abs(player.velocity.y);
 	}
@@ -201,5 +239,10 @@ public class Projectile : MonoBehaviour
 	private void Deactivate()
 	{
 		gameObject.SetActive(false);
+
+		//if (transform.GetChild(0).rotation.z != 90)
+		//{
+		//	transform.GetChild(0).Rotate(0, 0, -90);
+		//}
 	}
 }
