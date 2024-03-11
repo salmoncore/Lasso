@@ -88,7 +88,7 @@ public class Health : MonoBehaviour
 
         // TODO: Fix this later please god
 
-        //StartCoroutine(BecomeTemporarilyInvincible());
+        StartCoroutine(BecomeTemporarilyInvincible());
     }
 
     public void Heal(int _heal) // TODO: Does this need to be public anymore?
@@ -131,9 +131,7 @@ public class Health : MonoBehaviour
 					TurnOffMeshRenderer();
 				}
 
-                //TurnOffSpriteRenderer();
             } else {
-                //TurnOnSpriteRenderer();
 
 				if (player.GetComponent<SpriteRenderer>() != null)
 				{
@@ -166,7 +164,7 @@ public class Health : MonoBehaviour
     }
 
     private void TurnOffSpriteRenderer() {
-        player.GetComponent<SpriteRenderer>().enabled = false;
+		player.GetComponent<SpriteRenderer>().enabled = false;
         render = false;
     }
 
@@ -177,13 +175,13 @@ public class Health : MonoBehaviour
 
     private void TurnOffMeshRenderer()
     {
-        player.GetComponent<SkinnedMeshRenderer>().enabled = false;
+        player.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
         render = false;
     }
 
     private void TurnOnMeshRenderer()
     {
-		player.GetComponent<SkinnedMeshRenderer>().enabled = true;
+		player.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
         render = true;
 	}
 }
