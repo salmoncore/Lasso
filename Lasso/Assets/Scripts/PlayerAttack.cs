@@ -20,6 +20,8 @@ public class PlayerAttack : MonoBehaviour
 	private PlayerInput playerInput;
 	public PauseManager pause;
 
+	private bool flicked;
+
 	private void Awake()
     {
 		anim = GetComponent<Animator>();
@@ -47,6 +49,22 @@ public class PlayerAttack : MonoBehaviour
 		if (context.action.name == playerInput.actions["Aim"].name)
 		{
 			aimDirection = context.ReadValue<Vector2>();
+
+			// Flick stick logic, pray
+			if (context.performed)
+			{
+				flicked = true;
+			}
+			else if (context.canceled)
+			{
+				flicked = false;
+				fireFlag = false;
+			}
+
+			if (flicked)
+			{
+				fireFlag = true;
+			}
 		}
 
         if (context.action.name == playerInput.actions["Movement"].name)
