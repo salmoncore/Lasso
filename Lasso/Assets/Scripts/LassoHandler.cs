@@ -25,10 +25,9 @@ public class LassoHandler : MonoBehaviour
 		{
 			// PS the raycast lines always face down so don't worry if rotation is unlocked
 
-			// Distance from the center to make sure the raycast can always reach the ground
 			float distance = Projectile.GetComponent<BoxCollider2D>().bounds.extents.y;
 
-			// Draw debug raycast
+			// debug raycast
 			Debug.DrawRay(Projectile.transform.position, Vector2.down * (0.5f + distance), Color.red);
 
 			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f + distance, LayerMask.GetMask("Ground")).collider != null)
