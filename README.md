@@ -1,6 +1,6 @@
 # Lasso
 
-## Download on Itch.io!
+## Download the tech demo on Itch.io!
 https://salmoncore.itch.io/lasso
 
 ## Video Demo
