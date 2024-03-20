@@ -42,8 +42,21 @@ public class LassoHandler : MonoBehaviour
 			{ isOnEnemy = true;	}
 			else { isOnEnemy = false; }
 
+			if ((Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("SturdyProjectile")) && (Collided.CompareTag("Enemy") || Collided.CompareTag("StunnedEnemy")))
+			{
+				Collided.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+				Collided.GetComponent<Rigidbody2D>().gravityScale = 2.5f;
+				Collided.GetComponent<BoxCollider2D>().isTrigger = false;
+
+				// Check if the collided object has an EnemyControl script, call the Stun method
+				if (Collided.GetComponent<EnemyControl>() != null)
+				{
+					Collided.GetComponent<EnemyControl>().Stun();
+				}
+			}
+
 			// If the projectile has stopped sliding
-			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 0.2f && (isOnGround || isOnInteractive || isOnEnemy))
+			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 5f && (isOnGround || isOnInteractive || isOnEnemy))
 			{
 				if (Projectile.CompareTag("FragileProjectile"))
 				{
@@ -55,19 +68,6 @@ public class LassoHandler : MonoBehaviour
 					Projectile.layer = LayerMask.NameToLayer("Interactive");
 					Reset();
 				}
-			}
-			else if ((Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("SturdyProjectile")) && Collided.CompareTag("Enemy"))
-			{
-				Collided.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
-				Collided.GetComponent<Rigidbody2D>().gravityScale = 1.5f;
-				Collided.GetComponent<BoxCollider2D>().isTrigger = false;
-
-				// Check if the collided object has an EnemyControl script, call the Stun method
-				if (Collided.GetComponent<EnemyControl>() != null)
-				{
-					Collided.GetComponent<EnemyControl>().Stun();
-				}
-				Reset();
 			}
 		}
 	}

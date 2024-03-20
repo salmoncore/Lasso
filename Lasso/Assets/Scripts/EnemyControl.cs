@@ -6,84 +6,58 @@ using UnityEngine;
 
 public class EnemyControl : MonoBehaviour
 {
-    public GameObject pointA;
-    public GameObject pointB;
+	[SerializeField] private float patrolSpeed;
     private Rigidbody2D rb;
     private Animator anim;
     private Transform currentPoint;
-    public float speed;
     private bool isStunned = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        currentPoint = pointB.transform;
-        anim.SetBool("isRunning", true);
     }
 
     void Update()
     {
-        Vector2 point = currentPoint.position - transform.position;
 
-        if (isStunned)
-        {
-			return;
-		}
-
-        if(currentPoint == pointB.transform)
-        {
-            rb.velocity = new Vector2(speed, 0);
-        }
-        else
-        {
-            rb.velocity = new Vector2(-speed, 0);
-        }
-
-        if ((Vector2.Distance(transform.position, currentPoint.position) < 1f) && (currentPoint == pointB.transform))
-        {
-            flip();
-            currentPoint = pointA.transform;
-        }
-
-        if ((Vector2.Distance(transform.position, currentPoint.position) < 1f) && (currentPoint == pointA.transform))
-        {
-            flip();
-            currentPoint = pointB.transform;
-        }
     }
 
 	public void Stun()
 	{
+        Debug.Log("Stunned!");
         isStunned = true;
-        rb.velocity = new Vector2(0, 0);
-        anim.SetBool("isRunning", false);
+        gameObject.tag = "StunnedEnemy";
         StartCoroutine(StunTimer());
 	}
 
     IEnumerator StunTimer()
     {
 		yield return new WaitForSeconds(2);
-		anim.SetBool("isRunning", true);
         isStunned = false;
+        gameObject.tag = "Enemy";
+        Debug.Log("Unstunned!");
 	}
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
+	private void OnCollisionEnter(Collision collision)
+	{
+		if (collision.gameObject.tag == "SturdyProjectile")
+        {
+            collision.gameObject.tag = "FragileProjectile";
+        }
+	}
 
-    }
-
-    private void flip()
+	private void flip()
     {
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1;
-        transform.localScale = localScale;
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(pointA.transform.position, 0.5f);
-        Gizmos.DrawWireSphere(pointB.transform.position, 0.5f);
-        Gizmos.DrawLine(pointA.transform.position, pointB.transform.position);  
+        if (TryGetComponent<SpriteRenderer>(out SpriteRenderer spriteRenderer))
+        {
+			spriteRenderer.flipX = !spriteRenderer.flipX;
+		}
+		else if (TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
+        {
+			Vector3 localScale = transform.localScale;
+			localScale.x *= -1;
+			transform.localScale = localScale;
+		}
     }
 }
