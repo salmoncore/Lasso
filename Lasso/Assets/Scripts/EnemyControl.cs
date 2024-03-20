@@ -6,21 +6,79 @@ using UnityEngine;
 
 public class EnemyControl : MonoBehaviour
 {
+    [SerializeField] private float boxCastSize = 0.65f;
+    [SerializeField] private float ledgeCheckDistance = 0.5f;
 	[SerializeField] private float patrolSpeed;
     private Rigidbody2D rb;
     private Animator anim;
-    private Transform currentPoint;
     private bool isStunned = false;
+    private bool isCrumpled = false;
+    private float patrolDirection = 1;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        patrolDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
     }
 
     void Update()
     {
+        Patrol();
+    }
 
+    // Patrol: The enemy moves forward until raycast collision with a wall or a ledge. If collision with a wall/ledge, pause, turn around, and continue.
+    private void Patrol()
+    {
+		if (isStunned || isCrumpled) return;
+		
+		if (hitWall() || hitObject() || hitLedge())
+        {
+            Debug.Log("Hit wall/object!");
+            patrolDirection *= -1;
+			flip();
+		}
+        else
+        {
+            rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
+        }
+	}
+
+    // Rush: The enemy pauses for a moment, and then accelerates towards the player's last known position. If the player is in sight, the enemy will rush towards the player.
+    // Attack: The enemy pauses for a moment, and then attacks the player. If the player is in sight, the enemy will attack the player.
+
+    private bool hitWall()
+    {
+        // idk why this doesn't just work so i'm going to enumerate the size instead, good luck lol
+        //Vector2 boxcastSize = GetComponent<BoxCollider2D>().size;
+
+        Vector2 boxcastSize = new Vector2(boxCastSize, boxCastSize);
+
+        RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), 1f, LayerMask.GetMask("Ground"));
+
+        // For testing the boxcast fit lol
+        Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * 1f, Color.red);
+        Debug.DrawRay(transform.position + new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
+        Debug.DrawRay(transform.position - new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
+        return hit.collider != null;
+	}
+
+    private bool hitObject()
+    {
+		Vector2 boxcastSize = new Vector2(boxCastSize, boxCastSize);
+
+		RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), 1f, LayerMask.GetMask("Interactive"));
+
+		// For testing the boxcast fit lol
+		Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * 1f, Color.red);
+		Debug.DrawRay(transform.position + new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
+		Debug.DrawRay(transform.position - new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
+		return hit.collider != null;
+	}
+
+    private bool hitLedge()
+    {
+        // TODO actually make this lol
     }
 
 	public void Stun()

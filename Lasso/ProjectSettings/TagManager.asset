@@ -15,6 +15,7 @@ TagManager:
   - SturdyProjectile
   - Breaking
   - Interactive
+  - StunnedEnemy
   layers:
   - Default
   - TransparentFX
