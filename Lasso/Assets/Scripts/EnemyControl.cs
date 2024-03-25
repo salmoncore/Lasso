@@ -13,6 +13,7 @@ public class EnemyControl : MonoBehaviour
     private Animator anim;
     private bool isStunned = false;
     private bool isCrumpled = false;
+    private bool waitFlag = false;
     private float patrolDirection = 1;
 
     void Start()
@@ -30,13 +31,13 @@ public class EnemyControl : MonoBehaviour
     // Patrol: The enemy moves forward until raycast collision with a wall or a ledge. If collision with a wall/ledge, pause, turn around, and continue.
     private void Patrol()
     {
-		if (isStunned || isCrumpled) return;
+		if (isStunned || isCrumpled || waitFlag) return;
 		
 		if (hitWall() || hitObject() || hitLedge())
         {
             Debug.Log("Hit wall/object!");
             patrolDirection *= -1;
-			flip();
+            StartCoroutine(WaitToTurn(1f));
 		}
         else
         {
@@ -46,6 +47,14 @@ public class EnemyControl : MonoBehaviour
 
     // Rush: The enemy pauses for a moment, and then accelerates towards the player's last known position. If the player is in sight, the enemy will rush towards the player.
     // Attack: The enemy pauses for a moment, and then attacks the player. If the player is in sight, the enemy will attack the player.
+
+    IEnumerator WaitToTurn(float time)
+    {
+        waitFlag = true;
+        yield return new WaitForSeconds(time);
+		flip();
+        waitFlag = false;
+	}
 
     private bool hitWall()
     {

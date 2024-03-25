@@ -2144,7 +2144,7 @@ Transform:
   m_GameObject: {fileID: 1914541159}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.9822, y: -4.2782, z: 0}
+  m_LocalPosition: {x: 5.278, y: -2.502, z: 0}
   m_LocalScale: {x: 4.577991, y: 4.0152216, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2221,7 +2221,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &1914541163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2299,6 +2299,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boxCastSize: 0.6
+  ledgeCheckDistance: 0.5
   patrolSpeed: 2
 --- !u!1 &1967623029 stripped
 GameObject:
