@@ -76,10 +76,21 @@ public class EnemyControl : MonoBehaviour
 		return hit.collider != null;
 	}
 
-    private bool hitLedge()
-    {
-        // TODO actually make this lol
-    }
+	private bool hitLedge()
+	{
+		float horizontalOffset = patrolDirection * (boxCastSize / 2 + 0.1f);
+		float verticalOffset = -boxCastSize / 2; // tweak later
+
+		Vector2 startPosition = (Vector2)transform.position + new Vector2(horizontalOffset, verticalOffset);
+
+		Vector2 direction = Vector2.down;
+		RaycastHit2D hit = Physics2D.Raycast(startPosition, direction, ledgeCheckDistance, LayerMask.GetMask("Ground"));
+
+		Debug.DrawRay(startPosition, direction * ledgeCheckDistance, Color.blue);
+
+		return hit.collider == null;
+	}
+
 
 	public void Stun()
 	{
