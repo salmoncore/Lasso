@@ -9,6 +9,7 @@ public class EnemyControl : MonoBehaviour
     [SerializeField] private float boxCastSize = 0.65f;
     [SerializeField] private float ledgeCheckDistance = 0.5f;
 	[SerializeField] private float patrolSpeed;
+    [SerializeField] private float sightDistance = 15f;
     private Rigidbody2D rb;
     private Animator anim;
     private bool isStunned = false;
@@ -31,6 +32,12 @@ public class EnemyControl : MonoBehaviour
     // Patrol: The enemy moves forward until raycast collision with a wall or a ledge. If collision with a wall/ledge, pause, turn around, and continue.
     private void Patrol()
     {
+        if (hitPlayer())
+        {
+			Debug.Log("Player in sight!");
+			//StartCoroutine(WaitToTurn(1f));
+		}
+
 		if (isStunned || isCrumpled || waitFlag) return;
 		
 		if (hitWall() || hitObject() || hitLedge())
@@ -55,6 +62,19 @@ public class EnemyControl : MonoBehaviour
 		flip();
         waitFlag = false;
 	}
+
+    private bool hitPlayer()
+    { 
+        Vector2 boxcastSize = new Vector2(boxCastSize, boxCastSize);
+
+        RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), sightDistance, LayerMask.GetMask("Player"));
+
+        // For testing the boxcast fit lol
+        Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * sightDistance, Color.red);
+        Debug.DrawRay(transform.position + new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * sightDistance, Color.red);
+        Debug.DrawRay(transform.position - new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * sightDistance, Color.red);
+        return hit.collider != null;
+    }
 
     private bool hitWall()
     {
@@ -99,7 +119,6 @@ public class EnemyControl : MonoBehaviour
 
 		return hit.collider == null;
 	}
-
 
 	public void Stun()
 	{
