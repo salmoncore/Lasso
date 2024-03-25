@@ -108,7 +108,7 @@ public class Projectile : MonoBehaviour
 	{
 		if (capturedEnemy != null)
 		{
-			if (capturedEnemy.tag == "Fragile" || capturedEnemy.tag == "Enemy")
+			if (capturedEnemy.tag == "Fragile" || capturedEnemy.tag == "StunnedEnemy")
 			{
 				capturedEnemy.tag = "FragileProjectile";
 			}

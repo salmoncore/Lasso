@@ -44,9 +44,10 @@ public class LassoHandler : MonoBehaviour
 
 			if ((Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("SturdyProjectile")) && (Collided.CompareTag("Enemy") || Collided.CompareTag("StunnedEnemy")))
 			{
-				Collided.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
-				Collided.GetComponent<Rigidbody2D>().gravityScale = 2.5f;
-				Collided.GetComponent<BoxCollider2D>().isTrigger = false;
+				// These shouldn't be needed anymore?
+				//Collided.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+				//Collided.GetComponent<Rigidbody2D>().gravityScale = 2.5f;
+				//Collided.GetComponent<BoxCollider2D>().isTrigger = false;
 
 				// Check if the collided object has an EnemyControl script, call the Stun method
 				if (Collided.GetComponent<EnemyControl>() != null)
@@ -101,6 +102,12 @@ public class LassoHandler : MonoBehaviour
 			Projectile.transform.Rotate(1, 1, 1);
 			yield return new WaitForSeconds(0.01f);
 		}
+	}
+
+	public void BreakObject()
+	{
+		Projectile = gameObject;
+		StartCoroutine(Break());
 	}
 
 	public void Reset()
