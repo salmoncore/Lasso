@@ -108,7 +108,7 @@ public class Projectile : MonoBehaviour
 	{
 		if (capturedEnemy != null)
 		{
-			if (capturedEnemy.tag == "Fragile" || capturedEnemy.tag == "Enemy")
+			if (capturedEnemy.tag == "Fragile" || capturedEnemy.tag == "StunnedEnemy")
 			{
 				capturedEnemy.tag = "FragileProjectile";
 			}
@@ -132,7 +132,7 @@ public class Projectile : MonoBehaviour
 
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
 
-			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None; 
 
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
 
@@ -167,7 +167,7 @@ public class Projectile : MonoBehaviour
 	{
 		Debug.Log("Projectile hit " + collision.tag);
 		// PS the lasso projectile is the trigger here lmao
-		if (collision.tag == "Ground")
+		if (collision.tag == "Ground" || collision.tag == "Enemy")
 		{
 			lassoTimer = lassoFlightTime;
 			hit = true;
@@ -175,7 +175,7 @@ public class Projectile : MonoBehaviour
 			anim.SetTrigger("Hit");
 			RetrieveLassoStart();
 		}
-		else if ((collision.tag == "Enemy" || collision.tag == "Fragile" || collision.tag == "Sturdy" ||
+		else if ((collision.tag == "StunnedEnemy" || collision.tag == "Fragile" || collision.tag == "Sturdy" ||
 				 collision.tag == "FragileProjectile" || collision.tag == "SturdyProjectile") && capturedEnemy == null)
 		{
 			lassoTimer = lassoFlightTime;
