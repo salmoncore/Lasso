@@ -95,7 +95,7 @@ public class EnemyControl : MonoBehaviour
 		if (isStunned || isCrumpled || waitFlag) return;
 		
 		if (hitWall() || hitObject() || hitLedge())
-        {
+		{
             //Debug.Log("Hit wall/object!");
             patrolDirection *= -1;
             StartCoroutine(WaitToTurn(1f));
@@ -277,19 +277,6 @@ public class EnemyControl : MonoBehaviour
 		return hit.collider != null;
 	}
 
-	private bool hitEnemy()
-	{
-		Vector2 boxcastSize = new Vector2(boxCastSize, boxCastSize);
-
-		RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), 1f, LayerMask.GetMask("Enemies"));
-
-		// For testing the boxcast fit lol
-		Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * 1f, Color.red);
-		Debug.DrawRay(transform.position + new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
-		Debug.DrawRay(transform.position - new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
-		return hit.collider != null;
-	}
-
 	private bool hitLedge()
 	{
 		float horizontalOffset = patrolDirection * (boxCastSize / 2 + 0.1f);
@@ -330,6 +317,12 @@ public class EnemyControl : MonoBehaviour
         {
             collision.gameObject.tag = "FragileProjectile";
         }
+
+		if (collision.gameObject.tag == "Enemy")
+		{
+			patrolDirection *= -1;
+			flip();
+		}
 
 		if (currentState == "Rush" && collision.gameObject.tag == "Fragile")
 		{
