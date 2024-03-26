@@ -46,6 +46,7 @@ public class EnemyControl : MonoBehaviour
 		{
 			Debug.LogError("Please choose a valid class for the enemy.");
 			Debug.Log("Valid classes are: Charger, Gunner, Balloonist");
+			//Class = "Charger";
 			return;
 		}
 
@@ -139,23 +140,23 @@ public class EnemyControl : MonoBehaviour
     // Patrol: The enemy moves forward until raycast collision with a wall or a ledge. If collision with a wall/ledge, pause, turn around, and continue.
     private void Patrol()
     {
-        if (hitPlayer())
-        {
-			currentState = "Rush";
-			//Debug.Log("Moving to " + currentState + "state.");
-		}
+        //if (hitPlayer())
+        //{
+		//	currentState = "Rush";
+		//	//Debug.Log("Moving to " + currentState + "state.");
+		//}
 
-		if (isStunned || isCrumpled || waitFlag) return;
+		//if (isStunned || isCrumpled || waitFlag) return;
 		
 		if (hitWall() || hitObject() || hitLedge())
 		{
             //Debug.Log("Hit wall/object!");
-            patrolDirection *= -1;
-            StartCoroutine(WaitToTurn(1f));
+            //patrolDirection *= -1;
+            //StartCoroutine(WaitToTurn(1f));
 		}
         else
         {
-            rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
+            //rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
         }
 	}
 
@@ -314,6 +315,12 @@ public class EnemyControl : MonoBehaviour
         Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * 1f, Color.red);
         Debug.DrawRay(transform.position + new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
         Debug.DrawRay(transform.position - new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
+
+		if (hit.collider != null)
+		{
+			Debug.Log("Hit wall!");
+		}
+
         return hit.collider != null;
 	}
 
@@ -327,6 +334,12 @@ public class EnemyControl : MonoBehaviour
 		Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * 1f, Color.red);
 		Debug.DrawRay(transform.position + new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
 		Debug.DrawRay(transform.position - new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
+
+		if (hit.collider != null)
+		{
+			Debug.Log("Hit Object!");
+		}
+
 		return hit.collider != null;
 	}
 
@@ -341,6 +354,11 @@ public class EnemyControl : MonoBehaviour
 		RaycastHit2D hit = Physics2D.Raycast(startPosition, direction, ledgeCheckDistance, LayerMask.GetMask("Ground"));
 
 		Debug.DrawRay(startPosition, direction * ledgeCheckDistance, Color.blue);
+
+		if (hit.collider == null)
+		{
+			Debug.Log("Hit ledge!");
+		}
 
 		return hit.collider == null;
 	}
