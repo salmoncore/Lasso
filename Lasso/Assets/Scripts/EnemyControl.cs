@@ -9,7 +9,9 @@ public class EnemyControl : MonoBehaviour
 {
 	[SerializeField] private String Class = "CHOOSE Charger/Gunner/Balloonist";
 	[SerializeField] private String currentState = "Patrol";
-	[SerializeField] private float boxCastSize = 0.65f;
+	[SerializeField] private Vector2 boxCastSize = new Vector2 (0.65f, 0.65f);
+	[SerializeField] private Vector2 boxCastOffset = new Vector2 (0f, 0f);
+	[SerializeField] private float boxCastDistance = 1f;
 	[SerializeField] private float ledgeCheckDistance = 0.5f;
 	[SerializeField] private float patrolSpeed = 2;
 	[SerializeField] private float sightDistance = 15f;
@@ -163,7 +165,7 @@ public class EnemyControl : MonoBehaviour
     // Rush: The enemy pauses for a moment, and then accelerates towards the player's last known position. If the player is in sight, the enemy will rush towards the player.
     private void Rush()
     {
-        if (inAttackRange())
+        if (hitPlayer(attackRange))
         { 
 			currentState = "TransitionToAttack";
             //Debug.Log("Moving to " + currentState + "state.");
@@ -215,7 +217,7 @@ public class EnemyControl : MonoBehaviour
 				patrolDirection = -1;
 			}
 
-			if (hitPlayer())
+			if (hitPlayer(sightDistance))
 			{
 				attackTimer -= Time.deltaTime / aggroTimeDivision; // Enemy attacks longer the longer the player is in sight
 			}
@@ -247,11 +249,11 @@ public class EnemyControl : MonoBehaviour
         waitFlag = false;
 	}
 
-	private bool inAttackRange()
+	private bool hitPlayer(float distance)
 	{
-		Vector2 boxcastSize = new Vector2(boxCastSize, boxCastSize);
+		Vector2 boxcastSize = new Vector2(boxCastSize.x, boxCastSize.y);
 
-		RaycastHit2D hitPlayer = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), attackRange, LayerMask.GetMask("Player"));
+		RaycastHit2D hitPlayer = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), distance, LayerMask.GetMask("Player"));
 
 		if (hitPlayer.collider != null)
 		{
@@ -270,74 +272,54 @@ public class EnemyControl : MonoBehaviour
 			}
 		}
 
-		Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * attackRange, Color.red);
-		return false;
-	}
-
-	private bool hitPlayer()
-	{
-		Vector2 boxcastSize = new Vector2(boxCastSize, boxCastSize);
-
-		RaycastHit2D hitPlayer = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), sightDistance, LayerMask.GetMask("Player"));
-
-		if (hitPlayer.collider != null)
-		{
-			RaycastHit2D hitWall = Physics2D.Raycast(transform.position, hitPlayer.point - (Vector2)transform.position, Vector2.Distance(transform.position, hitPlayer.point), LayerMask.GetMask("Ground"));
-			RaycastHit2D hitObject = new RaycastHit2D();
-
-			if (!seeThroughObjects)
-			{
-				hitObject = Physics2D.Raycast(transform.position, hitPlayer.point - (Vector2)transform.position, Vector2.Distance(transform.position, hitPlayer.point), LayerMask.GetMask("Interactive"));
-			}
-
-			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
-			{
-				Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * hitPlayer.distance, Color.green);
-				return true;
-			}
-		}
-
-		Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * sightDistance, Color.red);
+		Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * distance, Color.red);
 		return false;
 	}
 
 
 	private bool hitWall()
-    {
-        // idk why this doesn't just work so i'm going to enumerate the size instead, good luck lol
-        //Vector2 boxcastSize = GetComponent<BoxCollider2D>().size;
+	{
+		Vector3 boxcastOrigin = transform.position + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
 
-        Vector2 boxcastSize = new Vector2(boxCastSize, boxCastSize);
+		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), boxCastDistance, LayerMask.GetMask("Ground"));
 
-        RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), 1f, LayerMask.GetMask("Ground"));
+		Vector3 topRight = boxcastOrigin + new Vector3(boxCastSize.x / 2, boxCastSize.y / 2, 0);
+		Vector3 topLeft = boxcastOrigin + new Vector3(-boxCastSize.x / 2, boxCastSize.y / 2, 0);
+		Vector3 bottomRight = boxcastOrigin + new Vector3(boxCastSize.x / 2, -boxCastSize.y / 2, 0);
+		Vector3 bottomLeft = boxcastOrigin + new Vector3(-boxCastSize.x / 2, -boxCastSize.y / 2, 0);
 
-        // For testing the boxcast fit lol
-        Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * 1f, Color.red);
-        Debug.DrawRay(transform.position + new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
-        Debug.DrawRay(transform.position - new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
+		Debug.DrawLine(topLeft, topRight, Color.red); // Top edge
+		Debug.DrawLine(topRight, bottomRight, Color.red); // Right edge
+		Debug.DrawLine(bottomRight, bottomLeft, Color.red); // Bottom edge
+		Debug.DrawLine(bottomLeft, topLeft, Color.red); // Left edge
 
 		if (hit.collider != null)
 		{
 			Debug.Log("Hit wall!");
 		}
 
-        return hit.collider != null;
+		return hit.collider != null;
 	}
 
-    private bool hitObject()
+	private bool hitObject()
     {
-		Vector2 boxcastSize = new Vector2(boxCastSize, boxCastSize);
+		Vector3 boxcastOrigin = transform.position + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
 
-		RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), 1f, LayerMask.GetMask("Interactive"));
+		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), boxCastDistance, LayerMask.GetMask("Interactive"));
 
-		// For testing the boxcast fit lol
-		Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * 1f, Color.red);
-		Debug.DrawRay(transform.position + new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
-		Debug.DrawRay(transform.position - new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
+		Vector3 topRight = boxcastOrigin + new Vector3(boxCastSize.x / 2, boxCastSize.y / 2, 0);
+		Vector3 topLeft = boxcastOrigin + new Vector3(-boxCastSize.x / 2, boxCastSize.y / 2, 0);
+		Vector3 bottomRight = boxcastOrigin + new Vector3(boxCastSize.x / 2, -boxCastSize.y / 2, 0);
+		Vector3 bottomLeft = boxcastOrigin + new Vector3(-boxCastSize.x / 2, -boxCastSize.y / 2, 0);
+
+		Debug.DrawLine(topLeft, topRight, Color.red); // Top edge
+		Debug.DrawLine(topRight, bottomRight, Color.red); // Right edge
+		Debug.DrawLine(bottomRight, bottomLeft, Color.red); // Bottom edge
+		Debug.DrawLine(bottomLeft, topLeft, Color.red); // Left edge
 
 		if (hit.collider != null)
 		{
-			Debug.Log("Hit Object!");
+			Debug.Log("Hit object!");
 		}
 
 		return hit.collider != null;
@@ -345,8 +327,8 @@ public class EnemyControl : MonoBehaviour
 
 	private bool hitLedge()
 	{
-		float horizontalOffset = patrolDirection * (boxCastSize / 2 + 0.1f);
-		float verticalOffset = -boxCastSize / 2; // tweak later
+		float horizontalOffset = patrolDirection * (boxCastSize.x / 2 + boxCastDistance);
+		float verticalOffset = -boxCastSize.x / 2; // tweak later
 
 		Vector2 startPosition = (Vector2)transform.position + new Vector2(horizontalOffset, verticalOffset);
 
