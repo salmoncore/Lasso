@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class EnemyControl : MonoBehaviour
 {
+	[SerializeField] private String Class = "CHOOSE Charger/Gunner/Balloonist";
 	[SerializeField] private String currentState = "Patrol";
 	[SerializeField] private float boxCastSize = 0.65f;
 	[SerializeField] private float ledgeCheckDistance = 0.5f;
@@ -41,23 +42,75 @@ public class EnemyControl : MonoBehaviour
     {
 		if (isStunned || isCrumpled) return;
 
-		switch (currentState)
+		if (Class != "Charger" && Class != "Gunner" && Class != "Balloonist")
 		{
-			case "Patrol":
-				Patrol();
-				break;
-			case "TransitionToRush":
-				StartCoroutine(RushTransition());
-				break;
-			case "Rush":
-				Rush();
-				break;
-			case "TransitionToAttack":
-				StartCoroutine(AttackTransition());
-				break;
-			case "Attack":
-				Attack();
-				break;
+			Debug.LogError("Please choose a valid class for the enemy.");
+			Debug.Log("Valid classes are: Charger, Gunner, Balloonist");
+			return;
+		}
+
+		if (Class == "Charger")
+		{
+			switch (currentState)
+			{
+				case "Patrol":
+					Patrol();
+					break;
+				case "TransitionToRush":
+					StartCoroutine(RushTransition());
+					break;
+				case "Rush":
+					Rush();
+					break;
+				case "TransitionToAttack":
+					StartCoroutine(AttackTransition());
+					break;
+				case "Attack":
+					Attack();
+					break;
+			}
+		}
+		else if (Class == "Gunner")
+		{
+			switch (currentState)
+			{
+				case "Patrol":
+					Patrol();
+					break;
+				case "TransitionToRush":
+					StartCoroutine(RushTransition());
+					break;
+				case "Rush":
+					Rush();
+					break;
+				case "TransitionToAttack":
+					StartCoroutine(AttackTransition());
+					break;
+				case "Attack":
+					Attack();
+					break;
+			}
+		}
+		else if (Class == "Balloonist")
+		{
+			switch (currentState)
+			{
+				case "Patrol":
+					Patrol();
+					break;
+				case "TransitionToRush":
+					StartCoroutine(RushTransition());
+					break;
+				case "Rush":
+					Rush();
+					break;
+				case "TransitionToAttack":
+					StartCoroutine(AttackTransition());
+					break;
+				case "Attack":
+					Attack();
+					break;
+			}
 		}
     }
 
