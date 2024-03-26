@@ -129,9 +129,13 @@ public class LassoHandler : MonoBehaviour
 			Projectile = gameObject;
 			Collided = collision.gameObject;
 		}
-		else
-		{
-			Reset();
-		}
-	}
+		//else if (gameObject.CompareTag("Enemy"))
+        //{
+        //    
+        //}
+        else
+        {
+            Reset();
+        }
+    }
 }

@@ -132,7 +132,7 @@ public class Projectile : MonoBehaviour
 
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
 
-			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+			capturedEnemy.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None; 
 
 			Rigidbody2D enemyRigidbody = capturedEnemy.GetComponent<Rigidbody2D>();
 

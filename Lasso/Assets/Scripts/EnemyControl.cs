@@ -7,53 +7,80 @@ using UnityEngine;
 
 public class EnemyControl : MonoBehaviour
 {
-    [SerializeField] private float boxCastSize = 0.65f;
-    [SerializeField] private float ledgeCheckDistance = 0.5f;
+	[SerializeField] private String currentState = "Patrol";
+	[SerializeField] private float boxCastSize = 0.65f;
+	[SerializeField] private float ledgeCheckDistance = 0.5f;
 	[SerializeField] private float patrolSpeed = 2;
-    [SerializeField] private float sightDistance = 15f;
-    [SerializeField] private float chargeSpeed = 5;
+	[SerializeField] private float sightDistance = 15f;
+	[SerializeField] private float attackRange = 1f; // For determining when to switch to attack state
+	[SerializeField] private float chargeSpeed = 5;
 	[SerializeField] private float acceleration = 0.5f;
+	[SerializeField] private float attackDuration = 1.5f;
+	[SerializeField] private float aggroTimeDivision = 2f;
+	[SerializeField] private bool isStunned = false;
 	[SerializeField] private bool ledgeCautious = true;
-	private String currentState = "Patrol";
+	[SerializeField] private bool seeThroughObjects = false;
+	[SerializeField] private bool noStunDuringAttack = false;
+	[SerializeField] private bool breaksSturdyProjectiles = false;
 	private Rigidbody2D rb;
     private Animator anim;
-    private bool isStunned = false;
     private bool isCrumpled = false;
     private bool waitFlag = false;
     private float patrolDirection = 1;
+	private float attackTimer;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         patrolDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
-    }
+		attackTimer = attackDuration;
+	}
 
-    void Update()
+	void Update()
     {
-        // Make a state machine for the enemy. By default, the enemy will patrol. If the player is in sight, the enemy will rush towards the player. 
-		// If the player is in attack range, the enemy will attack the player. If the enemy is stunned, the enemy will not move. If the enemy is crumpled, the enemy will not move.
-
 		if (isStunned || isCrumpled) return;
 
-		if (currentState == "Patrol")
+		switch (currentState)
 		{
-			Patrol();
-		}
-		else if (currentState == "TransitionToRush")
-		{
-			StartCoroutine(RushTransition());
-		}
-		else if (currentState == "Rush")
-		{
-			Rush();
+			case "Patrol":
+				Patrol();
+				break;
+			case "TransitionToRush":
+				StartCoroutine(RushTransition());
+				break;
+			case "Rush":
+				Rush();
+				break;
+			case "TransitionToAttack":
+				StartCoroutine(AttackTransition());
+				break;
+			case "Attack":
+				Attack();
+				break;
 		}
     }
 
 	IEnumerator RushTransition() 
 	{
+		// TODO: add some telegraph effect here so gamers know they're about to get rushed
+
 		yield return new WaitForSeconds(.75f);
+
 		currentState = "Rush";
+		//Debug.Log("Moving to " + currentState + "state.");
+	}
+
+	IEnumerator AttackTransition()
+	{
+		// TODO: also some effects here lmao
+
+		// Jump back a bit before attacking
+		rb.velocity = new Vector2(-patrolDirection * patrolSpeed, rb.velocity.y);
+
+		yield return new WaitForSeconds(.75f);
+		currentState = "Attack";
+		//Debug.Log("Moving to " + currentState + "state.");
 	}
 
     // Patrol: The enemy moves forward until raycast collision with a wall or a ledge. If collision with a wall/ledge, pause, turn around, and continue.
@@ -61,15 +88,15 @@ public class EnemyControl : MonoBehaviour
     {
         if (hitPlayer())
         {
-			Debug.Log("Player in sight!");
 			currentState = "Rush";
+			//Debug.Log("Moving to " + currentState + "state.");
 		}
 
 		if (isStunned || isCrumpled || waitFlag) return;
 		
 		if (hitWall() || hitObject() || hitLedge())
         {
-            Debug.Log("Hit wall/object!");
+            //Debug.Log("Hit wall/object!");
             patrolDirection *= -1;
             StartCoroutine(WaitToTurn(1f));
 		}
@@ -82,29 +109,31 @@ public class EnemyControl : MonoBehaviour
     // Rush: The enemy pauses for a moment, and then accelerates towards the player's last known position. If the player is in sight, the enemy will rush towards the player.
     private void Rush()
     {
-        //if (inAttackRange())
-        //{ 
-        //    Debug.Log("Attack player!");
-        //    // Transition to Attack State 
-        //}
+        if (inAttackRange())
+        { 
+			currentState = "TransitionToAttack";
+            //Debug.Log("Moving to " + currentState + "state.");
+        }
 
         if (isStunned || isCrumpled || waitFlag) return;
 
         if (hitLedge() && ledgeCautious)
         {
-			Debug.Log("Hit ledge!");
+			//Debug.Log("Hit ledge!");
 
 			rb.velocity = new Vector2(0, rb.velocity.y);
 			StartCoroutine(WaitToTurn(1f));
 
 			currentState = "Patrol";
+			//Debug.Log("Moving to " + currentState + "state.");
 		}
-		else if (hitWall() )
+		else if (hitWall())
 		{
-			Debug.Log("Hit wall/object!");
+			//Debug.Log("Hit wall/object!");
 
 			rb.velocity = new Vector2(0, rb.velocity.y);
 			currentState = "Patrol";
+			//Debug.Log("Moving to " + currentState + "state.");
 		}
 		else
         {
@@ -113,6 +142,48 @@ public class EnemyControl : MonoBehaviour
     }
 
     // Attack: The enemy pauses for a moment, and then attacks the player. If the player is in sight, the enemy will attack the player.
+	private void Attack()
+	{
+		if (isStunned || isCrumpled || waitFlag) return;
+
+		Debug.Log("Time: " + attackTimer);
+
+		if ((!hitObject() || !hitWall() || !hitLedge()) && attackTimer > 0)
+		{
+			float playerDirection = GameObject.Find("Player").transform.position.x - transform.position.x;
+
+			if (playerDirection > 0)
+			{
+				patrolDirection = 1;
+			}
+			else
+			{
+				patrolDirection = -1;
+			}
+
+			if (hitPlayer())
+			{
+				attackTimer -= Time.deltaTime / aggroTimeDivision; // Enemy attacks longer the longer the player is in sight
+			}
+			else
+			{
+				attackTimer -= Time.deltaTime;
+			}
+
+			rb.velocity = new Vector2(patrolDirection * patrolSpeed / 2, rb.velocity.y);
+
+			// TODO: Enable hurtbox here
+			// TODO: Trigger attack animation here
+		}
+		else
+		{
+			currentState = "Patrol";
+			attackTimer = attackDuration;
+			// TODO: Disable Hurtbox here
+			// TODO: Disable animation here
+			//Debug.Log("Moving to " + currentState + "state.");
+		}
+	}
 
     IEnumerator WaitToTurn(float time)
     {
@@ -120,6 +191,33 @@ public class EnemyControl : MonoBehaviour
         yield return new WaitForSeconds(time);
 		flip();
         waitFlag = false;
+	}
+
+	private bool inAttackRange()
+	{
+		Vector2 boxcastSize = new Vector2(boxCastSize, boxCastSize);
+
+		RaycastHit2D hitPlayer = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), attackRange, LayerMask.GetMask("Player"));
+
+		if (hitPlayer.collider != null)
+		{
+			RaycastHit2D hitWall = Physics2D.Raycast(transform.position, hitPlayer.point - (Vector2)transform.position, Vector2.Distance(transform.position, hitPlayer.point), LayerMask.GetMask("Ground"));
+			RaycastHit2D hitObject = new RaycastHit2D();
+
+			if (!seeThroughObjects)
+			{
+				hitObject = Physics2D.Raycast(transform.position, hitPlayer.point - (Vector2)transform.position, Vector2.Distance(transform.position, hitPlayer.point), LayerMask.GetMask("Interactive"));
+			}
+
+			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
+			{
+				Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * hitPlayer.distance, Color.green);
+				return true;
+			}
+		}
+
+		Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * attackRange, Color.red);
+		return false;
 	}
 
 	private bool hitPlayer()
@@ -131,7 +229,12 @@ public class EnemyControl : MonoBehaviour
 		if (hitPlayer.collider != null)
 		{
 			RaycastHit2D hitWall = Physics2D.Raycast(transform.position, hitPlayer.point - (Vector2)transform.position, Vector2.Distance(transform.position, hitPlayer.point), LayerMask.GetMask("Ground"));
-			RaycastHit2D hitObject = Physics2D.Raycast(transform.position, hitPlayer.point - (Vector2)transform.position, Vector2.Distance(transform.position, hitPlayer.point), LayerMask.GetMask("Interactive"));
+			RaycastHit2D hitObject = new RaycastHit2D();
+
+			if (!seeThroughObjects)
+			{
+				hitObject = Physics2D.Raycast(transform.position, hitPlayer.point - (Vector2)transform.position, Vector2.Distance(transform.position, hitPlayer.point), LayerMask.GetMask("Interactive"));
+			}
 
 			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
 			{
@@ -174,18 +277,17 @@ public class EnemyControl : MonoBehaviour
 		return hit.collider != null;
 	}
 
-	private bool hitSturdyObject()
+	private bool hitEnemy()
 	{
-		// cast a raycast. if it hits something with the tag "Fragile", return true
 		Vector2 boxcastSize = new Vector2(boxCastSize, boxCastSize);
 
-		RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), 1f, LayerMask.GetMask("Interactive"));
+		RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), 1f, LayerMask.GetMask("Enemies"));
 
 		// For testing the boxcast fit lol
 		Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * 1f, Color.red);
 		Debug.DrawRay(transform.position + new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
 		Debug.DrawRay(transform.position - new Vector3(0, boxcastSize.y, 0), new Vector2(patrolDirection, 0) * 1f, Color.red);
-		return hit.transform.CompareTag("Sturdy");
+		return hit.collider != null;
 	}
 
 	private bool hitLedge()
@@ -205,7 +307,9 @@ public class EnemyControl : MonoBehaviour
 
 	public void Stun()
 	{
-        Debug.Log("Stunned!");
+		if (currentState == "Attack" && noStunDuringAttack) return;
+
+        //Debug.Log("Stunned!");
         isStunned = true;
         gameObject.tag = "StunnedEnemy";
         StartCoroutine(StunTimer());
@@ -217,12 +321,12 @@ public class EnemyControl : MonoBehaviour
 		yield return new WaitForSeconds(2);
         isStunned = false;
         gameObject.tag = "Enemy";
-        Debug.Log("Unstunned!");
+        //Debug.Log("Unstunned!");
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision)
 	{		
-		if (collision.gameObject.tag == "SturdyProjectile")
+		if (breaksSturdyProjectiles && collision.gameObject.tag == "SturdyProjectile")
         {
             collision.gameObject.tag = "FragileProjectile";
         }
@@ -238,9 +342,31 @@ public class EnemyControl : MonoBehaviour
 		{
 			if (collision.gameObject.GetComponent<LassoHandler>() != null)
 			{
-				Stun();
 				collision.gameObject.tag = "SturdyProjectile";
 				collision.gameObject.layer = LayerMask.NameToLayer("Projectiles");
+			}
+		}
+
+		if (currentState == "Attack")
+		{ 
+			float collisionDirection = collision.transform.position.x - transform.position.x;
+
+			if (collisionDirection * patrolDirection > 0)
+			{
+				if (collision.gameObject.tag == "Fragile")
+				{
+					if (collision.gameObject.GetComponent<LassoHandler>() != null)
+					{
+						collision.gameObject.GetComponent<LassoHandler>().BreakObject();
+					}
+				}
+				else if (breaksSturdyProjectiles && collision.gameObject.tag == "SturdyProjectile")
+				{
+					if (collision.gameObject.GetComponent<LassoHandler>() != null)
+					{
+						collision.gameObject.GetComponent<LassoHandler>().BreakObject();
+					}
+				}
 			}
 		}
 	}
