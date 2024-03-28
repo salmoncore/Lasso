@@ -11,8 +11,8 @@ public class EnemyControl : MonoBehaviour
 	[SerializeField] private String currentState = "Patrol";
 	[SerializeField] private Vector2 boxCastSize = new Vector2 (0.65f, 0.65f);
 	[SerializeField] private Vector2 boxCastOffset = new Vector2 (0f, 0f);
-	[SerializeField] private float boxCastDistance = 1f;
-	[SerializeField] private float ledgeCheckDistance = 0.5f;
+	[SerializeField] private Vector2 ledgeCheckSize = new Vector2(0f, 0f);
+	[SerializeField] private Vector2 ledgeCheckOffset = new Vector2(0f, 0f);
 	[SerializeField] private float patrolSpeed = 2;
 	[SerializeField] private float sightDistance = 15f;
 	[SerializeField] private float attackRange = 1f; // For determining when to switch to attack state
@@ -57,7 +57,7 @@ public class EnemyControl : MonoBehaviour
 		{
 			Debug.LogError("Please choose a valid class for the enemy.");
 			Debug.Log("Valid classes are: Charger, Gunner, Balloonist");
-			//Class = "Charger";
+			Class = "Charger";
 			return;
 		}
 
@@ -151,8 +151,8 @@ public class EnemyControl : MonoBehaviour
     // Patrol: The enemy moves forward until raycast collision with a wall or a ledge. If collision with a wall/ledge, pause, turn around, and continue.
     private void Patrol()
     {
-        //if (hitPlayer())
-        //{
+		//if (hitPlayer())
+		//{
 		//	currentState = "Rush";
 		//	//Debug.Log("Moving to " + currentState + "state.");
 		//}
@@ -161,14 +161,14 @@ public class EnemyControl : MonoBehaviour
 		
 		if (hitWall() || hitObject() || hitLedge())
 		{
-            Debug.Log("Hit wall/object!");
-            patrolDirection *= -1;
-            StartCoroutine(WaitToTurn(1f));
+		    Debug.Log("Hit wall/object!");
+		    patrolDirection *= -1;
+		    StartCoroutine(WaitToTurn(1f));
 		}
-        else
-        {
-            rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
-        }
+		else
+		{
+		    rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
+		}
 	}
 
     // Rush: The enemy pauses for a moment, and then accelerates towards the player's last known position. If the player is in sight, the enemy will rush towards the player.
@@ -291,7 +291,7 @@ public class EnemyControl : MonoBehaviour
 		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
 		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
 
-		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), boxCastDistance, LayerMask.GetMask("Ground"));
+		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
 
 		Vector3 topRight = boxcastOrigin + new Vector3(boxCastSize.x / 2, boxCastSize.y / 2, 0);
 		Vector3 topLeft = boxcastOrigin + new Vector3(-boxCastSize.x / 2, boxCastSize.y / 2, 0);
@@ -316,7 +316,7 @@ public class EnemyControl : MonoBehaviour
 		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
 		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
 
-		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), boxCastDistance, LayerMask.GetMask("Interactive"));
+		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Interactive"));
 
 		Vector3 topRight = boxcastOrigin + new Vector3(boxCastSize.x / 2, boxCastSize.y / 2, 0);
 		Vector3 topLeft = boxcastOrigin + new Vector3(-boxCastSize.x / 2, boxCastSize.y / 2, 0);
@@ -339,20 +339,14 @@ public class EnemyControl : MonoBehaviour
 	private bool hitLedge()
 	{
 		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
+		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (ledgeCheckSize.x / 2 + ledgeCheckOffset.x), ledgeCheckOffset.y, 0);
 
-		float ledgeBoxCastWidth = boxCollider.size.x/60; // TODO: jank as hell & not extensible fix later
-		float ledgeBoxCastHeight = 0.5f;
+		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, ledgeCheckSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
 
-		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (ledgeBoxCastWidth / 2 + boxCastDistance), -boxCollider.bounds.extents.y, 0);
-
-		Vector2 boxcastSize = new Vector2(ledgeBoxCastWidth, ledgeBoxCastHeight);
-
-		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxcastSize, 0, Vector2.down, ledgeCheckDistance, LayerMask.GetMask("Ground"));
-
-		Vector3 topRight = boxcastOrigin + new Vector3(boxcastSize.x / 2, boxcastSize.y / 2, 0);
-		Vector3 topLeft = boxcastOrigin + new Vector3(-boxcastSize.x / 2, boxcastSize.y / 2, 0);
-		Vector3 bottomRight = boxcastOrigin + new Vector3(boxcastSize.x / 2, -boxcastSize.y / 2, 0);
-		Vector3 bottomLeft = boxcastOrigin + new Vector3(-boxcastSize.x / 2, -boxcastSize.y / 2, 0);
+		Vector3 topRight = boxcastOrigin + new Vector3(ledgeCheckSize.x / 2, ledgeCheckSize.y / 2, 0);
+		Vector3 topLeft = boxcastOrigin + new Vector3(-ledgeCheckSize.x / 2, ledgeCheckSize.y / 2, 0);
+		Vector3 bottomRight = boxcastOrigin + new Vector3(ledgeCheckSize.x / 2, -ledgeCheckSize.y / 2, 0);
+		Vector3 bottomLeft = boxcastOrigin + new Vector3(-ledgeCheckSize.x / 2, -ledgeCheckSize.y / 2, 0);
 
 		Debug.DrawLine(topLeft, topRight, Color.blue); // Top edge
 		Debug.DrawLine(topRight, bottomRight, Color.blue); // Right edge
