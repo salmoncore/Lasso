@@ -9,13 +9,15 @@ public class EnemyControl : MonoBehaviour
 {
 	[SerializeField] private String Class = "CHOOSE Charger/Gunner/Balloonist";
 	[SerializeField] private String currentState = "Patrol";
-	[SerializeField] private Vector2 boxCastSize = new Vector2 (0.65f, 0.65f);
+	[SerializeField] private Vector2 boxCastSize = new Vector2 (0.65f, 0.65f); // For use in detecting walls/objects
 	[SerializeField] private Vector2 boxCastOffset = new Vector2 (0f, 0f);
-	[SerializeField] private Vector2 ledgeCheckSize = new Vector2(0f, 0f);
+	[SerializeField] private Vector2 ledgeCheckSize = new Vector2(0f, 0f); // For use in detecting ledges
 	[SerializeField] private Vector2 ledgeCheckOffset = new Vector2(0f, 0f);
+	[SerializeField] private Vector2 playerSightSize = new Vector2(0f, 0f); // Detecting player at a distance
+	[SerializeField] private Vector2 playerSightOffset = new Vector2(0f, 0f);
+	[SerializeField] private Vector2 beginAttackSize = new Vector2(0f, 0f); // When the player is in range for an attack
+	[SerializeField] private Vector2 beginAttackOffset = new Vector2(0f, 0f);
 	[SerializeField] private float patrolSpeed = 2;
-	[SerializeField] private float sightDistance = 15f;
-	[SerializeField] private float attackRange = 1f; // For determining when to switch to attack state
 	[SerializeField] private float chargeSpeed = 5;
 	[SerializeField] private float acceleration = 0.5f;
 	[SerializeField] private float attackDuration = 1.5f;
@@ -151,30 +153,30 @@ public class EnemyControl : MonoBehaviour
     // Patrol: The enemy moves forward until raycast collision with a wall or a ledge. If collision with a wall/ledge, pause, turn around, and continue.
     private void Patrol()
     {
-		//if (hitPlayer())
-		//{
-		//	currentState = "Rush";
-		//	//Debug.Log("Moving to " + currentState + "state.");
-		//}
+		if (hitPlayer())
+		{
+			//currentState = "Rush";
+			//Debug.Log("Moving to " + currentState + "state.");
+		}
 
-		if (isStunned || isCrumpled || waitFlag) return;
-		
-		if (hitWall() || hitObject() || hitLedge())
-		{
-		    Debug.Log("Hit wall/object!");
-		    patrolDirection *= -1;
-		    StartCoroutine(WaitToTurn(1f));
-		}
-		else
-		{
-		    rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
-		}
+		//if (isStunned || isCrumpled || waitFlag) return;
+		//
+		//if (hitWall() || hitObject() || hitLedge())
+		//{
+		//    Debug.Log("Hit wall/object!");
+		//    patrolDirection *= -1;
+		//    StartCoroutine(WaitToTurn(1f));
+		//}
+		//else
+		//{
+		//    rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
+		//}
 	}
 
     // Rush: The enemy pauses for a moment, and then accelerates towards the player's last known position. If the player is in sight, the enemy will rush towards the player.
     private void Rush()
     {
-        if (hitPlayer(attackRange))
+        if (hitPlayer())
         { 
 			currentState = "TransitionToAttack";
             //Debug.Log("Moving to " + currentState + "state.");
@@ -226,14 +228,14 @@ public class EnemyControl : MonoBehaviour
 				patrolDirection = -1;
 			}
 
-			if (hitPlayer(sightDistance))
-			{
-				attackTimer -= Time.deltaTime / aggroTimeDivision; // Enemy attacks longer the longer the player is in sight
-			}
-			else
-			{
-				attackTimer -= Time.deltaTime;
-			}
+			//if (hitPlayer(sightDistance))
+			//{
+			//	attackTimer -= Time.deltaTime / aggroTimeDivision; // Enemy attacks longer the longer the player is in sight
+			//}
+			//else
+			//{
+			//	attackTimer -= Time.deltaTime;
+			//}
 
 			rb.velocity = new Vector2(patrolDirection * patrolSpeed / 2, rb.velocity.y);
 
@@ -258,33 +260,42 @@ public class EnemyControl : MonoBehaviour
         waitFlag = false;
 	}
 
-	private bool hitPlayer(float distance)
+	private bool hitPlayer() // Uses playerSightSize/Offset for seeing player
 	{
-		Vector2 boxcastSize = new Vector2(boxCastSize.x, boxCastSize.y);
+		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
+		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (playerSightSize.x / 2 + playerSightOffset.x), playerSightOffset.y, 0);
 
-		RaycastHit2D hitPlayer = Physics2D.BoxCast(transform.position, boxcastSize, 0, new Vector2(patrolDirection, 0), distance, LayerMask.GetMask("Player"));
+		RaycastHit2D hitPlayer = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Player"));
 
 		if (hitPlayer.collider != null)
-		{
-			RaycastHit2D hitWall = Physics2D.Raycast(transform.position, hitPlayer.point - (Vector2)transform.position, Vector2.Distance(transform.position, hitPlayer.point), LayerMask.GetMask("Ground"));
+		{ 
+			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
 			RaycastHit2D hitObject = new RaycastHit2D();
 
 			if (!seeThroughObjects)
 			{
-				hitObject = Physics2D.Raycast(transform.position, hitPlayer.point - (Vector2)transform.position, Vector2.Distance(transform.position, hitPlayer.point), LayerMask.GetMask("Interactive"));
+				hitObject = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Interactive"));
 			}
 
 			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
 			{
-				Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * hitPlayer.distance, Color.green);
+				Debug.Log("Player detected!");
 				return true;
 			}
 		}
 
-		Debug.DrawRay(transform.position, new Vector2(patrolDirection, 0) * distance, Color.red);
+		Vector2 topRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, playerSightSize.y / 2, 0);
+		Vector2 topLeft = boxcastOrigin + new Vector3(-playerSightSize.x / 2, playerSightSize.y / 2, 0);
+		Vector2 bottomRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, -playerSightSize.y / 2, 0);
+		Vector2 bottomLeft = boxcastOrigin + new Vector3(-playerSightSize.x / 2, -playerSightSize.y / 2, 0);
+
+		Debug.DrawLine(topLeft, topRight, Color.green); // Top edge
+		Debug.DrawLine(topRight, bottomRight, Color.green); // Right edge
+		Debug.DrawLine(bottomRight, bottomLeft, Color.green); // Bottom edge
+		Debug.DrawLine(bottomLeft, topLeft, Color.green); // Left edge
+
 		return false;
 	}
-
 
 	private bool hitWall()
 	{
