@@ -58,11 +58,36 @@ public class EnemyControl : MonoBehaviour
 			return;
 		}
 
-
+		if (Class == "Charger")
+		{
+			boxCastSize = new Vector2(0.59f, 1.36f);
+			boxCastOffset = new Vector2(0.27f, 0.02f);
+			ledgeCheckSize = new Vector2(0.05f, 0.5f);
+			ledgeCheckOffset = new Vector2(0.34f, -0.75f);
+			playerSightSize = new Vector2(5f, 1f);
+			playerSightOffset = new Vector2(0.28f, 0f);
+			beginAttackSize = new Vector2(1.5f, 2f);
+			beginAttackOffset = new Vector2(0f, 0f);
+		}
+		else if (Class == "Gunner")
+		{
+			// Set up Gunner-specific variables here
+		}
+		else if (Class == "Balloonist")
+		{
+			// Set up Balloonist-specific variables here
+		}
 	}
 
 	void Update()
     {
+
+		//if (hitLedge() || hitWall() || hitObject() || hitPlayer() || attackPlayer())
+		//{
+		// // For Debugging lmao
+		//}
+		//return;
+
 		if (isStunned || isCrumpled) return;
 
 		if (Class == "Charger")
@@ -178,7 +203,7 @@ public class EnemyControl : MonoBehaviour
     // Rush: The enemy pauses for a moment, and then accelerates towards the player's last known position. If the player is in sight, the enemy will rush towards the player.
     private void Rush()
     {
-        if (hitPlayer())
+        if (attackPlayer())
         { 
 			currentState = "TransitionToAttack";
             //Debug.Log("Moving to " + currentState + "state.");
