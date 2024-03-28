@@ -576,7 +576,7 @@ MonoBehaviour:
   ledgeCheckOffset: {x: 0.49, y: -1.25}
   playerSightSize: {x: 5, y: 1.5}
   playerSightOffset: {x: 0.5, y: 0}
-  beginAttackSize: {x: 0, y: 0}
+  beginAttackSize: {x: 1.5, y: 2}
   beginAttackOffset: {x: 0, y: 0}
   patrolSpeed: 2
   chargeSpeed: 5

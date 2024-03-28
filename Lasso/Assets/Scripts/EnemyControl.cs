@@ -9,7 +9,7 @@ public class EnemyControl : MonoBehaviour
 {
 	[SerializeField] private String Class = "CHOOSE Charger/Gunner/Balloonist";
 	[SerializeField] private String currentState = "Patrol";
-	[SerializeField] private Vector2 boxCastSize = new Vector2 (0.65f, 0.65f); // For use in detecting walls/objects
+	[SerializeField] private Vector2 boxCastSize = new Vector2 (0f, 0f); // For use in detecting walls/objects
 	[SerializeField] private Vector2 boxCastOffset = new Vector2 (0f, 0f);
 	[SerializeField] private Vector2 ledgeCheckSize = new Vector2(0f, 0f); // For use in detecting ledges
 	[SerializeField] private Vector2 ledgeCheckOffset = new Vector2(0f, 0f);
@@ -49,11 +49,6 @@ public class EnemyControl : MonoBehaviour
 		{
 			transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, Mathf.Abs(transform.localScale.z));
 		}
-	}
-
-	void Update()
-    {
-		if (isStunned || isCrumpled) return;
 
 		if (Class != "Charger" && Class != "Gunner" && Class != "Balloonist")
 		{
@@ -62,6 +57,13 @@ public class EnemyControl : MonoBehaviour
 			Class = "Charger";
 			return;
 		}
+
+
+	}
+
+	void Update()
+    {
+		if (isStunned || isCrumpled) return;
 
 		if (Class == "Charger")
 		{
@@ -155,22 +157,22 @@ public class EnemyControl : MonoBehaviour
     {
 		if (hitPlayer())
 		{
-			//currentState = "Rush";
+			currentState = "Rush";
 			//Debug.Log("Moving to " + currentState + "state.");
 		}
-
-		//if (isStunned || isCrumpled || waitFlag) return;
-		//
-		//if (hitWall() || hitObject() || hitLedge())
-		//{
-		//    Debug.Log("Hit wall/object!");
-		//    patrolDirection *= -1;
-		//    StartCoroutine(WaitToTurn(1f));
-		//}
-		//else
-		//{
-		//    rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
-		//}
+		
+		if (isStunned || isCrumpled || waitFlag) return;
+		
+		if (hitWall() || hitObject() || hitLedge())
+		{
+		    Debug.Log("Hit wall/object!");
+		    patrolDirection *= -1;
+		    StartCoroutine(WaitToTurn(1f));
+		}
+		else
+		{
+		    rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
+		}
 	}
 
     // Rush: The enemy pauses for a moment, and then accelerates towards the player's last known position. If the player is in sight, the enemy will rush towards the player.
@@ -228,14 +230,14 @@ public class EnemyControl : MonoBehaviour
 				patrolDirection = -1;
 			}
 
-			//if (hitPlayer(sightDistance))
-			//{
-			//	attackTimer -= Time.deltaTime / aggroTimeDivision; // Enemy attacks longer the longer the player is in sight
-			//}
-			//else
-			//{
-			//	attackTimer -= Time.deltaTime;
-			//}
+			if (attackPlayer())
+			{
+				attackTimer -= Time.deltaTime / aggroTimeDivision; // Enemy attacks longer the longer the player is in sight
+			}
+			else
+			{
+				attackTimer -= Time.deltaTime;
+			}
 
 			rb.velocity = new Vector2(patrolDirection * patrolSpeed / 2, rb.velocity.y);
 
@@ -260,8 +262,49 @@ public class EnemyControl : MonoBehaviour
         waitFlag = false;
 	}
 
+	private bool attackPlayer() // Uses beginAttackSize/Offset for determining when to enter the attack state
+	{
+		if (waitFlag || isStunned || isCrumpled) return false;
+
+		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
+		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (beginAttackSize.x / 2 + beginAttackOffset.x), beginAttackOffset.y, 0);
+
+		RaycastHit2D hitPlayer = Physics2D.BoxCast(boxcastOrigin, beginAttackSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Player"));
+
+		if (hitPlayer.collider != null)
+		{
+			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, beginAttackSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+			RaycastHit2D hitObject = new RaycastHit2D();
+
+			if (!seeThroughObjects)
+			{
+				hitObject = Physics2D.BoxCast(boxcastOrigin, beginAttackSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Interactive"));
+			}
+
+			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
+			{
+				Debug.Log("Player detected!");
+				return true;
+			}
+		}
+
+		Vector2 topRight = boxcastOrigin + new Vector3(beginAttackSize.x / 2, beginAttackSize.y / 2, 0);
+		Vector2 topLeft = boxcastOrigin + new Vector3(-beginAttackSize.x / 2, beginAttackSize.y / 2, 0);
+		Vector2 bottomRight = boxcastOrigin + new Vector3(beginAttackSize.x / 2, -beginAttackSize.y / 2, 0);
+		Vector2 bottomLeft = boxcastOrigin + new Vector3(-beginAttackSize.x / 2, -beginAttackSize.y / 2, 0);
+
+		Debug.DrawLine(topLeft, topRight, Color.yellow); // Top edge
+		Debug.DrawLine(topRight, bottomRight, Color.yellow); // Right edge
+		Debug.DrawLine(bottomRight, bottomLeft, Color.yellow); // Bottom edge
+		Debug.DrawLine(bottomLeft, topLeft, Color.yellow); // Left edge
+
+		return false;
+	}
+	
 	private bool hitPlayer() // Uses playerSightSize/Offset for seeing player
 	{
+		if (waitFlag || isStunned || isCrumpled) return false;
+
 		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
 		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (playerSightSize.x / 2 + playerSightOffset.x), playerSightOffset.y, 0);
 
@@ -377,7 +420,6 @@ public class EnemyControl : MonoBehaviour
 	{
 		if (currentState == "Attack" && noStunDuringAttack) return;
 
-        //Debug.Log("Stunned!");
         isStunned = true;
         gameObject.tag = "StunnedEnemy";
         StartCoroutine(StunTimer());
@@ -389,7 +431,6 @@ public class EnemyControl : MonoBehaviour
 		yield return new WaitForSeconds(2);
         isStunned = false;
         gameObject.tag = "Enemy";
-        //Debug.Log("Unstunned!");
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision)
@@ -463,19 +504,6 @@ public class EnemyControl : MonoBehaviour
 			{
 				transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, Mathf.Abs(transform.localScale.z));
 			}
-
-			//Vector3 localScale = transform.localScale;
-			//localScale.z *= -1;
-			//transform.localScale = localScale;
 		}
-
-
-		//else if (TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
-        //{
-		//	Vector3 localScale = transform.localScale;
-		//	localScale.x *= -1;
-		//	transform.localScale = localScale;
-		//}
-
     }
 }
