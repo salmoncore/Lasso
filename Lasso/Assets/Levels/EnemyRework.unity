@@ -459,9 +459,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: Brute_Enemy
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 2205715393663723020, guid: 7080b4a0889e8054b92d9164d047b035, type: 3}
-    - {fileID: 203150297715955661, guid: 7080b4a0889e8054b92d9164d047b035, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
