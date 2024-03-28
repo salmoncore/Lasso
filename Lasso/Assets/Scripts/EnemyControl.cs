@@ -180,6 +180,12 @@ public class EnemyControl : MonoBehaviour
     // Patrol: The enemy moves forward until raycast collision with a wall or a ledge. If collision with a wall/ledge, pause, turn around, and continue.
     private void Patrol()
     {
+		
+		// Animator: trying to define on spawn a walking animation starts. It currently does not work. 
+		anim.SetBool("isWalking", true);
+		anim.SetBool("isRunning", false);
+		anim.SetBool("isIdle", false);
+
 		if (hitPlayer())
 		{
 			currentState = "Rush";
@@ -191,12 +197,20 @@ public class EnemyControl : MonoBehaviour
 		if (hitWall() || hitObject() || hitLedge())
 		{
 		    Debug.Log("Hit wall/object!");
+
+			anim.SetBool("isWalking", false); // stop the walking animation for the turn, resume it after.
+			anim.SetBool("isIdle", true);
+
 		    patrolDirection *= -1;
 		    StartCoroutine(WaitToTurn(1f));
+
+			anim.SetBool("isIdle", false); // these and the ones above it don't seem to work for turning.
+			anim.SetBool("isWalking", true);
 		}
 		else
 		{
 		    rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
+
 		}
 	}
 
@@ -242,6 +256,10 @@ public class EnemyControl : MonoBehaviour
 
 		Debug.Log("Time: " + attackTimer);
 
+		// while attacking, the brute should sprint.
+		anim.SetBool("isWalking", false);
+		anim.SetBool("isRunning", true);
+
 		if ((!hitObject() || !hitWall() || !hitLedge()) && attackTimer > 0)
 		{
 			float playerDirection = GameObject.Find("Player").transform.position.x - transform.position.x;
@@ -268,6 +286,8 @@ public class EnemyControl : MonoBehaviour
 
 			// TODO: Enable hurtbox here
 			// TODO: Trigger attack animation here
+				// unsure if this is actually where it should go. it works a little wonky.
+			anim.SetTrigger("isAttacking");
 		}
 		else
 		{
@@ -275,6 +295,7 @@ public class EnemyControl : MonoBehaviour
 			attackTimer = attackDuration;
 			// TODO: Disable Hurtbox here
 			// TODO: Disable animation here
+				// attacking is a trigger, don't need to disable it.
 			//Debug.Log("Moving to " + currentState + "state.");
 		}
 	}
@@ -295,6 +316,7 @@ public class EnemyControl : MonoBehaviour
 		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (beginAttackSize.x / 2 + beginAttackOffset.x), beginAttackOffset.y, 0);
 
 		RaycastHit2D hitPlayer = Physics2D.BoxCast(boxcastOrigin, beginAttackSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Player"));
+		anim.SetTrigger("isAttacking");
 
 		if (hitPlayer.collider != null)
 		{
@@ -348,6 +370,10 @@ public class EnemyControl : MonoBehaviour
 			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
 			{
 				Debug.Log("Player detected!");
+
+				anim.SetBool("isRunning", true);
+				anim.SetBool("isWalking", false);
+
 				return true;
 			}
 		}
