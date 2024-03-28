@@ -572,8 +572,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Class: Charger
   currentState: Patrol
-  boxCastSize: {x: 0.99, y: 2.16}
-  boxCastOffset: {x: 0.33, y: 1.42}
+  boxCastSize: {x: 1, y: 2.18}
+  boxCastOffset: {x: 0.47, y: 0}
   boxCastDistance: 0.5
   ledgeCheckDistance: 0.5
   patrolSpeed: 2

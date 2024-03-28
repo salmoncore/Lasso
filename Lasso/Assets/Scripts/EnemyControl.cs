@@ -279,7 +279,8 @@ public class EnemyControl : MonoBehaviour
 
 	private bool hitWall()
 	{
-		Vector3 boxcastOrigin = transform.position + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
+		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
 
 		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), boxCastDistance, LayerMask.GetMask("Ground"));
 
@@ -303,7 +304,8 @@ public class EnemyControl : MonoBehaviour
 
 	private bool hitObject()
     {
-		Vector3 boxcastOrigin = transform.position + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
+		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
 
 		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), boxCastDistance, LayerMask.GetMask("Interactive"));
 
