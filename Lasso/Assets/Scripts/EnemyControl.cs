@@ -38,6 +38,15 @@ public class EnemyControl : MonoBehaviour
         anim = GetComponent<Animator>();
         patrolDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
 		attackTimer = attackDuration;
+
+		if (patrolDirection > 0)
+		{
+			transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, -Mathf.Abs(transform.localScale.z));
+		}
+		else
+		{
+			transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, Mathf.Abs(transform.localScale.z));
+		}
 	}
 
 	void Update()
@@ -148,17 +157,17 @@ public class EnemyControl : MonoBehaviour
 		//	//Debug.Log("Moving to " + currentState + "state.");
 		//}
 
-		//if (isStunned || isCrumpled || waitFlag) return;
+		if (isStunned || isCrumpled || waitFlag) return;
 		
 		if (hitWall() || hitObject() || hitLedge())
 		{
-            //Debug.Log("Hit wall/object!");
-            //patrolDirection *= -1;
-            //StartCoroutine(WaitToTurn(1f));
+            Debug.Log("Hit wall/object!");
+            patrolDirection *= -1;
+            StartCoroutine(WaitToTurn(1f));
 		}
         else
         {
-            //rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
+            rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
         }
 	}
 
@@ -329,22 +338,34 @@ public class EnemyControl : MonoBehaviour
 
 	private bool hitLedge()
 	{
-		float horizontalOffset = patrolDirection * (boxCastSize.x / 2 + boxCastDistance);
-		float verticalOffset = -boxCastSize.x / 2; // tweak later
+		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
 
-		Vector2 startPosition = (Vector2)transform.position + new Vector2(horizontalOffset, verticalOffset);
+		float ledgeBoxCastWidth = boxCollider.size.x/60; // TODO: jank as hell & not extensible fix later
+		float ledgeBoxCastHeight = 0.5f;
 
-		Vector2 direction = Vector2.down;
-		RaycastHit2D hit = Physics2D.Raycast(startPosition, direction, ledgeCheckDistance, LayerMask.GetMask("Ground"));
+		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (ledgeBoxCastWidth / 2 + boxCastDistance), -boxCollider.bounds.extents.y, 0);
 
-		Debug.DrawRay(startPosition, direction * ledgeCheckDistance, Color.blue);
+		Vector2 boxcastSize = new Vector2(ledgeBoxCastWidth, ledgeBoxCastHeight);
+
+		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxcastSize, 0, Vector2.down, ledgeCheckDistance, LayerMask.GetMask("Ground"));
+
+		Vector3 topRight = boxcastOrigin + new Vector3(boxcastSize.x / 2, boxcastSize.y / 2, 0);
+		Vector3 topLeft = boxcastOrigin + new Vector3(-boxcastSize.x / 2, boxcastSize.y / 2, 0);
+		Vector3 bottomRight = boxcastOrigin + new Vector3(boxcastSize.x / 2, -boxcastSize.y / 2, 0);
+		Vector3 bottomLeft = boxcastOrigin + new Vector3(-boxcastSize.x / 2, -boxcastSize.y / 2, 0);
+
+		Debug.DrawLine(topLeft, topRight, Color.blue); // Top edge
+		Debug.DrawLine(topRight, bottomRight, Color.blue); // Right edge
+		Debug.DrawLine(bottomRight, bottomLeft, Color.blue); // Bottom edge
+		Debug.DrawLine(bottomLeft, topLeft, Color.blue); // Left edge
 
 		if (hit.collider == null)
 		{
-			Debug.Log("Hit ledge!");
+			Debug.Log("Ledge detected!");
+			return true;
 		}
 
-		return hit.collider == null;
+		return false;
 	}
 
 	public void Stun()
@@ -421,15 +442,35 @@ public class EnemyControl : MonoBehaviour
 
 	private void flip()
     {
-        if (TryGetComponent<SpriteRenderer>(out SpriteRenderer spriteRenderer))
-        {
+		if (TryGetComponent<SpriteRenderer>(out SpriteRenderer spriteRenderer))
+		{
 			spriteRenderer.flipX = !spriteRenderer.flipX;
 		}
-		else if (TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
-        {
-			Vector3 localScale = transform.localScale;
-			localScale.x *= -1;
-			transform.localScale = localScale;
+		else
+		{
+			// Flip the transform.localScale.z depending on the patrolDirection
+
+			if (patrolDirection > 0)
+			{
+				transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, -Mathf.Abs(transform.localScale.z));
+			}
+			else
+			{
+				transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, Mathf.Abs(transform.localScale.z));
+			}
+
+			//Vector3 localScale = transform.localScale;
+			//localScale.z *= -1;
+			//transform.localScale = localScale;
 		}
+
+
+		//else if (TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
+        //{
+		//	Vector3 localScale = transform.localScale;
+		//	localScale.x *= -1;
+		//	transform.localScale = localScale;
+		//}
+
     }
 }
