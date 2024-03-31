@@ -33,14 +33,15 @@ public class MainMenuManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // value to store our toggle component
+        m_toggle = toggle.GetComponent<Toggle>();
+
         // if the screen is on fullscreenwindow we want the checkmark on
         // else, we want it off. this works when opening the game multiple times
         if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow) {
-            m_toggle = toggle.GetComponent<Toggle>();
             m_toggle.isOn = true;
             windowToggle(true);
         } else if (Screen.fullScreenMode == FullScreenMode.Windowed) {
-            m_toggle = toggle.GetComponent<Toggle>();
             m_toggle.isOn = false;
             windowToggle(false);
         }
