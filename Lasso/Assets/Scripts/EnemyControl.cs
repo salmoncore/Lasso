@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class EnemyControl : MonoBehaviour
 {
+	public GameObject bullet;
 	[SerializeField] private String Class = "CHOOSE Charger/Gunner/Balloonist";
 	[SerializeField] private String currentState = "Patrol";
 	[SerializeField] private Vector2 boxCastSize = new Vector2 (0f, 0f); // For use in detecting walls/objects
@@ -157,7 +158,7 @@ public class EnemyControl : MonoBehaviour
 		else if (lookoutPlayer(gunnerSightRange))
 		{
 			Debug.Log("Shooting!");
-
+			currentState = "Shoot";
 		}
 	}
 
@@ -171,13 +172,30 @@ public class EnemyControl : MonoBehaviour
 	private void Shoot()
 	{ 
 		if (gunnerOnCooldown || isStunned || isCrumpled || waitFlag) return;
-
-		// Create a black sphere projectile which travels in the direction of the player from the gunner's firePoint.
-		// The projectile should have a rigidbody2D with a velocity of 10 in the direction of the player.
-		// The projectile should have a collider2D with a trigger.
-		// The projectile should have a script that destroys the projectile after 5 seconds.
-
 		
+		//// Find the "Bullet" prefab in the Resources folder
+		//GameObject bullet = Resources.Load<GameObject>("Bullet");
+		//if (bullet == null)
+		//{
+		//	Debug.Log("Failed to load bullet prefab. Check the resources folder.");
+		//	return;
+		//}
+
+		// Instantiate the bullet prefab at the firePoint's position
+		Transform firePoint = transform.Find("firePoint");
+		if (firePoint == null)
+		{
+			Debug.Log("Failed to get firepoint. Is enemyControl set to gunner?");
+			return;
+		}
+		else
+		{
+			// Instantiate the bullet prefab at the firePoint's location, with a velocity of 10 in the direction of the center of the player's collider
+			GameObject bulletInstance = Instantiate(bullet, firePoint.position, Quaternion.identity);
+			Vector3 playerPosition = GameObject.Find("Player").GetComponent<BoxCollider2D>().bounds.center;
+			Vector3 direction = playerPosition - firePoint.position;
+			bulletInstance.GetComponent<Rigidbody2D>().velocity = direction.normalized * 10;
+		}
 
 		StartCoroutine(Cooldown());
 	}
