@@ -22,7 +22,10 @@ public class EnemyControl : MonoBehaviour
 	[SerializeField] private float acceleration = 0.5f;
 	[SerializeField] private float attackDuration = 1.5f;
 	[SerializeField] private float aggroTimeDivision = 2f;
-	[SerializeField] private float gunnerSightRange = 20f;
+	[SerializeField] private float gunnerSightRange = 10f;
+	[SerializeField] private float gunnerFleeRange = 5f;
+	[SerializeField] private float gunnerCooldown = 5f;
+	[SerializeField] private bool gunnerFaceLeft = true;
 	[SerializeField] private bool isStunned = false;
 	[SerializeField] private bool ledgeCautious = true;
 	[SerializeField] private bool seeThroughObjects = false;
@@ -32,6 +35,7 @@ public class EnemyControl : MonoBehaviour
     private Animator anim;
     private bool isCrumpled = false;
     private bool waitFlag = false;
+	private bool gunnerOnCooldown = false;
     private float patrolDirection = 1;
 	private float attackTimer;
 
@@ -72,7 +76,10 @@ public class EnemyControl : MonoBehaviour
 		}
 		else if (Class == "Gunner")
 		{
-			// Set up Gunner-specific variables here
+			if (!gunnerFaceLeft)
+			{
+				transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+			}
 		}
 		else if (Class == "Balloonist")
 		{
@@ -119,6 +126,12 @@ public class EnemyControl : MonoBehaviour
 				case "Lookout":
 					Lookout();
 					break;
+				case "Shoot":
+					Shoot();
+					break;
+				case "Flee":
+					Flee();
+					break;
 			}
 		}
 		else if (Class == "Balloonist")
@@ -137,13 +150,46 @@ public class EnemyControl : MonoBehaviour
 	{
 		if (isStunned || isCrumpled || waitFlag) return;
 
-		if (lookoutPlayer())
+		if (lookoutPlayer(gunnerFleeRange))
 		{
-			Debug.Log("Player detected!");
+			Debug.Log("Fleeing!");
+		}
+		else if (lookoutPlayer(gunnerSightRange))
+		{
+			Debug.Log("Shooting!");
+
 		}
 	}
 
-	private bool lookoutPlayer() // Uses playerSightSize/Offset for seeing player through floors & walls
+	private void Flee()
+	{
+		if (isStunned || isCrumpled || waitFlag) return;
+
+		// Flee from the player
+	}
+
+	private void Shoot()
+	{ 
+		if (gunnerOnCooldown || isStunned || isCrumpled || waitFlag) return;
+
+		// Create a black sphere projectile which travels in the direction of the player from the gunner's firePoint.
+		// The projectile should have a rigidbody2D with a velocity of 10 in the direction of the player.
+		// The projectile should have a collider2D with a trigger.
+		// The projectile should have a script that destroys the projectile after 5 seconds.
+
+		
+
+		StartCoroutine(Cooldown());
+	}
+
+	IEnumerator Cooldown()
+	{
+		gunnerOnCooldown = true;
+		yield return new WaitForSeconds(gunnerCooldown);
+		gunnerOnCooldown = false;
+	}
+
+	private bool lookoutPlayer(float viewDistance) // Uses playerSightSize/Offset for seeing player through floors & walls
 	{
 		// Use a raycast to the player's position from the enemy's position to determine if the player is in sight.
 		// If there is a wall in the way, return false.
@@ -178,8 +224,8 @@ public class EnemyControl : MonoBehaviour
 		// Cast a ray from the firePoint to the player's position, checking for the player layer.
 		RaycastHit2D hitPlayer = Physics2D.Raycast(firePoint.position, playerPosition - firePoint.position, distance, LayerMask.GetMask("Player"));
 
-		// If the raycast hits the player, check for walls and objects in the way. Additionally, check if the player is within the gunnerSightRange.
-		if (hitPlayer.collider != null && distance <= gunnerSightRange)
+		// If the raycast hits the player, check for walls and objects in the way. Additionally, check if the player is within the viewDistance.
+		if (hitPlayer.collider != null && distance <= viewDistance)
 		{
 			// Cast a ray from the firePoint to the player's position, checking for the ground layer.
 			RaycastHit2D hitWall = Physics2D.Raycast(firePoint.position, playerPosition - firePoint.position, distance, LayerMask.GetMask("Ground"));
@@ -283,7 +329,6 @@ public class EnemyControl : MonoBehaviour
 		else
 		{
 		    rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
-
 		}
 	}
 

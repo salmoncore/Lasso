@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class LassoHandler : MonoBehaviour
 {
+	[SerializeField] public bool canGrabWithoutStunning = false;
 	private GameObject Projectile;
 	private GameObject Collided;
 	private bool isOnGround;

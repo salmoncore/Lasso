@@ -108,7 +108,7 @@ public class Projectile : MonoBehaviour
 	{
 		if (capturedEnemy != null)
 		{
-			if (capturedEnemy.tag == "Fragile" || capturedEnemy.tag == "StunnedEnemy")
+			if (capturedEnemy.tag == "Fragile" || capturedEnemy.tag == "StunnedEnemy" || capturedEnemy.tag == "Enemy")
 			{
 				capturedEnemy.tag = "FragileProjectile";
 			}
@@ -165,9 +165,17 @@ public class Projectile : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
-		Debug.Log("Projectile hit " + collision.tag);
+		//Debug.Log("Projectile hit " + collision.tag);
 		// PS the lasso projectile is the trigger here lmao
-		if (collision.tag == "Ground" || collision.tag == "Enemy")
+
+		// Check and see if the collided object has a LassoHandler script, and store the value of canGrabWithoutStunning
+		bool canGrabWithoutStunning = false;
+		if (collision.GetComponent<LassoHandler>() != null)
+		{
+			canGrabWithoutStunning = collision.GetComponent<LassoHandler>().canGrabWithoutStunning;
+		}
+
+		if (collision.tag == "Ground" || (collision.tag == "Enemy" && !canGrabWithoutStunning))
 		{
 			lassoTimer = lassoFlightTime;
 			hit = true;
@@ -176,7 +184,8 @@ public class Projectile : MonoBehaviour
 			RetrieveLassoStart();
 		}
 		else if ((collision.tag == "StunnedEnemy" || collision.tag == "Fragile" || collision.tag == "Sturdy" ||
-				 collision.tag == "FragileProjectile" || collision.tag == "SturdyProjectile") && capturedEnemy == null)
+				 collision.tag == "FragileProjectile" || collision.tag == "SturdyProjectile" ||
+				 (collision.tag == "Enemy" && canGrabWithoutStunning)) && capturedEnemy == null)
 		{
 			lassoTimer = lassoFlightTime;
 			hit = true;
