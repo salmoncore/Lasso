@@ -98,9 +98,13 @@ public class LassoHandler : MonoBehaviour
 
 	private IEnumerator SpinProjectile()
 	{
+		// pick a random rotation speed for each axis to spin the object
+
+		Vector3 RotateSpecs = new Vector3(UnityEngine.Random.Range(-3, 3), UnityEngine.Random.Range(-3, 3), UnityEngine.Random.Range(-3, 3));
+
 		while (true)
 		{
-			Projectile.transform.Rotate(1, 1, 1);
+			Projectile.transform.Rotate(RotateSpecs);
 			yield return new WaitForSeconds(0.01f);
 		}
 	}
