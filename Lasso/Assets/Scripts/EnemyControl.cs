@@ -115,20 +115,8 @@ public class EnemyControl : MonoBehaviour
 		{
 			switch (currentState)
 			{
-				case "Patrol":
-					Patrol();
-					break;
-				case "TransitionToRush":
-					StartCoroutine(RushTransition());
-					break;
-				case "Rush":
-					Rush();
-					break;
-				case "TransitionToAttack":
-					StartCoroutine(AttackTransition());
-					break;
-				case "Attack":
-					Attack();
+				case "Lookout":
+					Lookout();
 					break;
 			}
 		}
@@ -136,24 +124,69 @@ public class EnemyControl : MonoBehaviour
 		{
 			switch (currentState)
 			{
-				case "Patrol":
-					Patrol();
-					break;
-				case "TransitionToRush":
-					StartCoroutine(RushTransition());
-					break;
-				case "Rush":
-					Rush();
-					break;
-				case "TransitionToAttack":
-					StartCoroutine(AttackTransition());
-					break;
-				case "Attack":
-					Attack();
+				case "":
+					Oopsie();
 					break;
 			}
 		}
     }
+
+	// For Gunner. Enemy stays idle until something from the player layer comes into view.
+	private void Lookout()
+	{
+		if (isStunned || isCrumpled || waitFlag) return;
+
+		
+	}
+
+	private bool lookoutPlayer() // Uses playerSightSize/Offset for seeing player through floors & walls
+	{
+		if (waitFlag || isStunned || isCrumpled) return false;
+
+		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
+		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (playerSightSize.x / 2 + playerSightOffset.x), playerSightOffset.y, 0);
+
+		RaycastHit2D hitPlayer = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Player"));
+
+		if (hitPlayer.collider != null)
+		{
+			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+			RaycastHit2D hitObject = new RaycastHit2D();
+
+			if (!seeThroughObjects)
+			{
+				hitObject = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Interactive"));
+			}
+
+			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
+			{
+				Debug.Log("Player detected!");
+
+				anim.SetBool("isRunning", true);
+				anim.SetBool("isWalking", false);
+
+				return true;
+			}
+		}
+
+		Vector2 topRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, playerSightSize.y / 2, 0);
+		Vector2 topLeft = boxcastOrigin + new Vector3(-playerSightSize.x / 2, playerSightSize.y / 2, 0);
+		Vector2 bottomRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, -playerSightSize.y / 2, 0);
+		Vector2 bottomLeft = boxcastOrigin + new Vector3(-playerSightSize.x / 2, -playerSightSize.y / 2, 0);
+
+		Debug.DrawLine(topLeft, topRight, Color.green); // Top edge
+		Debug.DrawLine(topRight, bottomRight, Color.green); // Right edge
+		Debug.DrawLine(bottomRight, bottomLeft, Color.green); // Bottom edge
+		Debug.DrawLine(bottomLeft, topLeft, Color.green); // Left edge
+
+		return false;
+	}
+
+	private void Oopsie()
+	{
+		// Current state isn't set up in editor?
+		Debug.Log("Make sure to set the Current State in the editor!");
+	}
 
 	IEnumerator RushTransition() 
 	{
