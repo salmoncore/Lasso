@@ -22,6 +22,7 @@ public class EnemyControl : MonoBehaviour
 	[SerializeField] private float acceleration = 0.5f;
 	[SerializeField] private float attackDuration = 1.5f;
 	[SerializeField] private float aggroTimeDivision = 2f;
+	[SerializeField] private float gunnerSightRange = 20f;
 	[SerializeField] private bool isStunned = false;
 	[SerializeField] private bool ledgeCautious = true;
 	[SerializeField] private bool seeThroughObjects = false;
@@ -136,49 +137,88 @@ public class EnemyControl : MonoBehaviour
 	{
 		if (isStunned || isCrumpled || waitFlag) return;
 
-		
+		if (lookoutPlayer())
+		{
+			Debug.Log("Player detected!");
+		}
 	}
 
 	private bool lookoutPlayer() // Uses playerSightSize/Offset for seeing player through floors & walls
 	{
-		if (waitFlag || isStunned || isCrumpled) return false;
+		// Use a raycast to the player's position from the enemy's position to determine if the player is in sight.
+		// If there is a wall in the way, return false.
+		// If there is an object in the way, but seeThroughObjects is true, return true.
+		// If there is an object in the way, but seeThroughObjects is false, return false.
+		// If there is no wall or object in the way, return true.
 
-		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
-		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (playerSightSize.x / 2 + playerSightOffset.x), playerSightOffset.y, 0);
+		// Get the position of the enemy's child object, firePoint, to use as the origin of the raycast.
+		Transform firePoint = transform.Find("firePoint");
 
-		RaycastHit2D hitPlayer = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Player"));
+		// Get the location of the player to use as the direction of the raycast. Use the center of the player's collider.
+		Vector3 playerPosition = GameObject.Find("Player").GetComponent<BoxCollider2D>().bounds.center;
 
-		if (hitPlayer.collider != null)
+		if (firePoint == null)
 		{
-			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+			Debug.Log("Failed to get firepoint. Is enemyControl set to gunner?");
+			return false;
+		}
+
+		if (playerPosition == null)
+		{
+			Debug.Log("Failed to get player position. Make sure the player is named \"Player\" lol.");
+			return false;
+		}
+
+		// Draw debug raycast from the firePoint to the player's position.
+		Debug.DrawRay(firePoint.position, playerPosition - firePoint.position, Color.yellow);
+
+		// Get the distance between the firePoint and the player's position.
+		float distance = Vector3.Distance(firePoint.position, playerPosition);
+
+		// Cast a ray from the firePoint to the player's position, checking for the player layer.
+		RaycastHit2D hitPlayer = Physics2D.Raycast(firePoint.position, playerPosition - firePoint.position, distance, LayerMask.GetMask("Player"));
+
+		// If the raycast hits the player, check for walls and objects in the way. Additionally, check if the player is within the gunnerSightRange.
+		if (hitPlayer.collider != null && distance <= gunnerSightRange)
+		{
+			// Cast a ray from the firePoint to the player's position, checking for the ground layer.
+			RaycastHit2D hitWall = Physics2D.Raycast(firePoint.position, playerPosition - firePoint.position, distance, LayerMask.GetMask("Ground"));
+
+			// Cast a ray from the firePoint to the player's position, checking for the interactive layer.
 			RaycastHit2D hitObject = new RaycastHit2D();
 
 			if (!seeThroughObjects)
 			{
-				hitObject = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Interactive"));
+				hitObject = Physics2D.Raycast(firePoint.position, playerPosition - firePoint.position, distance, LayerMask.GetMask("Interactive"));
 			}
 
-			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
+			// If there is a wall in the way, return false.
+			if (hitWall.collider != null)
 			{
-				Debug.Log("Player detected!");
+				Debug.Log("Wall detected!");
+				return false;
+			}
 
-				anim.SetBool("isRunning", true);
-				anim.SetBool("isWalking", false);
-
+			// If there is an object in the way, but seeThroughObjects is true, return true.
+			if (hitObject.collider != null && seeThroughObjects)
+			{
+				Debug.Log("Object detected, but seeThroughObjects is true!");
 				return true;
 			}
+
+			// If there is an object in the way, but seeThroughObjects is false, return false.
+			if (hitObject.collider != null && !seeThroughObjects)
+			{
+				Debug.Log("Object detected!");
+				return false;
+			}
+
+			// If there is no wall or object in the way, return true.
+			Debug.Log("Player detected!");
+			return true;
 		}
-
-		Vector2 topRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, playerSightSize.y / 2, 0);
-		Vector2 topLeft = boxcastOrigin + new Vector3(-playerSightSize.x / 2, playerSightSize.y / 2, 0);
-		Vector2 bottomRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, -playerSightSize.y / 2, 0);
-		Vector2 bottomLeft = boxcastOrigin + new Vector3(-playerSightSize.x / 2, -playerSightSize.y / 2, 0);
-
-		Debug.DrawLine(topLeft, topRight, Color.green); // Top edge
-		Debug.DrawLine(topRight, bottomRight, Color.green); // Right edge
-		Debug.DrawLine(bottomRight, bottomLeft, Color.green); // Bottom edge
-		Debug.DrawLine(bottomLeft, topLeft, Color.green); // Left edge
-
+		
+		// If the raycast does not hit the player or the player is out of range, return false.
 		return false;
 	}
 
