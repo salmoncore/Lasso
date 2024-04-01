@@ -25,6 +25,7 @@ public class EnemyControl : MonoBehaviour
 	[SerializeField] private float aggroTimeDivision = 2f;
 	[SerializeField] private float gunnerSightRange = 10f;
 	[SerializeField] private float gunnerFleeRange = 5f;
+	[SerializeField] private float gunnerDelayToFire = 2f;
 	[SerializeField] private float gunnerCooldown = 5f;
 	[SerializeField] private bool gunnerFaceLeft = true;
 	[SerializeField] private bool isStunned = false;
@@ -81,6 +82,7 @@ public class EnemyControl : MonoBehaviour
 			{
 				transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
 			}
+			Cooldown(gunnerDelayToFire);
 		}
 		else if (Class == "Balloonist")
 		{
@@ -158,6 +160,7 @@ public class EnemyControl : MonoBehaviour
 		else if (lookoutPlayer(gunnerSightRange))
 		{
 			Debug.Log("Shooting!");
+			Cooldown(gunnerDelayToFire);
 			currentState = "Shoot";
 		}
 	}
@@ -172,14 +175,6 @@ public class EnemyControl : MonoBehaviour
 	private void Shoot()
 	{ 
 		if (gunnerOnCooldown || isStunned || isCrumpled || waitFlag) return;
-		
-		//// Find the "Bullet" prefab in the Resources folder
-		//GameObject bullet = Resources.Load<GameObject>("Bullet");
-		//if (bullet == null)
-		//{
-		//	Debug.Log("Failed to load bullet prefab. Check the resources folder.");
-		//	return;
-		//}
 
 		// Instantiate the bullet prefab at the firePoint's position
 		Transform firePoint = transform.Find("firePoint");
@@ -190,20 +185,25 @@ public class EnemyControl : MonoBehaviour
 		}
 		else
 		{
-			// Instantiate the bullet prefab at the firePoint's location, with a velocity of 10 in the direction of the center of the player's collider
+			// Set bullet to velocity of 10 in the direction of the center of the player's collider
 			GameObject bulletInstance = Instantiate(bullet, firePoint.position, Quaternion.identity);
 			Vector3 playerPosition = GameObject.Find("Player").GetComponent<BoxCollider2D>().bounds.center;
 			Vector3 direction = playerPosition - firePoint.position;
 			bulletInstance.GetComponent<Rigidbody2D>().velocity = direction.normalized * 10;
 		}
 
-		StartCoroutine(Cooldown());
+		StartCoroutine(Cooldown(gunnerCooldown));
+
+		if (!lookoutPlayer(gunnerSightRange))
+		{
+			currentState = "Lookout";
+		}
 	}
 
-	IEnumerator Cooldown()
+	IEnumerator Cooldown(float time)
 	{
 		gunnerOnCooldown = true;
-		yield return new WaitForSeconds(gunnerCooldown);
+		yield return new WaitForSeconds(time);
 		gunnerOnCooldown = false;
 	}
 
