@@ -60,7 +60,7 @@ public class LassoHandler : MonoBehaviour
 			// If the projectile has stopped sliding
 			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 5f && (isOnGround || isOnInteractive || isOnEnemy))
 			{
-				if (Projectile.CompareTag("FragileProjectile"))
+				if (Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("StunnedEnemy") || Projectile.CompareTag("Enemy"))
 				{
 					StartCoroutine(Break());
 				}
@@ -84,7 +84,7 @@ public class LassoHandler : MonoBehaviour
 		{
 			spriteRenderer.color = new Color(1, 1, 1, 0.5f);
 		}
-		else if (Projectile.TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
+		else
 		{
 			// Changing the alpha doesn't seem to work here so I'm gonna do this silly thing
 			StartCoroutine(SpinProjectile());
