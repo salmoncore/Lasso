@@ -12,6 +12,7 @@ public class LassoHandler : MonoBehaviour
 	private bool isOnGround;
 	private bool isOnInteractive;
 	private bool isOnEnemy;
+	private bool isOnPlayer;
 
 	public void Initialize(float speed)
 	{
@@ -29,19 +30,23 @@ public class LassoHandler : MonoBehaviour
 			float distance = Projectile.GetComponent<BoxCollider2D>().bounds.extents.y;
 
 			// debug raycast
-			Debug.DrawRay(Projectile.transform.position, Vector2.down * (0.5f + distance), Color.red);
+			Debug.DrawRay(Projectile.transform.position, Vector2.down * (0.7f + distance), Color.red);
 
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f + distance, LayerMask.GetMask("Ground")).collider != null)
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Ground")).collider != null)
 			{ isOnGround = true; }
 			else { isOnGround = false; }
 
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f + distance, LayerMask.GetMask("Interactive")).collider != null)
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Interactive")).collider != null)
 			{ isOnInteractive = true; }
 			else { isOnInteractive = false;	}
 
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f + distance, LayerMask.GetMask("Enemies")).collider != null)
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Enemies")).collider != null)
 			{ isOnEnemy = true;	}
 			else { isOnEnemy = false; }
+
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Player")).collider != null)
+			{ isOnPlayer = true; }
+			else { isOnPlayer = false; }
 
 			if ((Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("SturdyProjectile")) && (Collided.CompareTag("Enemy") || Collided.CompareTag("StunnedEnemy")))
 			{
@@ -58,7 +63,7 @@ public class LassoHandler : MonoBehaviour
 			}
 
 			// If the projectile has stopped sliding
-			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 5f && (isOnGround || isOnInteractive || isOnEnemy))
+			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 5f && (isOnGround || isOnInteractive || isOnEnemy || isOnPlayer))
 			{
 				if (Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("StunnedEnemy") || Projectile.CompareTag("Enemy"))
 				{
@@ -125,6 +130,7 @@ public class LassoHandler : MonoBehaviour
 		isOnGround = false;
 		isOnInteractive = false;
 		isOnEnemy = false;
+		isOnPlayer = false;
 	}
 
 	void OnCollisionEnter2D(Collision2D collision)

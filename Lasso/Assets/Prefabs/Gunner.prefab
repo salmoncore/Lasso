@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 3986343226948095326}
   - component: {fileID: 2877313171548065468}
   - component: {fileID: 2047789335065409314}
+  - component: {fileID: 6976318256723450536}
   m_Layer: 7
   m_Name: Gunner
   m_TagString: Enemy
@@ -178,6 +179,19 @@ MonoBehaviour:
   seeThroughObjects: 0
   noStunDuringAttack: 0
   breaksSturdyProjectiles: 0
+--- !u!114 &6976318256723450536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8524054579843048906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bbdf4607ef771f4eab0e756fa226d36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canGrabWithoutStunning: 0
 --- !u!1001 &4721307900436650998
 PrefabInstance:
   m_ObjectHideFlags: 0
