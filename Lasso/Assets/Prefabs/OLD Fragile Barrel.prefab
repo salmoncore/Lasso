@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &4474054541723582847
+--- !u!1001 &7786390088660725369
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -22,11 +22,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fef81d44a4c7d114bb9399f307bcfbad, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.46
+      value: -5.355
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fef81d44a4c7d114bb9399f307bcfbad, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.15
+      value: -1.608
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fef81d44a4c7d114bb9399f307bcfbad, type: 3}
       propertyPath: m_LocalPosition.z
@@ -70,7 +70,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 8405c3f8165346445bae471e1b9c12b4, type: 2}
     - target: {fileID: 919132149155446097, guid: fef81d44a4c7d114bb9399f307bcfbad, type: 3}
       propertyPath: m_Name
-      value: Sturdy Barrel
+      value: Fragile Barrel
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fef81d44a4c7d114bb9399f307bcfbad, type: 3}
       propertyPath: m_Layer
@@ -78,7 +78,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fef81d44a4c7d114bb9399f307bcfbad, type: 3}
       propertyPath: m_TagString
-      value: Sturdy
+      value: Fragile
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -86,27 +86,27 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fef81d44a4c7d114bb9399f307bcfbad, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 503848448660633957}
+      addedObject: {fileID: 27374703555978188}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fef81d44a4c7d114bb9399f307bcfbad, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5377129278846649909}
+      addedObject: {fileID: 2192502769382816474}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fef81d44a4c7d114bb9399f307bcfbad, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8625225189628406878}
+      addedObject: {fileID: 611781281712860757}
   m_SourcePrefab: {fileID: 100100000, guid: fef81d44a4c7d114bb9399f307bcfbad, type: 3}
---- !u!1 &3663222237192092718 stripped
+--- !u!1 &6975998143770104616 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: fef81d44a4c7d114bb9399f307bcfbad, type: 3}
-  m_PrefabInstance: {fileID: 4474054541723582847}
+  m_PrefabInstance: {fileID: 7786390088660725369}
   m_PrefabAsset: {fileID: 0}
---- !u!50 &503848448660633957
+--- !u!50 &27374703555978188
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3663222237192092718}
+  m_GameObject: {fileID: 6975998143770104616}
   m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
@@ -114,7 +114,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 3
+  m_GravityScale: 2.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -126,26 +126,25 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &5377129278846649909
+--- !u!114 &2192502769382816474
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3663222237192092718}
+  m_GameObject: {fileID: 6975998143770104616}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bbdf4607ef771f4eab0e756fa226d36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canGrabWithoutStunning: 0
---- !u!61 &8625225189628406878
+--- !u!61 &611781281712860757
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3663222237192092718}
+  m_GameObject: {fileID: 6975998143770104616}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
