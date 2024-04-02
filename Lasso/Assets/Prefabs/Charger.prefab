@@ -1328,6 +1328,7 @@ GameObject:
   - component: {fileID: 7061281397087134555}
   - component: {fileID: 1947557615033685475}
   - component: {fileID: 1975475532215094666}
+  - component: {fileID: 7621948469781505317}
   m_Layer: 7
   m_Name: Charger
   m_TagString: Enemy
@@ -1363,6 +1364,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b85b76648924d49b3eda6c823d8f0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bullet: {fileID: 0}
   Class: Charger
   currentState: Patrol
   boxCastSize: {x: 1, y: 2.1}
@@ -1378,6 +1380,12 @@ MonoBehaviour:
   acceleration: 0.5
   attackDuration: 1.5
   aggroTimeDivision: 2
+  gunnerSightRange: 10
+  gunnerFleeRange: 5
+  gunnerDelayToFire: 2
+  gunnerCooldown: 5
+  gunnerFleeTime: 4
+  gunnerFaceLeft: 1
   isStunned: 0
   ledgeCautious: 1
   seeThroughObjects: 0
@@ -1455,6 +1463,27 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 9.957608, y: 5.967937}
   m_EdgeRadius: 0
+--- !u!95 &7621948469781505317
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5954947448250239329}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: db83ed7dd99215741a8fe2e68b0245c1, type: 3}
+  m_Controller: {fileID: 9100000, guid: e52760ce48dbd324b8eec05484958d95, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6211748526038488936
 GameObject:
   m_ObjectHideFlags: 0
