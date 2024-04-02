@@ -100,7 +100,10 @@ public class LassoHandler : MonoBehaviour
 	{
 		// pick a random rotation speed for each axis to spin the object
 
-		Vector3 RotateSpecs = new Vector3(UnityEngine.Random.Range(-3, 3), UnityEngine.Random.Range(-3, 3), UnityEngine.Random.Range(-3, 3));
+		Vector3 RotateSpecs = new Vector3(UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(-3f, 3f));
+		if (RotateSpecs.x < 0.5f) { RotateSpecs.x = 0.5f; }
+		if (RotateSpecs.y < 0.5f) { RotateSpecs.y = 0.5f; }
+		if (RotateSpecs.z < 0.5f) { RotateSpecs.z = 0.5f; }
 
 		while (true)
 		{
