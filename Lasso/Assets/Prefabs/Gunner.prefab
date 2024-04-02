@@ -169,7 +169,9 @@ MonoBehaviour:
   aggroTimeDivision: 2
   gunnerSightRange: 10
   gunnerFleeRange: 3
+  gunnerDelayToFire: 2
   gunnerCooldown: 5
+  gunnerFleeTime: 4
   gunnerFaceLeft: 1
   isStunned: 0
   ledgeCautious: 1

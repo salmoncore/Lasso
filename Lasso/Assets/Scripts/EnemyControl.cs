@@ -27,6 +27,7 @@ public class EnemyControl : MonoBehaviour
 	[SerializeField] private float gunnerFleeRange = 5f;
 	[SerializeField] private float gunnerDelayToFire = 2f;
 	[SerializeField] private float gunnerCooldown = 5f;
+	[SerializeField] private float gunnerFleeTime = 4f;
 	[SerializeField] private bool gunnerFaceLeft = true;
 	[SerializeField] private bool isStunned = false;
 	[SerializeField] private bool ledgeCautious = true;
@@ -45,7 +46,16 @@ public class EnemyControl : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        patrolDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+
+		if (Class == "Charger" || Class == "Balloonist")
+		{ 
+			patrolDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+		}
+		else
+		{
+			patrolDirection = -1;
+		}
+
 		attackTimer = attackDuration;
 
 		if (patrolDirection > 0)
@@ -83,6 +93,11 @@ public class EnemyControl : MonoBehaviour
 				transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
 			}
 			Cooldown(gunnerDelayToFire);
+
+			boxCastSize = new Vector2(1f, 1.169f);
+			boxCastOffset = new Vector2(0.14f, 0.04f);
+			ledgeCheckSize = new Vector2(0.1f, 0.51f);
+			ledgeCheckOffset = new Vector2(0.28f, -0.69f);
 		}
 		else if (Class == "Balloonist")
 		{
@@ -95,7 +110,7 @@ public class EnemyControl : MonoBehaviour
 
 		//if (hitLedge() || hitWall() || hitObject() || hitPlayer() || attackPlayer())
 		//{
-		// // For Debugging lmao
+		// // For Determining box sizes lmao
 		//}
 		//return;
 
@@ -129,8 +144,8 @@ public class EnemyControl : MonoBehaviour
 				case "Lookout":
 					Lookout();
 					break;
-				case "Shoot":
-					Shoot();
+				case "TakeAim":
+					TakeAim();
 					break;
 				case "Flee":
 					Flee();
@@ -151,30 +166,97 @@ public class EnemyControl : MonoBehaviour
 	// For Gunner. Enemy stays idle until something from the player layer comes into view.
 	private void Lookout()
 	{
-		if (isStunned || isCrumpled || waitFlag) return;
+		if (waitFlag) return;
 
 		if (lookoutPlayer(gunnerFleeRange))
 		{
 			Debug.Log("Fleeing!");
+			currentState = "Flee";
+			return;
 		}
 		else if (lookoutPlayer(gunnerSightRange))
 		{
 			Debug.Log("Shooting!");
 			Cooldown(gunnerDelayToFire);
-			currentState = "Shoot";
+			currentState = "TakeAim";
 		}
 	}
 
 	private void Flee()
 	{
-		if (isStunned || isCrumpled || waitFlag) return;
+		if (waitFlag) return;
 
-		// Flee from the player
+		// Check if the player is still in sight
+		if (lookoutPlayer(gunnerFleeRange))
+		{
+			// If the player is still in sight, continue fleeing
+			rb.velocity = new Vector2(-patrolDirection * chargeSpeed, rb.velocity.y);
+		}
+		else
+		{
+			// If the player is no longer in sight, stop fleeing and return to the lookout state
+			rb.velocity = new Vector2(0, rb.velocity.y);
+			currentState = "Lookout";
+		}
+
+		// Get the direction of the player
+		Vector3 playerPosition = GameObject.Find("Player").GetComponent<BoxCollider2D>().bounds.center;
+
+		// Determine the direction to move in to flee from the player
+		if (playerPosition.x < transform.position.x)
+		{
+			patrolDirection = 1;
+			transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+		}
+		else
+		{
+			patrolDirection = -1;
+			transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+		}
+
+		// If there is no wall or object in the way, continue moving away from the player
+		if (!hitWall() && !hitObject() && !hitLedge())
+		{
+			rb.velocity = new Vector2(patrolDirection * chargeSpeed, rb.velocity.y);
+		}
+		else
+		{
+			// If there is a wall or object in the way, shoot at the player
+			rb.velocity = new Vector2(0, rb.velocity.y);
+			Shoot();
+		}
+	}
+
+	private void TakeAim()
+	{
+		if (lookoutPlayer(gunnerFleeRange))
+		{
+			Debug.Log("Fleeing!");
+			currentState = "Flee";
+			return;
+		}
+
+		// Flip to face the direction of the player
+		if (GameObject.Find("Player").transform.position.x < transform.position.x)
+		{
+			transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+		}
+		else
+		{
+			transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+		}
+
+		Shoot();
+
+		if (!lookoutPlayer(gunnerSightRange))
+		{
+			currentState = "Lookout";
+		}
 	}
 
 	private void Shoot()
-	{ 
-		if (gunnerOnCooldown || isStunned || isCrumpled || waitFlag) return;
+	{
+		if (gunnerOnCooldown || waitFlag) return;
 
 		// Instantiate the bullet prefab at the firePoint's position
 		Transform firePoint = transform.Find("firePoint");
@@ -193,11 +275,6 @@ public class EnemyControl : MonoBehaviour
 		}
 
 		StartCoroutine(Cooldown(gunnerCooldown));
-
-		if (!lookoutPlayer(gunnerSightRange))
-		{
-			currentState = "Lookout";
-		}
 	}
 
 	IEnumerator Cooldown(float time)
@@ -209,12 +286,6 @@ public class EnemyControl : MonoBehaviour
 
 	private bool lookoutPlayer(float viewDistance) // Uses playerSightSize/Offset for seeing player through floors & walls
 	{
-		// Use a raycast to the player's position from the enemy's position to determine if the player is in sight.
-		// If there is a wall in the way, return false.
-		// If there is an object in the way, but seeThroughObjects is true, return true.
-		// If there is an object in the way, but seeThroughObjects is false, return false.
-		// If there is no wall or object in the way, return true.
-
 		// Get the position of the enemy's child object, firePoint, to use as the origin of the raycast.
 		Transform firePoint = transform.Find("firePoint");
 
@@ -610,7 +681,19 @@ public class EnemyControl : MonoBehaviour
         isStunned = true;
         gameObject.tag = "StunnedEnemy";
         StartCoroutine(StunTimer());
-		currentState = "Patrol";
+
+		if (Class == "Charger")
+		{
+			currentState = "Patrol";
+		}
+		else if (Class == "Gunner")
+		{
+			currentState = "Lookout";
+		}
+		else if (Class == "Balloon")
+		{
+			// Set up Balloonist-specific variables here
+		}
 	}
 
     IEnumerator StunTimer()
@@ -618,6 +701,7 @@ public class EnemyControl : MonoBehaviour
 		yield return new WaitForSeconds(2);
         isStunned = false;
         gameObject.tag = "Enemy";
+		Debug.Log("Enemy no longer stunned!");
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision)
