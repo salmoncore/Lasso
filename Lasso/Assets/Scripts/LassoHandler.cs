@@ -6,11 +6,13 @@ using UnityEngine;
 
 public class LassoHandler : MonoBehaviour
 {
+	[SerializeField] public bool canGrabWithoutStunning = false;
 	private GameObject Projectile;
 	private GameObject Collided;
 	private bool isOnGround;
 	private bool isOnInteractive;
 	private bool isOnEnemy;
+	private bool isOnPlayer;
 
 	public void Initialize(float speed)
 	{
@@ -28,19 +30,23 @@ public class LassoHandler : MonoBehaviour
 			float distance = Projectile.GetComponent<BoxCollider2D>().bounds.extents.y;
 
 			// debug raycast
-			Debug.DrawRay(Projectile.transform.position, Vector2.down * (0.5f + distance), Color.red);
+			Debug.DrawRay(Projectile.transform.position, Vector2.down * (0.7f + distance), Color.red);
 
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f + distance, LayerMask.GetMask("Ground")).collider != null)
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Ground")).collider != null)
 			{ isOnGround = true; }
 			else { isOnGround = false; }
 
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f + distance, LayerMask.GetMask("Interactive")).collider != null)
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Interactive")).collider != null)
 			{ isOnInteractive = true; }
 			else { isOnInteractive = false;	}
 
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.5f + distance, LayerMask.GetMask("Enemies")).collider != null)
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Enemies")).collider != null)
 			{ isOnEnemy = true;	}
 			else { isOnEnemy = false; }
+
+			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Player")).collider != null)
+			{ isOnPlayer = true; }
+			else { isOnPlayer = false; }
 
 			if ((Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("SturdyProjectile")) && (Collided.CompareTag("Enemy") || Collided.CompareTag("StunnedEnemy")))
 			{
@@ -57,9 +63,9 @@ public class LassoHandler : MonoBehaviour
 			}
 
 			// If the projectile has stopped sliding
-			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 5f && (isOnGround || isOnInteractive || isOnEnemy))
+			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 5f && (isOnGround || isOnInteractive || isOnEnemy || isOnPlayer))
 			{
-				if (Projectile.CompareTag("FragileProjectile"))
+				if (Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("StunnedEnemy") || Projectile.CompareTag("Enemy"))
 				{
 					StartCoroutine(Break());
 				}
@@ -83,7 +89,7 @@ public class LassoHandler : MonoBehaviour
 		{
 			spriteRenderer.color = new Color(1, 1, 1, 0.5f);
 		}
-		else if (Projectile.TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
+		else
 		{
 			// Changing the alpha doesn't seem to work here so I'm gonna do this silly thing
 			StartCoroutine(SpinProjectile());
@@ -97,9 +103,16 @@ public class LassoHandler : MonoBehaviour
 
 	private IEnumerator SpinProjectile()
 	{
+		// pick a random rotation speed for each axis to spin the object
+
+		Vector3 RotateSpecs = new Vector3(UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(-3f, 3f));
+		if (RotateSpecs.x < 0.5f) { RotateSpecs.x = 0.5f; }
+		if (RotateSpecs.y < 0.5f) { RotateSpecs.y = 0.5f; }
+		if (RotateSpecs.z < 0.5f) { RotateSpecs.z = 0.5f; }
+
 		while (true)
 		{
-			Projectile.transform.Rotate(1, 1, 1);
+			Projectile.transform.Rotate(RotateSpecs);
 			yield return new WaitForSeconds(0.01f);
 		}
 	}
@@ -117,6 +130,7 @@ public class LassoHandler : MonoBehaviour
 		isOnGround = false;
 		isOnInteractive = false;
 		isOnEnemy = false;
+		isOnPlayer = false;
 	}
 
 	void OnCollisionEnter2D(Collision2D collision)

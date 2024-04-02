@@ -9,6 +9,7 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private float attackCooldown;
     [SerializeField] private Transform firePoint;
     [SerializeField] private GameObject lassoObj;
+	[SerializeField] private GameObject sackObj;
 	private Animator anim;
     private PlayerMovement playerMovement;
     private float cooldownTimer = Mathf.Infinity;
@@ -29,6 +30,9 @@ public class PlayerAttack : MonoBehaviour
 
 		playerInput = GetComponent<PlayerInput>();
 		playerInput.onActionTriggered += PlayerInput_onActionTriggered;
+
+		// Disable the sack object by default
+		sackObj.SetActive(false);
 	}
 
 	private void PlayerInput_onActionTriggered(InputAction.CallbackContext context)
@@ -85,6 +89,16 @@ public class PlayerAttack : MonoBehaviour
 			}
 
 			cooldownTimer += Time.deltaTime;
+		}
+
+		// If the player has a captured enemy, enable the sack object
+		if (lassoObj.GetComponent<Projectile>().HasCapturedEnemy())
+		{
+			sackObj.SetActive(true);
+		}
+		else
+		{
+			sackObj.SetActive(false);
 		}
     }
 
