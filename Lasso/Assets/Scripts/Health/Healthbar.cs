@@ -7,7 +7,7 @@ public class Healthbar : MonoBehaviour
 {
     // Note that there are 3 hearts in the UI. Any more will require a UI change.
     [SerializeField] private Health playerHealth;
-    [SerializeField] private List<Image> hearts;
+    [SerializeField] private List<GameObject> badges;
 
     private void Start()
     {
@@ -21,9 +21,10 @@ public class Healthbar : MonoBehaviour
 
     private void Update()
     {
-        for (int i = 0; i < hearts.Count; i++)
+        for (int i = 0; i < badges.Count; i++)
         {
-            hearts[i].enabled = (i < playerHealth.currentHealth);
+            //badges[i].enabled = (i < playerHealth.currentHealth);
+            badges[i].SetActive(i < playerHealth.currentHealth);
         }
     }
 }

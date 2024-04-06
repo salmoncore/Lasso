@@ -282,9 +282,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 153420180}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -25.27, y: 12.2, z: 1.0624113}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -996.6, y: -548.8, z: 1.5316592}
+  m_LocalScale: {x: 1.441682, y: 1.441682, z: 1.441682}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 282935997}
@@ -292,12 +292,17 @@ Transform:
   - {fileID: 1203905361}
   - {fileID: 551382834}
   - {fileID: 845392255}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1676142216}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &157742014 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5157171933547850704, guid: 4e3e7efc132bf194bb64ea3956218674, type: 3}
   m_PrefabInstance: {fileID: 5362266448539174086}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &159159967 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4123153009905630202, guid: 125004508f6273541a2e520d3d14ad56, type: 3}
+  m_PrefabInstance: {fileID: 440771929}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &159159968 stripped
 Transform:
@@ -479,6 +484,11 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &282935996 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4123153009905630202, guid: 125004508f6273541a2e520d3d14ad56, type: 3}
+  m_PrefabInstance: {fileID: 1074842528}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &282935997 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5406969192062802339, guid: 125004508f6273541a2e520d3d14ad56, type: 3}
@@ -604,7 +614,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4123153009905630202, guid: 125004508f6273541a2e520d3d14ad56, type: 3}
       propertyPath: m_Name
-      value: Badge1 (1)
+      value: Badge2
       objectReference: {fileID: 0}
     - target: {fileID: 4123153009905630202, guid: 125004508f6273541a2e520d3d14ad56, type: 3}
       propertyPath: m_Layer
@@ -1516,9 +1526,30 @@ PrefabInstance:
       propertyPath: playerHealth
       value: 
       objectReference: {fileID: 581965205}
+    - target: {fileID: 7975897117752665687, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: badges.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7975897117752665687, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: badges.Array.data[0]
+      value: 
+      objectReference: {fileID: 282935996}
+    - target: {fileID: 7975897117752665687, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: badges.Array.data[1]
+      value: 
+      objectReference: {fileID: 159159967}
+    - target: {fileID: 7975897117752665687, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: badges.Array.data[2]
+      value: 
+      objectReference: {fileID: 1203905360}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8867032558057555374, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+    - {fileID: 6417478722781395398, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 5427588257057362467, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 153420181}
     - targetCorrespondingSourceObject: {fileID: 1236758929258011156, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1231550039}
@@ -2430,6 +2461,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 95887483764953005, guid: b6af0903268a6894aaa849048d09d224, type: 3}
   m_PrefabInstance: {fileID: 44619477}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1203905360 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4123153009905630202, guid: 125004508f6273541a2e520d3d14ad56, type: 3}
+  m_PrefabInstance: {fileID: 1478764400}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1203905361 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5406969192062802339, guid: 125004508f6273541a2e520d3d14ad56, type: 3}
@@ -3124,7 +3160,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4123153009905630202, guid: 125004508f6273541a2e520d3d14ad56, type: 3}
       propertyPath: m_Name
-      value: Badge1 (2)
+      value: Badge3
       objectReference: {fileID: 0}
     - target: {fileID: 4123153009905630202, guid: 125004508f6273541a2e520d3d14ad56, type: 3}
       propertyPath: m_Layer
@@ -3537,6 +3573,11 @@ PrefabInstance:
 --- !u!1 &1676142212 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1699765351389410554, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+  m_PrefabInstance: {fileID: 616734870}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &1676142216 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5427588257057362467, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
   m_PrefabInstance: {fileID: 616734870}
   m_PrefabAsset: {fileID: 0}
 --- !u!222 &1676142218
@@ -4339,4 +4380,3 @@ SceneRoots:
   - {fileID: 689492744}
   - {fileID: 1547260974}
   - {fileID: 1319137935}
-  - {fileID: 153420181}
