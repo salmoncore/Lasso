@@ -104,16 +104,12 @@ public class MainMenuManager : MonoBehaviour
             fullscreenW.gameObject.SetActive(false);
             borderlessB.gameObject.SetActive(true);
             borderlessW.gameObject.SetActive(true);
-            Debug.Log("Borderless on");
         } else {
             Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
             borderlessB.gameObject.SetActive(false);
             borderlessW.gameObject.SetActive(false);
             fullscreenB.gameObject.SetActive(true);
             fullscreenW.gameObject.SetActive(true);
-            Debug.Log("Fullscreen on");
         }
-
-        Debug.Log("Screen Changed");
     }
 }
