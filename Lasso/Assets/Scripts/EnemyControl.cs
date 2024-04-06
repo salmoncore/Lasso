@@ -18,28 +18,28 @@ public class EnemyControl : MonoBehaviour
 	[SerializeField] private Vector2 playerSightOffset = new Vector2(0f, 0f);
 	[SerializeField] private Vector2 beginAttackSize = new Vector2(0f, 0f); // When the player is in range for an attack
 	[SerializeField] private Vector2 beginAttackOffset = new Vector2(0f, 0f);
-	[SerializeField] private float patrolSpeed = 2;
-	[SerializeField] private float chargeSpeed = 5;
-	[SerializeField] private float acceleration = 0.5f;
-	[SerializeField] private float attackDuration = 1.5f;
-	[SerializeField] private float aggroTimeDivision = 2f;
-	[SerializeField] private float gunnerSightRange = 10f;
-	[SerializeField] private float gunnerFleeRange = 5f;
-	[SerializeField] private float gunnerDelayToFire = 2f;
-	[SerializeField] private float gunnerCooldown = 5f;
-	[SerializeField] private float gunnerFleeTime = 4f;
-	[SerializeField] private bool gunnerFaceLeft = true;
-	[SerializeField] private bool isStunned = false;
-	[SerializeField] private bool ledgeCautious = true;
-	[SerializeField] private bool seeThroughObjects = false;
-	[SerializeField] private bool noStunDuringAttack = false;
-	[SerializeField] private bool breaksSturdyProjectiles = false;
+	[SerializeField] private float patrolSpeed = 2; // Speed of the enemy when patrolling
+	[SerializeField] private float chargeSpeed = 5; // Speed of the enemy when charging. Used primarily for Charger class.
+	[SerializeField] private float acceleration = 0.5f; // TODO: Implement acceleration 
+	[SerializeField] private float attackDuration = 1.5f; // Duration of the attack for the charger class.
+	[SerializeField] private float aggroTimeDivision = 2f; // How much longer the enemy attacks the player the longer the player is in sight. Used for Charger class.
+	[SerializeField] private float gunnerSightRange = 10f; // Range at which the Gunner can see the player
+	[SerializeField] private float gunnerFleeRange = 5f; // Range at which the Gunner will flee from the player
+	[SerializeField] private float gunnerDelayToFire = 2f; // TODO: Fix this. Delay before the gunner can shoot at the player.
+	[SerializeField] private float gunnerCooldown = 5f;	// Cooldown between shots for the Gunner
+	[SerializeField] private float gunnerFleeTime = 4f; // The amount of time the Gunner will flee from the player
+	[SerializeField] private bool gunnerFaceLeft = true; // Determines if the Gunner faces left or right on spawn
+	[SerializeField] private bool isStunned = false; // Determines if the enemy is stunned
+	[SerializeField] private bool ledgeCautious = true; // Determines if the enemy will stop at ledges
+	[SerializeField] private bool seeThroughObjects = false; // Determines if the enemy can see through objects on the "Interactive" layer
+	[SerializeField] private bool noStunDuringAttack = false; // Determines if the enemy can be stunned during an attack
+	[SerializeField] private bool breaksSturdyProjectiles = false; // Determines if the Charger can break sturdy projectiles while attacking
 	private Rigidbody2D rb;
     private Animator anim;
-    private bool isCrumpled = false;
+    private bool isCrumpled = false; // TODO: Remove or revise this.
     private bool waitFlag = false;
 	private bool gunnerOnCooldown = false;
-    private float patrolDirection = 1;
+    private float patrolDirection = 1; // Determines the direction the enemy is moving. -1 is left, 1 is right.
 	private float attackTimer;
 
     void Start()
@@ -47,6 +47,7 @@ public class EnemyControl : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
+		// If it's the Charger or Balloonist, choose a random direction to patrol in. The gunner will have the starting direction defined in the flags.
 		if (Class == "Charger" || Class == "Balloonist")
 		{ 
 			patrolDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
@@ -58,6 +59,7 @@ public class EnemyControl : MonoBehaviour
 
 		attackTimer = attackDuration;
 
+		// Flips the enemy so they always face the direction they're moving in.
 		if (patrolDirection > 0)
 		{
 			transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, -Mathf.Abs(transform.localScale.z));
@@ -67,6 +69,7 @@ public class EnemyControl : MonoBehaviour
 			transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, Mathf.Abs(transform.localScale.z));
 		}
 
+		// Check if the class is valid. If not, default to Charger.
 		if (Class != "Charger" && Class != "Gunner" && Class != "Balloonist")
 		{
 			Debug.LogError("Please choose a valid class for the enemy.");
@@ -75,6 +78,7 @@ public class EnemyControl : MonoBehaviour
 			return;
 		}
 
+		// Initializing variables based on the class of the enemy.
 		if (Class == "Charger")
 		{
 			boxCastSize = new Vector2(0.59f, 1.36f);
@@ -88,6 +92,7 @@ public class EnemyControl : MonoBehaviour
 		}
 		else if (Class == "Gunner")
 		{
+			// Flip the Gunner if they're supposed to face left
 			if (!gunnerFaceLeft)
 			{
 				transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
@@ -114,6 +119,7 @@ public class EnemyControl : MonoBehaviour
 		//}
 		//return;
 
+		// If the enemy is stunned or crumpled, don't update the enemy logic until they recover.
 		if (isStunned || isCrumpled) return;
 
 		if (Class == "Charger")
@@ -168,12 +174,13 @@ public class EnemyControl : MonoBehaviour
 	{
 		if (waitFlag) return;
 
+		// Check if the player is in the Flee or Sight range, and switch to either Flee or TakeAim states, respectively.
 		if (lookoutPlayer(gunnerFleeRange))
 		{
 			Debug.Log("Fleeing!");
 			currentState = "Flee";
 			return;
-		}
+		} 
 		else if (lookoutPlayer(gunnerSightRange))
 		{
 			Debug.Log("Shooting!");
@@ -182,6 +189,8 @@ public class EnemyControl : MonoBehaviour
 		}
 	}
 
+	// For Gunner. Enemy moves away from the player for a set amount of time, or until the enemy hits a wall or object.
+	// If the gunner gets cornered, they will shoot at the player.
 	private void Flee()
 	{
 		if (waitFlag) return;
@@ -227,16 +236,17 @@ public class EnemyControl : MonoBehaviour
 		}
 	}
 
+	// For Gunner. Enemy shoots at the player if the player is in sight. Transitions from Lookout state.
 	private void TakeAim()
 	{
 		if (lookoutPlayer(gunnerFleeRange))
 		{
-			Debug.Log("Fleeing!");
+			//Debug.Log("Fleeing!");
 			currentState = "Flee";
 			return;
 		}
 
-		// Flip to face the direction of the player
+		// Flip to face the direction of the player as the gunner aims.
 		if (GameObject.Find("Player").transform.position.x < transform.position.x)
 		{
 			transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
@@ -248,18 +258,22 @@ public class EnemyControl : MonoBehaviour
 
 		Shoot();
 
+		// If the player is no longer in sight, return to the Lookout state.
 		if (!lookoutPlayer(gunnerSightRange))
 		{
 			currentState = "Lookout";
 		}
 	}
 
+	// For Gunner. Handles firing and cooldowns for the gunner. Called in the TakeAim state.
 	private void Shoot()
 	{
 		if (gunnerOnCooldown || waitFlag) return;
 
 		// Instantiate the bullet prefab at the firePoint's position
 		Transform firePoint = transform.Find("firePoint");
+
+		// Error checking, else instantiate the bullet and set its velocity in the direction of the player.
 		if (firePoint == null)
 		{
 			Debug.Log("Failed to get firepoint. Is enemyControl set to gunner?");
@@ -274,6 +288,7 @@ public class EnemyControl : MonoBehaviour
 			bulletInstance.GetComponent<Rigidbody2D>().velocity = direction.normalized * 10;
 		}
 
+		// Start the cooldown for the gunner
 		StartCoroutine(Cooldown(gunnerCooldown));
 	}
 
@@ -284,6 +299,7 @@ public class EnemyControl : MonoBehaviour
 		gunnerOnCooldown = false;
 	}
 
+	// For Gunner. Checks if the player is in sight of the Gunner. Uses playerSightSize/Offset for seeing player through floors & walls.
 	private bool lookoutPlayer(float viewDistance) // Uses playerSightSize/Offset for seeing player through floors & walls
 	{
 		// Get the position of the enemy's child object, firePoint, to use as the origin of the raycast.
@@ -292,6 +308,7 @@ public class EnemyControl : MonoBehaviour
 		// Get the location of the player to use as the direction of the raycast. Use the center of the player's collider.
 		Vector3 playerPosition = GameObject.Find("Player").GetComponent<BoxCollider2D>().bounds.center;
 
+		// Error checks
 		if (firePoint == null)
 		{
 			Debug.Log("Failed to get firepoint. Is enemyControl set to gunner?");
@@ -322,6 +339,7 @@ public class EnemyControl : MonoBehaviour
 			// Cast a ray from the firePoint to the player's position, checking for the interactive layer.
 			RaycastHit2D hitObject = new RaycastHit2D();
 
+			// If seeThroughObjects is true, ignore objects in the way, else use raycast to check for interactive.
 			if (!seeThroughObjects)
 			{
 				hitObject = Physics2D.Raycast(firePoint.position, playerPosition - firePoint.position, distance, LayerMask.GetMask("Interactive"));
@@ -357,12 +375,14 @@ public class EnemyControl : MonoBehaviour
 		return false;
 	}
 
+	// For debugging, supposed to be blank. Lol.
 	private void Oopsie()
 	{
 		// Current state isn't set up in editor?
 		Debug.Log("Make sure to set the Current State in the editor!");
 	}
 
+	// For Charger. Brief transition before rushing towards the player.
 	IEnumerator RushTransition() 
 	{
 		// TODO: add some telegraph effect here so gamers know they're about to get rushed
@@ -373,6 +393,7 @@ public class EnemyControl : MonoBehaviour
 		//Debug.Log("Moving to " + currentState + "state.");
 	}
 
+	// For Charger. Brief transition before attacking the player.
 	IEnumerator AttackTransition()
 	{
 		// TODO: also some effects here lmao
@@ -385,7 +406,7 @@ public class EnemyControl : MonoBehaviour
 		//Debug.Log("Moving to " + currentState + "state.");
 	}
 
-    // Patrol: The enemy moves forward until raycast collision with a wall or a ledge. If collision with a wall/ledge, pause, turn around, and continue.
+    // Charger moves forward until raycast collision with a wall or a ledge. If collision with a wall/ledge, pause, turn around, and continue.
     private void Patrol()
     {
 		
@@ -394,6 +415,7 @@ public class EnemyControl : MonoBehaviour
 		anim.SetBool("isRunning", false);
 		anim.SetBool("isIdle", false);
 
+		// If the player is in sight, transition to the Rush state.
 		if (hitPlayer())
 		{
 			currentState = "Rush";
@@ -402,6 +424,7 @@ public class EnemyControl : MonoBehaviour
 		
 		if (isStunned || isCrumpled || waitFlag) return;
 		
+		// If the enemy hits a wall, object, or ledge, turn around.
 		if (hitWall() || hitObject() || hitLedge())
 		{
 		    Debug.Log("Hit wall/object!");
@@ -415,15 +438,16 @@ public class EnemyControl : MonoBehaviour
 			anim.SetBool("isIdle", false); // these and the ones above it don't seem to work for turning.
 			anim.SetBool("isWalking", true);
 		}
-		else
+		else // Otherwise, continue walking.
 		{
 		    rb.velocity = new Vector2(patrolSpeed * patrolDirection, rb.velocity.y);
 		}
 	}
 
-    // Rush: The enemy pauses for a moment, and then accelerates towards the player's last known position. If the player is in sight, the enemy will rush towards the player.
+    // Charger pauses for a moment, and then accelerates towards the player's last known position. If the player is in sight, the enemy will rush towards the player.
     private void Rush()
     {
+		// Checks if the player is in the attack range, and transitions to the Attack state if true.
         if (attackPlayer())
         { 
 			currentState = "TransitionToAttack";
@@ -432,6 +456,7 @@ public class EnemyControl : MonoBehaviour
 
         if (isStunned || isCrumpled || waitFlag) return;
 
+		// Ledge checking during the rush, dependant on if the enemy is ledge cautious.
         if (hitLedge() && ledgeCautious)
         {
 			//Debug.Log("Hit ledge!");
@@ -442,7 +467,7 @@ public class EnemyControl : MonoBehaviour
 			currentState = "Patrol";
 			//Debug.Log("Moving to " + currentState + "state.");
 		}
-		else if (hitWall())
+		else if (hitWall()) // Always checks for walls, will switch to patrol if true.
 		{
 			//Debug.Log("Hit wall/object!");
 
@@ -450,25 +475,27 @@ public class EnemyControl : MonoBehaviour
 			currentState = "Patrol";
 			//Debug.Log("Moving to " + currentState + "state.");
 		}
-		else
+		else // Otherwise, continue rushing.
         {
 			rb.velocity = new Vector2(chargeSpeed * patrolDirection, rb.velocity.y);
 		}
     }
 
-    // Attack: The enemy pauses for a moment, and then attacks the player. If the player is in sight, the enemy will attack the player.
+    // Charger attacks the player. If the player remains in the attack range, the enemy will attack for a longer time.
 	private void Attack()
 	{
 		if (isStunned || isCrumpled || waitFlag) return;
 
-		Debug.Log("Time: " + attackTimer);
+		//Debug.Log("Time: " + attackTimer);
 
 		// while attacking, the brute should sprint.
 		anim.SetBool("isWalking", false);
 		anim.SetBool("isRunning", true);
 
+		// If the charger hasn't hit anything and the attack timer hasn't run out, continue attacking.
 		if ((!hitObject() || !hitWall() || !hitLedge()) && attackTimer > 0)
 		{
+			// Get the player's position constantly and figure out what direction to "patrol" in while attacking, really just the direction to attack in here.
 			float playerDirection = GameObject.Find("Player").transform.position.x - transform.position.x;
 
 			if (playerDirection > 0)
@@ -480,20 +507,23 @@ public class EnemyControl : MonoBehaviour
 				patrolDirection = -1;
 			}
 
+			// This is the check where it sees if the player is still in the attack range, in which case the attack timer is extended.
 			if (attackPlayer())
 			{
 				attackTimer -= Time.deltaTime / aggroTimeDivision; // Enemy attacks longer the longer the player is in sight
 			}
-			else
+			else // If the player is out of the attack range, the attack timer is reduced.
 			{
 				attackTimer -= Time.deltaTime;
 			}
-
+			
+			// Charger moves in the direction of the player while attacking, at half patrol speed.
 			rb.velocity = new Vector2(patrolDirection * patrolSpeed / 2, rb.velocity.y);
 
 			// TODO: Enable hurtbox here
 			// TODO: Trigger attack animation here
 				// unsure if this is actually where it should go. it works a little wonky.
+				   // arthur note: hm, noted. um I suppose it could be done in the check for the attackPlayer() function? 
 			anim.SetTrigger("isAttacking");
 		}
 		else
@@ -503,10 +533,12 @@ public class EnemyControl : MonoBehaviour
 			// TODO: Disable Hurtbox here
 			// TODO: Disable animation here
 				// attacking is a trigger, don't need to disable it.
+				   // arthur note: oh lol ok
 			//Debug.Log("Moving to " + currentState + "state.");
 		}
 	}
 
+	// For Charger. Flips the enemy after a set amount of time. Used after hitting a wall or object.
     IEnumerator WaitToTurn(float time)
     {
         waitFlag = true;
@@ -515,33 +547,39 @@ public class EnemyControl : MonoBehaviour
         waitFlag = false;
 	}
 
-	private bool attackPlayer() // Uses beginAttackSize/Offset for determining when to enter the attack state
+	// For charger. Determines if the player is in the attack range, using beginAttackSize/Offset values for range. Note that these may be initialized in code.
+	private bool attackPlayer()
 	{
 		if (waitFlag || isStunned || isCrumpled) return false;
 
+		// Produces the actual boxcast for checking if the player is in range for an attack.
 		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
 		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (beginAttackSize.x / 2 + beginAttackOffset.x), beginAttackOffset.y, 0);
 
 		RaycastHit2D hitPlayer = Physics2D.BoxCast(boxcastOrigin, beginAttackSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Player"));
-		anim.SetTrigger("isAttacking");
+		anim.SetTrigger("isAttacking"); // This might be better serverd further down, in the condition when true is returned. 
+										// No evaluation on the boxcast has been made yet lol
 
+		// If the player is within the attack range, check for walls and objects in the way.
 		if (hitPlayer.collider != null)
 		{
 			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, beginAttackSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
 			RaycastHit2D hitObject = new RaycastHit2D();
 
-			if (!seeThroughObjects)
+			if (!seeThroughObjects) // Checks, depending on the flag, if the enemy's view is obstructed by interactive objects.
 			{
 				hitObject = Physics2D.BoxCast(boxcastOrigin, beginAttackSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Interactive"));
 			}
 
+			// If no wall is detected or the player is closer than the wall, and if the player is closer than the object or no object is detected, begin attack.
 			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
 			{
 				Debug.Log("Player detected!");
 				return true;
 			}
 		}
-
+		
+		// Debug lines for the boxcast, that's all.
 		Vector2 topRight = boxcastOrigin + new Vector3(beginAttackSize.x / 2, beginAttackSize.y / 2, 0);
 		Vector2 topLeft = boxcastOrigin + new Vector3(-beginAttackSize.x / 2, beginAttackSize.y / 2, 0);
 		Vector2 bottomRight = boxcastOrigin + new Vector3(beginAttackSize.x / 2, -beginAttackSize.y / 2, 0);
@@ -552,28 +590,33 @@ public class EnemyControl : MonoBehaviour
 		Debug.DrawLine(bottomRight, bottomLeft, Color.yellow); // Bottom edge
 		Debug.DrawLine(bottomLeft, topLeft, Color.yellow); // Left edge
 
+		// Some variety of conditions weren't met, so not attacking.
 		return false;
 	}
 	
-	private bool hitPlayer() // Uses playerSightSize/Offset for seeing player
+	// For charger. This name is really misleading, it's just checking if the boxcast is "hitting" the player at a distance for determining when to rush.
+	private bool hitPlayer()
 	{
 		if (waitFlag || isStunned || isCrumpled) return false;
 
+		// Produces the actual boxcast for checking if the player is in range for an attack.
 		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
 		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (playerSightSize.x / 2 + playerSightOffset.x), playerSightOffset.y, 0);
 
 		RaycastHit2D hitPlayer = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Player"));
 
+		// If the player is within the sight range, check for walls and objects in the way.
 		if (hitPlayer.collider != null)
 		{ 
 			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
 			RaycastHit2D hitObject = new RaycastHit2D();
 
-			if (!seeThroughObjects)
+			if (!seeThroughObjects) // Checks, depending on the flag, if the enemy's view is obstructed by interactive objects.
 			{
 				hitObject = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Interactive"));
 			}
 
+			// If no wall is detected or the player is closer than the wall, and if the player is closer than the object or no object is detected, begin rushing.
 			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
 			{
 				Debug.Log("Player detected!");
@@ -585,6 +628,7 @@ public class EnemyControl : MonoBehaviour
 			}
 		}
 
+		// More debug lines for the boxcast.
 		Vector2 topRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, playerSightSize.y / 2, 0);
 		Vector2 topLeft = boxcastOrigin + new Vector3(-playerSightSize.x / 2, playerSightSize.y / 2, 0);
 		Vector2 bottomRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, -playerSightSize.y / 2, 0);
@@ -595,9 +639,11 @@ public class EnemyControl : MonoBehaviour
 		Debug.DrawLine(bottomRight, bottomLeft, Color.green); // Bottom edge
 		Debug.DrawLine(bottomLeft, topLeft, Color.green); // Left edge
 
+		// Some variety of conditions weren't met, so not rushing.
 		return false;
 	}
 
+	// For both the charger and the gunner, just checks to see if there is a wall within the boxcast. Returns true if there is.
 	private bool hitWall()
 	{
 		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
@@ -623,6 +669,7 @@ public class EnemyControl : MonoBehaviour
 		return hit.collider != null;
 	}
 
+	// For both the charger and the gunner, just checks to see if there is an object within the boxcast. Returns true if there is.
 	private bool hitObject()
     {
 		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
@@ -648,6 +695,7 @@ public class EnemyControl : MonoBehaviour
 		return hit.collider != null;
 	}
 
+	// For both the charger and the gunner, just checks to see if there is a ledge within the boxcast. Returns true if there is.
 	private bool hitLedge()
 	{
 		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
@@ -674,14 +722,18 @@ public class EnemyControl : MonoBehaviour
 		return false;
 	}
 
+	// Public method for all enemies, called from the LassoHandler script's update method under certain conditions. 
 	public void Stun()
 	{
+		// For the Charger, if the enemy is attacking and the noStun flag is true, they cannot be stunned.
 		if (currentState == "Attack" && noStunDuringAttack) return;
 
+		// Sets the isStunned flag to true for the duration of the StunTimer, currently set to 2 seconds.
         isStunned = true;
         gameObject.tag = "StunnedEnemy";
         StartCoroutine(StunTimer());
 
+		// After coming out of being stunned, the charger returns to patrolling, the gunner to lookout, and the balloonist to whatever state they'll end up in by default lol.
 		if (Class == "Charger")
 		{
 			currentState = "Patrol";
@@ -696,6 +748,7 @@ public class EnemyControl : MonoBehaviour
 		}
 	}
 
+	// The time should really be enum'd or something, but for now it's just a hardcoded 2 seconds.
     IEnumerator StunTimer()
     {
 		yield return new WaitForSeconds(2);
@@ -704,26 +757,30 @@ public class EnemyControl : MonoBehaviour
 		Debug.Log("Enemy no longer stunned!");
 	}
 
+	// Handles collisions with the enemy.
 	private void OnCollisionEnter2D(Collision2D collision)
 	{		
+		// For the charger. If breaksSturdyProjectiles is true, the charger can break sturdy projectiles while attacking.
 		if (breaksSturdyProjectiles && collision.gameObject.tag == "SturdyProjectile")
         {
             collision.gameObject.tag = "FragileProjectile";
         }
 
+		// If colliding with an enemy, just flip the patrol direction. Should probably be using a boxcast for this since they get so close, but that's for later.
 		if (collision.gameObject.tag == "Enemy")
 		{
 			patrolDirection *= -1;
 			flip();
 		}
 
+		// If the charger is in the rush state and collides with a fragile object, break it from the LassoHandler script.
 		if (currentState == "Rush" && collision.gameObject.tag == "Fragile")
 		{
 			if (collision.gameObject.GetComponent<LassoHandler>() != null)
 			{
 				collision.gameObject.GetComponent<LassoHandler>().BreakObject();
 			}
-		}
+		} // If the charger is in the rush state and collides with a sturdy object, change it to a sturdy projectile.
 		else if (currentState == "Rush" && collision.gameObject.tag == "Sturdy")
 		{
 			if (collision.gameObject.GetComponent<LassoHandler>() != null)
@@ -733,6 +790,8 @@ public class EnemyControl : MonoBehaviour
 			}
 		}
 
+		// If the charger is in the attack state and collides with a fragile object, break it.
+		// If it's a sturdy object, break it if breaksSturdyProjectiles is true.
 		if (currentState == "Attack")
 		{ 
 			float collisionDirection = collision.transform.position.x - transform.position.x;
@@ -743,20 +802,21 @@ public class EnemyControl : MonoBehaviour
 				{
 					if (collision.gameObject.GetComponent<LassoHandler>() != null)
 					{
-						collision.gameObject.GetComponent<LassoHandler>().BreakObject();
+						collision.gameObject.GetComponent<LassoHandler>().BreakObject(); // ps, breaking occurs in LassoHandler script.
 					}
 				}
 				else if (breaksSturdyProjectiles && collision.gameObject.tag == "SturdyProjectile")
 				{
 					if (collision.gameObject.GetComponent<LassoHandler>() != null)
 					{
-						collision.gameObject.GetComponent<LassoHandler>().BreakObject();
+						collision.gameObject.GetComponent<LassoHandler>().BreakObject(); // Breaking still occurs in LassoHandler script.
 					}
 				}
 			}
 		}
 	}
 
+	// Just flips the enemy by setting the scale.z to the negative of itself.
 	private void flip()
     {
 		if (TryGetComponent<SpriteRenderer>(out SpriteRenderer spriteRenderer))

@@ -21,17 +21,19 @@ public class LassoHandler : MonoBehaviour
 		isOnGround = false;
 	}
 
+	// Looking for where enemies and objects break? It's in here :)
 	private void Update()
 	{
-		if (!(Projectile == null) && !(Collided == null))
+		// If the projectile and collided object are not null, check the layer of what it's colliding with and make a determination.
+		if (Projectile != null && Collided != null)
 		{
 			// PS the raycast lines always face down so don't worry if rotation is unlocked
-
 			float distance = Projectile.GetComponent<BoxCollider2D>().bounds.extents.y;
 
 			// debug raycast
 			Debug.DrawRay(Projectile.transform.position, Vector2.down * (0.7f + distance), Color.red);
 
+			// Next few lines are checking if the projectile is on the ground, interactive objects, enemies, or the player.
 			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Ground")).collider != null)
 			{ isOnGround = true; }
 			else { isOnGround = false; }
@@ -48,6 +50,7 @@ public class LassoHandler : MonoBehaviour
 			{ isOnPlayer = true; }
 			else { isOnPlayer = false; }
 
+			// If the projectile is... a projectile, and it hits an enemy, stun the enemy.
 			if ((Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("SturdyProjectile")) && (Collided.CompareTag("Enemy") || Collided.CompareTag("StunnedEnemy")))
 			{
 				// These shouldn't be needed anymore?
@@ -58,18 +61,20 @@ public class LassoHandler : MonoBehaviour
 				// Check if the collided object has an EnemyControl script, call the Stun method
 				if (Collided.GetComponent<EnemyControl>() != null)
 				{
-					Collided.GetComponent<EnemyControl>().Stun();
+					Collided.GetComponent<EnemyControl>().Stun(); // Stunning is called here!
+					// If it's easier to do so, you can access values from the EnemyControl script here, just as done above. Just make sure it's public.
 				}
 			}
 
-			// If the projectile has stopped sliding
+			// If the projectile has stopped sliding on the ground, find what it is and determine whether to break it or not.
 			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 5f && (isOnGround || isOnInteractive || isOnEnemy || isOnPlayer))
 			{
+				// If the projectile is fragile or an enemy, we're breaking it.
 				if (Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("StunnedEnemy") || Projectile.CompareTag("Enemy"))
 				{
-					StartCoroutine(Break());
+					StartCoroutine(Break()); // Break is the coroutine that actually breaks the object. You can use the "Projectile" variable to access the object.
 				}
-				else if (Projectile.CompareTag("SturdyProjectile"))
+				else if (Projectile.CompareTag("SturdyProjectile")) // Otherwise, it's sturdy and can go back to being sturdy. lame.
 				{
 					Projectile.tag = "Sturdy";
 					Projectile.layer = LayerMask.NameToLayer("Interactive");
@@ -79,8 +84,10 @@ public class LassoHandler : MonoBehaviour
 		}
 	}
 
+	// Break is where the thing actually breaks for real!
 	private IEnumerator Break()
 	{
+		// Sets some flags, makes the object jump, makes the sprite transparent or spins the object, and then destroys it after 5 seconds.
 		Projectile.tag = "Breaking";
 		Projectile.layer = LayerMask.NameToLayer("Breaking");
 		Projectile.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 2.5f);
@@ -117,6 +124,7 @@ public class LassoHandler : MonoBehaviour
 		}
 	}
 
+	// BreakObject is a public method that can be called from other scripts to break the object.
 	public void BreakObject()
 	{
 		Projectile = gameObject;
