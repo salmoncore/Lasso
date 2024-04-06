@@ -263,6 +263,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5157171933547850704, guid: 4e3e7efc132bf194bb64ea3956218674, type: 3}
   m_PrefabInstance: {fileID: 5362266448539174086}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &159159967 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8128907333244735274, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+  m_PrefabInstance: {fileID: 616734870}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &262446599
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -438,6 +443,11 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &282935996 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8315460919413227100, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+  m_PrefabInstance: {fileID: 616734870}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &310192060
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1168,6 +1178,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UICanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 3624258116242212355, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5427588257057362467, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1252,10 +1266,31 @@ PrefabInstance:
       propertyPath: playerHealth
       value: 
       objectReference: {fileID: 581965205}
+    - target: {fileID: 7975897117752665687, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: badges.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7975897117752665687, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: badges.Array.data[0]
+      value: 
+      objectReference: {fileID: 282935996}
+    - target: {fileID: 7975897117752665687, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: badges.Array.data[1]
+      value: 
+      objectReference: {fileID: 159159967}
+    - target: {fileID: 7975897117752665687, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: badges.Array.data[2]
+      value: 
+      objectReference: {fileID: 1203905360}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8867032558057555374, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+    - {fileID: 6417478722781395398, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1699765351389410554, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1676142218}
   m_SourcePrefab: {fileID: 100100000, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
 --- !u!1001 &689492744
 PrefabInstance:
@@ -1960,6 +1995,11 @@ PrefabInstance:
 GameObject:
   m_CorrespondingSourceObject: {fileID: 95887483764953005, guid: b6af0903268a6894aaa849048d09d224, type: 3}
   m_PrefabInstance: {fileID: 44619477}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1203905360 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4021754459857138298, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+  m_PrefabInstance: {fileID: 616734870}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1242668940 stripped
 GameObject:
@@ -2902,6 +2942,19 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 13ddafe825c2d2a43b67c6d321743b01, type: 3}
+--- !u!1 &1676142212 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1699765351389410554, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+  m_PrefabInstance: {fileID: 616734870}
+  m_PrefabAsset: {fileID: 0}
+--- !u!222 &1676142218
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1676142212}
+  m_CullTransparentMesh: 1
 --- !u!4 &1720220790 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 403049731319827372, guid: c0d9cfe92f10b11408346c45d8a41dcb, type: 3}
