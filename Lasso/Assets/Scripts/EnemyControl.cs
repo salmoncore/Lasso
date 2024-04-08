@@ -409,11 +409,8 @@ public class EnemyControl : MonoBehaviour
     // Charger moves forward until raycast collision with a wall or a ledge. If collision with a wall/ledge, pause, turn around, and continue.
     private void Patrol()
     {
-		
-		// Animator: trying to define on spawn a walking animation starts. It currently does not work. 
 		anim.SetBool("isWalking", true);
 		anim.SetBool("isRunning", false);
-		anim.SetBool("isIdle", false);
 
 		// If the player is in sight, transition to the Rush state.
 		if (hitPlayer())
@@ -430,6 +427,7 @@ public class EnemyControl : MonoBehaviour
 		    Debug.Log("Hit wall/object!");
 
 			anim.SetBool("isWalking", false); // stop the walking animation for the turn, resume it after.
+			anim.SetBool("isRunning", false);
 			anim.SetBool("isIdle", true);
 
 		    patrolDirection *= -1;
@@ -522,19 +520,15 @@ public class EnemyControl : MonoBehaviour
 
 			// TODO: Enable hurtbox here
 			// TODO: Trigger attack animation here
-				// unsure if this is actually where it should go. it works a little wonky.
-				   // arthur note: hm, noted. um I suppose it could be done in the check for the attackPlayer() function? 
+			// unsure if this is actually where it should go. it works a little wonky.
+			// arthur note: hm, noted. um I suppose it could be done in the check for the attackPlayer() function? 
+			// anim.SetTrigger("isAttacking");
 			anim.SetTrigger("isAttacking");
 		}
 		else
 		{
 			currentState = "Patrol";
 			attackTimer = attackDuration;
-			// TODO: Disable Hurtbox here
-			// TODO: Disable animation here
-				// attacking is a trigger, don't need to disable it.
-				   // arthur note: oh lol ok
-			//Debug.Log("Moving to " + currentState + "state.");
 		}
 	}
 
@@ -550,6 +544,7 @@ public class EnemyControl : MonoBehaviour
 	// For charger. Determines if the player is in the attack range, using beginAttackSize/Offset values for range. Note that these may be initialized in code.
 	private bool attackPlayer()
 	{
+
 		if (waitFlag || isStunned || isCrumpled) return false;
 
 		// Produces the actual boxcast for checking if the player is in range for an attack.
@@ -557,12 +552,11 @@ public class EnemyControl : MonoBehaviour
 		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (beginAttackSize.x / 2 + beginAttackOffset.x), beginAttackOffset.y, 0);
 
 		RaycastHit2D hitPlayer = Physics2D.BoxCast(boxcastOrigin, beginAttackSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Player"));
-		anim.SetTrigger("isAttacking"); // This might be better serverd further down, in the condition when true is returned. 
-										// No evaluation on the boxcast has been made yet lol
 
 		// If the player is within the attack range, check for walls and objects in the way.
 		if (hitPlayer.collider != null)
 		{
+
 			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, beginAttackSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
 			RaycastHit2D hitObject = new RaycastHit2D();
 
@@ -571,10 +565,13 @@ public class EnemyControl : MonoBehaviour
 				hitObject = Physics2D.BoxCast(boxcastOrigin, beginAttackSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Interactive"));
 			}
 
+
+			anim.SetTrigger("isAttacking");
+
 			// If no wall is detected or the player is closer than the wall, and if the player is closer than the object or no object is detected, begin attack.
 			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
 			{
-				Debug.Log("Player detected!");
+				Debug.Log("Player detected! (in AttackPlayer)");
 				return true;
 			}
 		}
@@ -619,11 +616,9 @@ public class EnemyControl : MonoBehaviour
 			// If no wall is detected or the player is closer than the wall, and if the player is closer than the object or no object is detected, begin rushing.
 			if ((hitWall.collider == null || hitWall.distance > hitPlayer.distance) && (hitObject.collider == null || hitObject.distance > hitPlayer.distance))
 			{
-				Debug.Log("Player detected!");
-
+				Debug.Log("Player detected! (in hitPlayer)");
 				anim.SetBool("isRunning", true);
 				anim.SetBool("isWalking", false);
-
 				return true;
 			}
 		}
@@ -731,6 +726,10 @@ public class EnemyControl : MonoBehaviour
 		// Sets the isStunned flag to true for the duration of the StunTimer, currently set to 2 seconds.
         isStunned = true;
         gameObject.tag = "StunnedEnemy";
+
+		// play the stunned animation so long as they're stunned
+		Debug.Log("right before isStunned anim tag");
+
         StartCoroutine(StunTimer());
 
 		// After coming out of being stunned, the charger returns to patrolling, the gunner to lookout, and the balloonist to whatever state they'll end up in by default lol.
@@ -751,7 +750,10 @@ public class EnemyControl : MonoBehaviour
 	// The time should really be enum'd or something, but for now it's just a hardcoded 2 seconds.
     IEnumerator StunTimer()
     {
+		anim.SetBool("isStunned", true);
 		yield return new WaitForSeconds(2);
+		anim.SetBool("isStunned", false);
+
         isStunned = false;
         gameObject.tag = "Enemy";
 		Debug.Log("Enemy no longer stunned!");
@@ -759,7 +761,7 @@ public class EnemyControl : MonoBehaviour
 
 	// Handles collisions with the enemy.
 	private void OnCollisionEnter2D(Collision2D collision)
-	{		
+	{	
 		// For the charger. If breaksSturdyProjectiles is true, the charger can break sturdy projectiles while attacking.
 		if (breaksSturdyProjectiles && collision.gameObject.tag == "SturdyProjectile")
         {
