@@ -48,14 +48,18 @@ public class PlayerMovement : MonoBehaviour
 
         playerInput = GetComponent<PlayerInput>();
         playerInput.onActionTriggered += PlayerInput_onActionTriggered;
+
+        if (winOnGoal && GameObject.FindGameObjectsWithTag("Goal").Length != 1)
+        {
+			Debug.Log("Warning: Multiple goals exist within scene.");
+		}
     }
 
     // Clear Detection - If there are no more gameobjects with the tag "Enemy" or "EnemyProjectile" or "FragileProjectile" or "Breaking", the player wins.
     private void checkClear()
     {
         // Check for "Enemy", "EnemyProjectile", "FragileProjectile", and "Breaking" tags
-		if (GameObject.FindGameObjectsWithTag("Enemy").Length == 0 && GameObject.FindGameObjectsWithTag("FragileProjectile").Length == 0 
-            && GameObject.FindGameObjectsWithTag("Breaking").Length == 0)
+		if (GameObject.FindGameObjectsWithTag("Enemy").Length == 0)
         {
             // If none exist, clearFlag is true
 			clearFlag = true;
@@ -91,6 +95,22 @@ public class PlayerMovement : MonoBehaviour
         }
 
         return winFlag;
+	}
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+		if (collision.CompareTag("Goal"))
+        {
+			goalFlag = true;
+		}
+	}
+
+	private void OnTriggerExit2D(Collider2D notcollisionlol)
+	{
+		if (notcollisionlol.CompareTag("Goal"))
+        {
+			goalFlag = false;
+		}
 	}
 
 	private void OnEnable()

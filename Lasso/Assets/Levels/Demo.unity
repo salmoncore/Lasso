@@ -778,6 +778,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Charger
       objectReference: {fileID: 0}
+    - target: {fileID: 5954947448250239329, guid: 385ee5c7b4d45a947a0e40c439f98fed, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7061281397087134555, guid: 385ee5c7b4d45a947a0e40c439f98fed, type: 3}
       propertyPath: ledgeCautious
       value: 0
@@ -1560,6 +1564,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gunner
       objectReference: {fileID: 0}
+    - target: {fileID: 8524054579843048906, guid: 017bca62831397746a1a31cdfbe1f510, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1859,6 +1867,10 @@ PrefabInstance:
       propertyPath: pause
       value: 
       objectReference: {fileID: 2023089615}
+    - target: {fileID: 1425149703185049305, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
+      propertyPath: winOnGoal
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1425149703185049305, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
       propertyPath: winOnClear
       value: 1
@@ -3093,6 +3105,83 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2606617495017839326, guid: 23c57294e911e0a4cbd473583245a796, type: 3}
   m_PrefabInstance: {fileID: 737090729}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2009739691
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2009739692}
+  - component: {fileID: 2009739693}
+  m_Layer: 16
+  m_Name: Goal
+  m_TagString: Goal
+  m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2009739692
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2009739691}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.56, y: -4.19, z: -2.8197424}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &2009739693
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2009739691}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &2014656869 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8174156466577211276, guid: 4e3e7efc132bf194bb64ea3956218674, type: 3}
@@ -3751,3 +3840,4 @@ SceneRoots:
   - {fileID: 689492744}
   - {fileID: 1547260974}
   - {fileID: 1319137935}
+  - {fileID: 2009739692}
