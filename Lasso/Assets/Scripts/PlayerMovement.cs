@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -185,8 +186,9 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerWins())
         {
-			// Win condition
-			Debug.Log("You win!");
+			// Enters here if player has won
+            // Maybe add in a delay or a win screen?
+			SceneManager.LoadScene("MainMenu");
 		}
 
         if (pause.isPaused) {
