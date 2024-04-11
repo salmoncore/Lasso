@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -29,6 +30,13 @@ public class PlayerMovement : MonoBehaviour
     private PlayerInput playerInput;
     private Vector2 movementDirection;
 
+    // Win Conditions - Use winOnClear and winOnGoal to determine how the player wins.
+    [SerializeField] private bool winOnClear = false;
+    [SerializeField] private bool winOnGoal = false;
+    private bool goalFlag = false;
+    private bool clearFlag = false;
+    private bool winFlag = false;
+
     // Awake is called when the script instance is being loaded
     private void Awake()
     {
@@ -41,6 +49,49 @@ public class PlayerMovement : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         playerInput.onActionTriggered += PlayerInput_onActionTriggered;
     }
+
+    // Clear Detection - If there are no more gameobjects with the tag "Enemy" or "EnemyProjectile" or "FragileProjectile" or "Breaking", the player wins.
+    private void checkClear()
+    {
+        // Check for "Enemy", "EnemyProjectile", "FragileProjectile", and "Breaking" tags
+		if (GameObject.FindGameObjectsWithTag("Enemy").Length == 0 && GameObject.FindGameObjectsWithTag("FragileProjectile").Length == 0 
+            && GameObject.FindGameObjectsWithTag("Breaking").Length == 0)
+        {
+            // If none exist, clearFlag is true
+			clearFlag = true;
+		}
+        else
+        {
+			// If any exist, clearFlag is false
+			clearFlag = false;
+		}
+	}
+
+    // Checks to see if the player has won, using the win conditions set in the inspector
+    private bool playerWins()
+    {
+        checkClear();
+
+		// If the clearFlag is true, and the game is set to win ONLY on clear, the player wins
+		if (clearFlag && (winOnClear && !winOnGoal))
+		{
+			winFlag = true;
+		}
+
+		// If the goalFlag is true, and the game is set to win ONLY on goal, the player wins
+        if (goalFlag && (winOnGoal && !winOnClear))
+        {
+			winFlag = true;
+		}
+
+        // If the clearFlag is true, and the goalFlag is true, and the game is set to win on both, the player wins
+        if (clearFlag && goalFlag && (winOnClear && winOnGoal))
+        {
+            winFlag = true;
+        }
+
+        return winFlag;
+	}
 
 	private void OnEnable()
 	{
@@ -111,6 +162,12 @@ public class PlayerMovement : MonoBehaviour
         bool onObject = isOnObject();
 		bool collidingLeft = isCollidingLeft();
 		bool collidingRight = isCollidingRight();
+
+        if (playerWins())
+        {
+			// Win condition
+			Debug.Log("You win!");
+		}
 
         if (pause.isPaused) {
 
