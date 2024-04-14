@@ -16,6 +16,7 @@ TagManager:
   - Breaking
   - Interactive
   - StunnedEnemy
+  - Goal
   layers:
   - Default
   - TransparentFX
@@ -33,11 +34,11 @@ TagManager:
   - GunnerFlee
   - 
   - 
+  - Goal
   - 
   - 
   - 
-  - 
-  - 
+  - UICamera
   - 
   - 
   - 
