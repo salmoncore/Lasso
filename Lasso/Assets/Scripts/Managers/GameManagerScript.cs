@@ -3,25 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using Unity.VisualScripting;
 
 public class GameManagerScript : MonoBehaviour
 {
-
     public GameObject gameOverUI;
     public GameObject restartButton, mainMenuButton, quitButton;
     public bool isDead = false;
     public GameObject inputManager;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public GameObject musicPlayer;
+    public AudioManager audioManagerScript;
 
     public void gameOver() {
         // stop time on death
@@ -31,9 +22,12 @@ public class GameManagerScript : MonoBehaviour
         gameOverUI.SetActive(true);
         // clear selected object
         EventSystem.current.SetSelectedGameObject(null);
-
         // set a new selected object
         EventSystem.current.SetSelectedGameObject(restartButton);
+        //play death song
+        musicPlayer = GameObject.Find("MusicPlayer");
+        audioManagerScript = musicPlayer.GetComponent<AudioManager>();
+        audioManagerScript.playerDied();
     }
 
     public void restart() {

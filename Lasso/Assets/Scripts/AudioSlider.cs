@@ -34,13 +34,11 @@ public class AudioSlider : MonoBehaviour
     }
     
     public void setMusicVolume(float value) {
-        Debug.Log(value);
         valueTextVOL.SetText($"{value.ToString("P0")}");
         mixer.SetFloat(MIXER_MUSIC, Mathf.Log10(value) * 20);
     }
 
     public void setSFXVolume(float value) {
-        Debug.Log(value);
         valueTextSFX.SetText($"{value.ToString("P0")}");
         mixer.SetFloat(MIXER_SFX, Mathf.Log10(value) * 20);
     }
