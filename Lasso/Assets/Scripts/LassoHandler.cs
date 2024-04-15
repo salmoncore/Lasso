@@ -27,26 +27,40 @@ public class LassoHandler : MonoBehaviour
 		// If the projectile and collided object are not null, check the layer of what it's colliding with and make a determination.
 		if (Projectile != null && Collided != null)
 		{
-			// PS the raycast lines always face down so don't worry if rotation is unlocked
-			float distance = Projectile.GetComponent<BoxCollider2D>().bounds.extents.y;
+			// Checking if the projectile has a Box collider or a capsule collider, and getting the distance from the center of the object to the bottom of the collider.
+			float distance = 0;
+			if (Projectile.GetComponent<BoxCollider2D>() != null)
+			{
+				distance = Projectile.GetComponent<BoxCollider2D>().bounds.extents.y;
+			}
+			else if (Projectile.GetComponent<CapsuleCollider2D>() != null)
+			{
+				distance = Projectile.GetComponent<CapsuleCollider2D>().bounds.extents.y;
+			}
+			else
+			{
+				// If the object doesn't have a box or capsule collider, it's not a projectile. Reset the values and return.
+				Reset();
+				return;
+			}
 
 			// debug raycast
-			Debug.DrawRay(Projectile.transform.position, Vector2.down * (0.7f + distance), Color.red);
+			Debug.DrawRay(Projectile.GetComponent<Collider2D>().bounds.center, Vector2.down * (1f + distance), Color.red);
 
-			// Next few lines are checking if the projectile is on the ground, interactive objects, enemies, or the player.
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Ground")).collider != null)
+			//// Next few lines are checking if the projectile is on the ground, interactive objects, enemies, or the player.
+			if (Physics2D.Raycast(Projectile.GetComponent<Collider2D>().bounds.center, Vector2.down, 1f + distance, LayerMask.GetMask("Ground")).collider != null)
 			{ isOnGround = true; }
 			else { isOnGround = false; }
-
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Interactive")).collider != null)
+			
+			if (Physics2D.Raycast(Projectile.GetComponent<Collider2D>().bounds.center, Vector2.down, 1f + distance, LayerMask.GetMask("Interactive")).collider != null)
 			{ isOnInteractive = true; }
 			else { isOnInteractive = false;	}
-
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Enemies")).collider != null)
+			
+			if (Physics2D.Raycast(Projectile.GetComponent<Collider2D>().bounds.center, Vector2.down, 1f + distance, LayerMask.GetMask("Enemies")).collider != null)
 			{ isOnEnemy = true;	}
 			else { isOnEnemy = false; }
-
-			if (Physics2D.Raycast(Projectile.transform.position, Vector2.down, 0.7f + distance, LayerMask.GetMask("Player")).collider != null)
+			
+			if (Physics2D.Raycast(Projectile.GetComponent<Collider2D>().bounds.center, Vector2.down, 1f + distance, LayerMask.GetMask("Player")).collider != null)
 			{ isOnPlayer = true; }
 			else { isOnPlayer = false; }
 
@@ -102,7 +116,19 @@ public class LassoHandler : MonoBehaviour
 			StartCoroutine(SpinProjectile());
 		}
 
-		Projectile.GetComponent<Collider2D>().enabled = false;
+		// Disable the collider for the object, whether it's a box collider or a capsule collider.
+		if (Projectile.GetComponent<BoxCollider2D>() != null)
+		{
+			Projectile.GetComponent<BoxCollider2D>().enabled = false;
+		}
+		else if (Projectile.GetComponent<CapsuleCollider2D>() != null)
+		{
+			Projectile.GetComponent<CapsuleCollider2D>().enabled = false;
+		}
+		else
+		{ 
+			Projectile.GetComponent<Collider2D>().enabled = false;
+		}
 
 		yield return new WaitForSeconds(5f);
 		Destroy(Projectile);
@@ -112,13 +138,11 @@ public class LassoHandler : MonoBehaviour
 	{
 		// pick a random rotation speed for each axis to spin the object
 
-		Vector3 RotateSpecs = new Vector3(UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(-3f, 3f));
-		if (RotateSpecs.x < 0.5f) { RotateSpecs.x = 0.5f; }
-		if (RotateSpecs.y < 0.5f) { RotateSpecs.y = 0.5f; }
-		if (RotateSpecs.z < 0.5f) { RotateSpecs.z = 0.5f; }
+		Vector3 RotateSpecs = new Vector3(UnityEngine.Random.Range(0, 2) == 0 ? -3f : 3f, UnityEngine.Random.Range(0, 2) == 0 ? -3f : 3f, UnityEngine.Random.Range(0, 2) == 0 ? -3f : 3f);
 
 		while (true)
 		{
+			Debug.Log("Projectile is: " + Projectile.name);
 			Projectile.transform.Rotate(RotateSpecs);
 			yield return new WaitForSeconds(0.01f);
 		}
