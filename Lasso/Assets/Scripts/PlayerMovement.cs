@@ -18,10 +18,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask interactiveLayer;
 	[SerializeField] private float accelerationTime = 0.2f; // Time to reach full speed
+    [SerializeField] private Vector2 boxCastSize;
+    [SerializeField] private Vector2 boxCastOffset;
+    [SerializeField] private Vector2 sideCheckSize;
+    [SerializeField] private Vector2 sideCheckOffset;
 	private float accelSmoothing;
 	private Rigidbody2D body;
     private Animator anim;
-    private BoxCollider2D boxCollider;
+    private CapsuleCollider2D playerCollider;
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
     private float jumpBufferTime = 0.2f;
@@ -45,7 +49,7 @@ public class PlayerMovement : MonoBehaviour
         pause = FindObjectOfType<PauseManager>();
         body = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        boxCollider = GetComponent<BoxCollider2D>();
+        playerCollider = GetComponent<CapsuleCollider2D>();
 
         playerInput = GetComponent<PlayerInput>();
         playerInput.onActionTriggered += PlayerInput_onActionTriggered;
@@ -181,8 +185,17 @@ public class PlayerMovement : MonoBehaviour
 
 		bool grounded = isGrounded();
         bool onObject = isOnObject();
-		bool collidingLeft = isCollidingLeft();
-		bool collidingRight = isCollidingRight();
+        bool collidingLeft = isCollidingLeft();
+        bool collidingRight = isCollidingRight();
+
+        if (collidingLeft)
+        { 
+            Debug.Log("Colliding Left");
+        }
+        if (collidingRight)
+        {
+            Debug.Log("Colliding Right");
+        }
 
         if (playerWins())
         {
@@ -272,40 +285,80 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private bool isGrounded()
+	private bool isGrounded()
     {
-		Vector2 boxCastSize = boxCollider.bounds.size;
-		boxCastSize.x -= boxCrop;
-		
-		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
-		return raycastHit.collider != null;
+		Vector3 boxcastOrigin = playerCollider.bounds.center + new Vector3(boxCastOffset.x, boxCastOffset.y, 0);
+
+        RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, Vector2.down, 0.1f, groundLayer);
+
+		Vector3 topRight = boxcastOrigin + new Vector3(boxCastSize.x / 2, boxCastSize.y / 2, 0);
+		Vector3 topLeft = boxcastOrigin + new Vector3(-boxCastSize.x / 2, boxCastSize.y / 2, 0);
+		Vector3 bottomRight = boxcastOrigin + new Vector3(boxCastSize.x / 2, -boxCastSize.y / 2, 0);
+		Vector3 bottomLeft = boxcastOrigin + new Vector3(-boxCastSize.x / 2, -boxCastSize.y / 2, 0);
+
+		Debug.DrawLine(topLeft, topRight, Color.red); // Top edge
+		Debug.DrawLine(topRight, bottomRight, Color.red); // Right edge
+		Debug.DrawLine(bottomRight, bottomLeft, Color.red); // Bottom edge
+		Debug.DrawLine(bottomLeft, topLeft, Color.red); // Left edge
+
+		return hit.collider != null;
 	}
 
     private bool isOnObject()
     {
-		Vector2 boxCastSize = boxCollider.bounds.size;
-		boxCastSize.x -= boxCrop;
+		Vector3 boxcastOrigin = playerCollider.bounds.center + new Vector3(boxCastOffset.x, boxCastOffset.y, 0);
 
-		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, interactiveLayer);
-		return raycastHit.collider != null;
+        RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, Vector2.down, 0.1f, interactiveLayer);
+
+        Vector3 topRight = boxcastOrigin + new Vector3(boxCastSize.x / 2, boxCastSize.y / 2, 0);
+        Vector3 topLeft = boxcastOrigin + new Vector3(-boxCastSize.x / 2, boxCastSize.y / 2, 0);
+        Vector3 bottomRight = boxcastOrigin + new Vector3(boxCastSize.x / 2, -boxCastSize.y / 2, 0);
+        Vector3 bottomLeft = boxcastOrigin + new Vector3(-boxCastSize.x / 2, -boxCastSize.y / 2, 0);
+
+        Debug.DrawLine(topLeft, topRight, Color.red); // Top edge
+        Debug.DrawLine(topRight, bottomRight, Color.red); // Right edge
+        Debug.DrawLine(bottomRight, bottomLeft, Color.red); // Bottom edge
+        Debug.DrawLine(bottomLeft, topLeft, Color.red); // Left edge
+
+        return hit.collider != null;
 	}
 
     private bool isCollidingLeft()
     {
-		Vector2 boxCastSize = boxCollider.bounds.size;
-		boxCastSize.y -= boxCrop;
+        Vector3 sidecastOrigin = playerCollider.bounds.center + new Vector3(sideCheckOffset.x, sideCheckOffset.y, 0);
 
-		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.left, 0.1f, groundLayer);
-		return raycastHit.collider != null;
+        RaycastHit2D hit = Physics2D.BoxCast(sidecastOrigin, sideCheckSize, 0, Vector2.left, 0.1f, groundLayer);
+
+        Vector3 topRight = sidecastOrigin + new Vector3(sideCheckSize.x / 2, sideCheckSize.y / 2, 0);
+        Vector3 topLeft = sidecastOrigin + new Vector3(-sideCheckSize.x / 2, sideCheckSize.y / 2, 0);
+        Vector3 bottomRight = sidecastOrigin + new Vector3(sideCheckSize.x / 2, -sideCheckSize.y / 2, 0);
+        Vector3 bottomLeft = sidecastOrigin + new Vector3(-sideCheckSize.x / 2, -sideCheckSize.y / 2, 0);
+
+        Debug.DrawLine(topLeft, topRight, Color.red); // Top edge
+        Debug.DrawLine(topRight, bottomRight, Color.red); // Right edge
+        Debug.DrawLine(bottomRight, bottomLeft, Color.red); // Bottom edge
+        Debug.DrawLine(bottomLeft, topLeft, Color.red); // Left edge
+
+        return hit.collider != null;
 	}
-
+    
     private bool isCollidingRight()
     {
-        Vector2 boxCastSize = boxCollider.bounds.size;
-        boxCastSize.y -= boxCrop;
+        Vector3 sidecastOrigin = playerCollider.bounds.center + new Vector3(-sideCheckOffset.x, sideCheckOffset.y, 0);
 
-        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.right, 0.1f, groundLayer);
-        return raycastHit.collider != null;
+        RaycastHit2D hit = Physics2D.BoxCast(sidecastOrigin, sideCheckSize, 0, Vector2.right, 0.1f, groundLayer);
+
+        Vector3 topRight = sidecastOrigin + new Vector3(sideCheckSize.x / 2, sideCheckSize.y / 2, 0);
+        Vector3 topLeft = sidecastOrigin + new Vector3(-sideCheckSize.x / 2, sideCheckSize.y / 2, 0);
+        Vector3 bottomRight = sidecastOrigin + new Vector3(sideCheckSize.x / 2, -sideCheckSize.y / 2, 0);
+        Vector3 bottomLeft = sidecastOrigin + new Vector3(-sideCheckSize.x / 2, -sideCheckSize.y / 2, 0);
+
+        Debug.DrawLine(topLeft, topRight, Color.blue); // Top edge
+        Debug.DrawLine(topRight, bottomRight, Color.blue); // Right edge
+        Debug.DrawLine(bottomRight, bottomLeft, Color.blue); // Bottom edge
+        Debug.DrawLine(bottomLeft, topLeft, Color.blue); // Left edge
+
+        return hit.collider != null;
     }
 
 	public bool canAttack()

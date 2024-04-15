@@ -177,13 +177,13 @@ public class EnemyControl : MonoBehaviour
 		// Check if the player is in the Flee or Sight range, and switch to either Flee or TakeAim states, respectively.
 		if (lookoutPlayer(gunnerFleeRange))
 		{
-			Debug.Log("Fleeing!");
+			//Debug.Log("Fleeing!");
 			currentState = "Flee";
 			return;
 		} 
 		else if (lookoutPlayer(gunnerSightRange))
 		{
-			Debug.Log("Shooting!");
+			//Debug.Log("Shooting!");
 			Cooldown(gunnerDelayToFire);
 			currentState = "TakeAim";
 		}
@@ -209,7 +209,7 @@ public class EnemyControl : MonoBehaviour
 		}
 
 		// Get the direction of the player
-		Vector3 playerPosition = GameObject.Find("Player").GetComponent<BoxCollider2D>().bounds.center;
+		Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
 
 		// Determine the direction to move in to flee from the player
 		if (playerPosition.x < transform.position.x)
@@ -283,7 +283,7 @@ public class EnemyControl : MonoBehaviour
 		{
 			// Set bullet to velocity of 10 in the direction of the center of the player's collider
 			GameObject bulletInstance = Instantiate(bullet, firePoint.position, Quaternion.identity);
-			Vector3 playerPosition = GameObject.Find("Player").GetComponent<BoxCollider2D>().bounds.center;
+			Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
 			Vector3 direction = playerPosition - firePoint.position;
 			bulletInstance.GetComponent<Rigidbody2D>().velocity = direction.normalized * 10;
 		}
@@ -306,7 +306,7 @@ public class EnemyControl : MonoBehaviour
 		Transform firePoint = transform.Find("firePoint");
 
 		// Get the location of the player to use as the direction of the raycast. Use the center of the player's collider.
-		Vector3 playerPosition = GameObject.Find("Player").GetComponent<BoxCollider2D>().bounds.center;
+		Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
 
 		// Error checks
 		if (firePoint == null)
@@ -348,26 +348,26 @@ public class EnemyControl : MonoBehaviour
 			// If there is a wall in the way, return false.
 			if (hitWall.collider != null)
 			{
-				Debug.Log("Wall detected!");
+				//Debug.Log("Wall detected!");
 				return false;
 			}
 
 			// If there is an object in the way, but seeThroughObjects is true, return true.
 			if (hitObject.collider != null && seeThroughObjects)
 			{
-				Debug.Log("Object detected, but seeThroughObjects is true!");
+				//Debug.Log("Object detected, but seeThroughObjects is true!");
 				return true;
 			}
 
 			// If there is an object in the way, but seeThroughObjects is false, return false.
 			if (hitObject.collider != null && !seeThroughObjects)
 			{
-				Debug.Log("Object detected!");
+				//Debug.Log("Object detected!");
 				return false;
 			}
 
 			// If there is no wall or object in the way, return true.
-			Debug.Log("Player detected!");
+			//Debug.Log("Player detected!");
 			return true;
 		}
 		
@@ -424,7 +424,7 @@ public class EnemyControl : MonoBehaviour
 		// If the enemy hits a wall, object, or ledge, turn around.
 		if (hitWall() || hitObject() || hitLedge())
 		{
-		    Debug.Log("Hit wall/object!");
+		    //Debug.Log("Hit wall/object!");
 
 			anim.SetBool("isWalking", false); // stop the walking animation for the turn, resume it after.
 			anim.SetBool("isRunning", false);
@@ -548,8 +548,8 @@ public class EnemyControl : MonoBehaviour
 		if (waitFlag || isStunned || isCrumpled) return false;
 
 		// Produces the actual boxcast for checking if the player is in range for an attack.
-		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
-		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (beginAttackSize.x / 2 + beginAttackOffset.x), beginAttackOffset.y, 0);
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (beginAttackSize.x / 2 + beginAttackOffset.x), beginAttackOffset.y, 0);
 
 		RaycastHit2D hitPlayer = Physics2D.BoxCast(boxcastOrigin, beginAttackSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Player"));
 
@@ -597,8 +597,8 @@ public class EnemyControl : MonoBehaviour
 		if (waitFlag || isStunned || isCrumpled) return false;
 
 		// Produces the actual boxcast for checking if the player is in range for an attack.
-		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
-		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (playerSightSize.x / 2 + playerSightOffset.x), playerSightOffset.y, 0);
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (playerSightSize.x / 2 + playerSightOffset.x), playerSightOffset.y, 0);
 
 		RaycastHit2D hitPlayer = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Player"));
 
@@ -641,8 +641,8 @@ public class EnemyControl : MonoBehaviour
 	// For both the charger and the gunner, just checks to see if there is a wall within the boxcast. Returns true if there is.
 	private bool hitWall()
 	{
-		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
-		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
 
 		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
 
@@ -658,7 +658,7 @@ public class EnemyControl : MonoBehaviour
 
 		if (hit.collider != null)
 		{
-			Debug.Log("Hit wall!");
+			//Debug.Log("Hit wall!");
 		}
 
 		return hit.collider != null;
@@ -667,8 +667,8 @@ public class EnemyControl : MonoBehaviour
 	// For both the charger and the gunner, just checks to see if there is an object within the boxcast. Returns true if there is.
 	private bool hitObject()
     {
-		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
-		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
 
 		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Interactive"));
 
@@ -684,7 +684,7 @@ public class EnemyControl : MonoBehaviour
 
 		if (hit.collider != null)
 		{
-			Debug.Log("Hit object!");
+			//Debug.Log("Hit object!");
 		}
 
 		return hit.collider != null;
@@ -693,8 +693,8 @@ public class EnemyControl : MonoBehaviour
 	// For both the charger and the gunner, just checks to see if there is a ledge within the boxcast. Returns true if there is.
 	private bool hitLedge()
 	{
-		BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
-		Vector3 boxcastOrigin = boxCollider.bounds.center + new Vector3(patrolDirection * (ledgeCheckSize.x / 2 + ledgeCheckOffset.x), ledgeCheckOffset.y, 0);
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (ledgeCheckSize.x / 2 + ledgeCheckOffset.x), ledgeCheckOffset.y, 0);
 
 		RaycastHit2D hit = Physics2D.BoxCast(boxcastOrigin, ledgeCheckSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
 
