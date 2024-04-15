@@ -81,6 +81,10 @@ public class AudioManager : MonoBehaviour
         } else if (sound == "sound") {
             instance.sfxSource.Stop();
             startSfx(1); 
+        } else if (sound == "hurt") {
+            instance.sfxSource.Stop();
+            int rand = UnityEngine.Random.Range(2, 11);
+            startSfx(rand);
         }
     }
 
