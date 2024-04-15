@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
 	private float accelSmoothing;
 	private Rigidbody2D body;
     private Animator anim;
-    private BoxCollider2D boxCollider;
+    private CapsuleCollider2D playerCollider;
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
     private float jumpBufferTime = 0.2f;
@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
         pause = FindObjectOfType<PauseManager>();
         body = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        boxCollider = GetComponent<BoxCollider2D>();
+        playerCollider = GetComponent<CapsuleCollider2D>();
 
         playerInput = GetComponent<PlayerInput>();
         playerInput.onActionTriggered += PlayerInput_onActionTriggered;
@@ -274,37 +274,37 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded()
     {
-		Vector2 boxCastSize = boxCollider.bounds.size;
+		Vector2 boxCastSize = playerCollider.bounds.size;
 		boxCastSize.x -= boxCrop;
 		
-		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
+		RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, groundLayer);
 		return raycastHit.collider != null;
 	}
 
     private bool isOnObject()
     {
-		Vector2 boxCastSize = boxCollider.bounds.size;
+		Vector2 boxCastSize = playerCollider.bounds.size;
 		boxCastSize.x -= boxCrop;
 
-		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, interactiveLayer);
+		RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, boxCastSize, 0f, Vector2.down, 0.1f, interactiveLayer);
 		return raycastHit.collider != null;
 	}
 
     private bool isCollidingLeft()
     {
-		Vector2 boxCastSize = boxCollider.bounds.size;
+		Vector2 boxCastSize = playerCollider.bounds.size;
 		boxCastSize.y -= boxCrop;
 
-		RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.left, 0.1f, groundLayer);
+		RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, boxCastSize, 0f, Vector2.left, 0.1f, groundLayer);
 		return raycastHit.collider != null;
 	}
 
     private bool isCollidingRight()
     {
-        Vector2 boxCastSize = boxCollider.bounds.size;
+        Vector2 boxCastSize = playerCollider.bounds.size;
         boxCastSize.y -= boxCrop;
 
-        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCastSize, 0f, Vector2.right, 0.1f, groundLayer);
+        RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, boxCastSize, 0f, Vector2.right, 0.1f, groundLayer);
         return raycastHit.collider != null;
     }
 
