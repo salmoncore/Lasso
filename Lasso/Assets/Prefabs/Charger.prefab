@@ -1327,8 +1327,8 @@ GameObject:
   - component: {fileID: 4468181280804096110}
   - component: {fileID: 7061281397087134555}
   - component: {fileID: 1947557615033685475}
-  - component: {fileID: 1975475532215094666}
   - component: {fileID: 7621948469781505317}
+  - component: {fileID: 3939431109404081960}
   m_Layer: 7
   m_Name: Charger
   m_TagString: Enemy
@@ -1418,8 +1418,29 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!61 &1975475532215094666
-BoxCollider2D:
+--- !u!95 &7621948469781505317
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5954947448250239329}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: db83ed7dd99215741a8fe2e68b0245c1, type: 3}
+  m_Controller: {fileID: 9100000, guid: e52760ce48dbd324b8eec05484958d95, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!70 &3939431109404081960
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1450,40 +1471,9 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -1.4716088, y: 3.8418715}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 9.957608, y: 5.967937}
-  m_EdgeRadius: 0
---- !u!95 &7621948469781505317
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5954947448250239329}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: db83ed7dd99215741a8fe2e68b0245c1, type: 3}
-  m_Controller: {fileID: 9100000, guid: e52760ce48dbd324b8eec05484958d95, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  m_Offset: {x: -1.4681411, y: 3.8500543}
+  m_Size: {x: 9.8967, y: 5.962033}
+  m_Direction: 0
 --- !u!1 &6211748526038488936
 GameObject:
   m_ObjectHideFlags: 0
