@@ -395,12 +395,12 @@ GameObject:
   m_Component:
   - component: {fileID: 3995654209414056325}
   - component: {fileID: 7031040966879777791}
-  - component: {fileID: 3273618417626708498}
   - component: {fileID: 3881626398954632509}
   - component: {fileID: 4043794636410002608}
   - component: {fileID: 4050361699889438055}
   - component: {fileID: 6240431339188903362}
   - component: {fileID: 5007141239840492368}
+  - component: {fileID: 6587628518605898394}
   m_Layer: 6
   m_Name: BanditPC
   m_TagString: Player
@@ -447,51 +447,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!61 &3273618417626708498
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4339423823873643327}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 6200000, guid: 16dd84fa253f1bc4e81a4660fb6d3b71, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.22796345, y: 2.0462644}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 9.266745, y: 3.8761964}
-  m_EdgeRadius: 0
 --- !u!50 &3881626398954632509
 Rigidbody2D:
   serializedVersion: 4
@@ -544,6 +499,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   accelerationTime: 0.08
+  boxCastSize: {x: 0.3, y: 0.3}
+  boxCastOffset: {x: 0, y: -0.5}
+  sideCheckSize: {x: 0.06, y: 0.5}
+  sideCheckOffset: {x: -0.23, y: 0}
   pause: {fileID: 0}
   winOnClear: 0
   winOnGoal: 0
@@ -614,6 +573,41 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!70 &6587628518605898394
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4339423823873643327}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: 16dd84fa253f1bc4e81a4660fb6d3b71, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.210226, y: 2.0514972}
+  m_Size: {x: 9.187615, y: 3.8730922}
+  m_Direction: 0
 --- !u!1 &4451820470743090023
 GameObject:
   m_ObjectHideFlags: 0

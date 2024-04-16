@@ -20,6 +20,8 @@ public class Health : MonoBehaviour
     private Rigidbody2D body;
     private bool isEnemyToTheRight;
     public GameManagerScript gameManager;
+    public GameObject musicPlayer;
+    public AudioManager audioManagerScript;
 
 	private void Awake()
     {
@@ -57,6 +59,22 @@ public class Health : MonoBehaviour
 
         if (currentHealth > 0) // Player hurt
         {
+            // plays hurt music
+            //musicPlayer = GameObject.Find("MusicPlayer");
+            //audioManagerScript = musicPlayer.GetComponent<AudioManager>();
+            //audioManagerScript.SFX("hurt");
+
+            try
+            {
+				musicPlayer = GameObject.Find("MusicPlayer");
+				audioManagerScript = musicPlayer.GetComponent<AudioManager>();
+				audioManagerScript.SFX("hurt");
+			}
+			catch
+            {
+                Debug.Log("Music player not found. Try reloading the scene?");
+			}
+            
             anim.SetTrigger("isHit");
             anim.SetTrigger("hurt");
 

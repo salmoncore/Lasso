@@ -17,6 +17,7 @@ TagManager:
   - Interactive
   - StunnedEnemy
   - Goal
+  - Button
   layers:
   - Default
   - TransparentFX
