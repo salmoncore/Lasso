@@ -30,10 +30,23 @@ public class SquishHandler : MonoBehaviour
 
 	private IEnumerator Squish(GameObject obj)
 	{
-		// Shrink the object on the Y axis
-		while (obj != null && obj.transform.localScale.y > 0f)
+		while (obj != null && (obj.transform.localScale.y > 0f || obj.transform.localScale.x > 0f))
 		{
-			obj.transform.localScale = new Vector3(obj.transform.localScale.x, obj.transform.localScale.y - 1f, obj.transform.localScale.z);
+			// Recalculate whether the object is more vertical or horizontal on each iteration
+			bool Xisvertical = (Vector3.Dot(obj.transform.up, Vector3.up) > Vector3.Dot(obj.transform.right, Vector3.up)) && (obj.transform.localScale.y > obj.transform.localScale.x);
+
+			if (Xisvertical)
+			{
+				// Squish vertically
+				obj.transform.localScale = new Vector3(obj.transform.localScale.x, Mathf.Max(0, obj.transform.localScale.y - 3f), obj.transform.localScale.z);
+			}
+			else
+			{
+				// Squish horizontally
+				obj.transform.localScale = new Vector3(Mathf.Max(0, obj.transform.localScale.x - 1.5f), obj.transform.localScale.y, obj.transform.localScale.z);
+			}
+
+			// Wait for a frame
 			yield return new WaitForSeconds(0.01f);
 		}
 
