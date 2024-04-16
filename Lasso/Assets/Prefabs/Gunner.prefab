@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 2047789335065409314}
   - component: {fileID: 970928332389435264}
   - component: {fileID: 6976318256723450536}
+  - component: {fileID: 3756051303417815904}
   m_Layer: 7
   m_Name: Gunner
   m_TagString: Enemy
@@ -182,6 +183,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canGrabWithoutStunning: 0
+--- !u!95 &3756051303417815904
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8524054579843048906}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: d1f2b78cd7469e44daa0ae5dff017cb2, type: 3}
+  m_Controller: {fileID: 9100000, guid: 692d37f936f9c824aa7ec23289fb1acd, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &4721307900436650998
 PrefabInstance:
   m_ObjectHideFlags: 0
