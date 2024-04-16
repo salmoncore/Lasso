@@ -174,6 +174,9 @@ public class EnemyControl : MonoBehaviour
 	{
 		if (waitFlag) return;
 
+		anim.SetBool("isIdle", true);
+		anim.SetBool("isMoving", false);
+
 		// Check if the player is in the Flee or Sight range, and switch to either Flee or TakeAim states, respectively.
 		if (lookoutPlayer(gunnerFleeRange))
 		{
@@ -196,6 +199,7 @@ public class EnemyControl : MonoBehaviour
 		if (waitFlag) return;
 
 		// Check if the player is still in sight
+
 		if (lookoutPlayer(gunnerFleeRange))
 		{
 			// If the player is still in sight, continue fleeing
@@ -222,6 +226,9 @@ public class EnemyControl : MonoBehaviour
 			patrolDirection = -1;
 			transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 		}
+
+		anim.SetBool("isMoving", true);
+		anim.SetBool("isIdle", false);
 
 		// If there is no wall or object in the way, continue moving away from the player
 		if (!hitWall() && !hitObject() && !hitLedge())
@@ -281,6 +288,8 @@ public class EnemyControl : MonoBehaviour
 		}
 		else
 		{
+			anim.SetTrigger("isAttack1");
+
 			// Set bullet to velocity of 10 in the direction of the center of the player's collider
 			GameObject bulletInstance = Instantiate(bullet, firePoint.position, Quaternion.identity);
 			Vector3 playerPosition = GameObject.Find("Player").GetComponent<BoxCollider2D>().bounds.center;
