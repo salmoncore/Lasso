@@ -47,7 +47,7 @@ public class LassoHandler : MonoBehaviour
 			// debug raycast
 			Debug.DrawRay(Projectile.GetComponent<Collider2D>().bounds.center, Vector2.down * (1f + distance), Color.red);
 
-			//// Next few lines are checking if the projectile is on the ground, interactive objects, enemies, or the player.
+			// Next few lines are checking if the projectile is on the ground, interactive objects, enemies, or the player.
 			if (Physics2D.Raycast(Projectile.GetComponent<Collider2D>().bounds.center, Vector2.down, 1f + distance, LayerMask.GetMask("Ground")).collider != null)
 			{ isOnGround = true; }
 			else { isOnGround = false; }

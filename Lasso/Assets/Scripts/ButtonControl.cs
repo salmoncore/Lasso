@@ -28,7 +28,7 @@ public class ButtonControl : MonoBehaviour
 		}
 
 		Rigidbody2D rb = Box.GetComponent<Rigidbody2D>();
-		rb.constraints = RigidbodyConstraints2D.FreezePositionX;
+		rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
 		rb.WakeUp(); // Ensure Rigidbody is awake after changing constraints
 
 		Box.AddComponent<SquishHandler>();
