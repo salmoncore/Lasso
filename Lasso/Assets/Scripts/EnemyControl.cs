@@ -780,7 +780,7 @@ public class EnemyControl : MonoBehaviour
 		{
 			if (collision.gameObject.GetComponent<LassoHandler>() != null)
 			{
-				collision.gameObject.GetComponent<LassoHandler>().BreakObject();
+				collision.gameObject.GetComponent<LassoHandler>().BreakObject(collision.gameObject);
 			}
 		} // If the charger is in the rush state and collides with a sturdy object, change it to a sturdy projectile.
 		else if (currentState == "Rush" && collision.gameObject.tag == "Sturdy")
@@ -804,14 +804,14 @@ public class EnemyControl : MonoBehaviour
 				{
 					if (collision.gameObject.GetComponent<LassoHandler>() != null)
 					{
-						collision.gameObject.GetComponent<LassoHandler>().BreakObject(); // ps, breaking occurs in LassoHandler script.
+						collision.gameObject.GetComponent<LassoHandler>().BreakObject(collision.gameObject); // ps, breaking occurs in LassoHandler script.
 					}
 				}
 				else if (breaksSturdyProjectiles && collision.gameObject.tag == "SturdyProjectile")
 				{
 					if (collision.gameObject.GetComponent<LassoHandler>() != null)
 					{
-						collision.gameObject.GetComponent<LassoHandler>().BreakObject(); // Breaking still occurs in LassoHandler script.
+						collision.gameObject.GetComponent<LassoHandler>().BreakObject(collision.gameObject); // Breaking still occurs in LassoHandler script.
 					}
 				}
 			}

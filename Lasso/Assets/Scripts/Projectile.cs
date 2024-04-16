@@ -175,7 +175,7 @@ public class Projectile : MonoBehaviour
 			canGrabWithoutStunning = collision.GetComponent<LassoHandler>().canGrabWithoutStunning;
 		}
 
-		if (collision.tag == "Ground" || (collision.tag == "Enemy" && !canGrabWithoutStunning))
+		if (collision.tag == "Ground" || collision.tag == "Button" || (collision.tag == "Enemy" && !canGrabWithoutStunning))
 		{
 			lassoTimer = lassoFlightTime;
 			hit = true;

@@ -47,7 +47,7 @@ public class LassoHandler : MonoBehaviour
 			// debug raycast
 			Debug.DrawRay(Projectile.GetComponent<Collider2D>().bounds.center, Vector2.down * (1f + distance), Color.red);
 
-			//// Next few lines are checking if the projectile is on the ground, interactive objects, enemies, or the player.
+			// Next few lines are checking if the projectile is on the ground, interactive objects, enemies, or the player.
 			if (Physics2D.Raycast(Projectile.GetComponent<Collider2D>().bounds.center, Vector2.down, 1f + distance, LayerMask.GetMask("Ground")).collider != null)
 			{ isOnGround = true; }
 			else { isOnGround = false; }
@@ -77,6 +77,16 @@ public class LassoHandler : MonoBehaviour
 				{
 					Collided.GetComponent<EnemyControl>().Stun(); // Stunning is called here!
 					// If it's easier to do so, you can access values from the EnemyControl script here, just as done above. Just make sure it's public.
+				}
+			}
+
+			// If the projectile is... a projectile, and it hits a button, trigger the "press" method.
+			if ((Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("SturdyProjectile")) && (Collided.CompareTag("Enemy") || Collided.CompareTag("Button")))
+			{
+				// Check if the collided object has a ButtonControl script, call the Press method
+				if (Collided.GetComponent<ButtonControl>() != null)
+				{
+					Collided.GetComponent<ButtonControl>().Press();
 				}
 			}
 
@@ -142,16 +152,18 @@ public class LassoHandler : MonoBehaviour
 
 		while (true)
 		{
-			Debug.Log("Projectile is: " + Projectile.name);
+			//Debug.Log("Projectile is: " + Projectile.name);
 			Projectile.transform.Rotate(RotateSpecs);
 			yield return new WaitForSeconds(0.01f);
 		}
 	}
 
 	// BreakObject is a public method that can be called from other scripts to break the object.
-	public void BreakObject()
+	public void BreakObject(GameObject thethingtobreak)
 	{
-		Projectile = gameObject;
+		Projectile = thethingtobreak;
+		Projectile.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+
 		StartCoroutine(Break());
 	}
 
