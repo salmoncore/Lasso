@@ -80,6 +80,16 @@ public class LassoHandler : MonoBehaviour
 				}
 			}
 
+			// If the projectile is... a projectile, and it hits a button, trigger the "press" method.
+			if ((Projectile.CompareTag("FragileProjectile") || Projectile.CompareTag("SturdyProjectile")) && (Collided.CompareTag("Enemy") || Collided.CompareTag("Button")))
+			{
+				// Check if the collided object has a ButtonControl script, call the Press method
+				if (Collided.GetComponent<ButtonControl>() != null)
+				{
+					Collided.GetComponent<ButtonControl>().Press();
+				}
+			}
+
 			// If the projectile has stopped sliding on the ground, find what it is and determine whether to break it or not.
 			if (Projectile.GetComponent<Rigidbody2D>().velocity.magnitude < 5f && (isOnGround || isOnInteractive || isOnEnemy || isOnPlayer))
 			{
@@ -142,16 +152,18 @@ public class LassoHandler : MonoBehaviour
 
 		while (true)
 		{
-			Debug.Log("Projectile is: " + Projectile.name);
+			//Debug.Log("Projectile is: " + Projectile.name);
 			Projectile.transform.Rotate(RotateSpecs);
 			yield return new WaitForSeconds(0.01f);
 		}
 	}
 
 	// BreakObject is a public method that can be called from other scripts to break the object.
-	public void BreakObject()
+	public void BreakObject(GameObject thethingtobreak)
 	{
-		Projectile = gameObject;
+		Projectile = thethingtobreak;
+		Projectile.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+
 		StartCoroutine(Break());
 	}
 
