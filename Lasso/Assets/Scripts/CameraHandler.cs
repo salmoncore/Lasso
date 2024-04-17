@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class CameraHandler : MonoBehaviour
 {
-	[SerializeField] private GameObject background;
+	[SerializeField] private Transform background;
+	[SerializeField] private float parallaxEffectMultiplier = 0.5f;
 	[SerializeField] private bool followPlayerVertically;
 	[SerializeField] private bool followPlayerHorizontally;
 	[SerializeField] private Vector2 offsetVertical;
@@ -12,26 +13,24 @@ public class CameraHandler : MonoBehaviour
 	[SerializeField] private float smoothSpeed = 0.125f; // Speed of the camera's follow
 	private GameObject player;
 	private Vector3 targetPosition;
+	private Vector3 lastCameraPosition;
 
 	void Start()
 	{
 		player = GameObject.FindGameObjectWithTag("Player");
-
 		if (player == null)
 		{
 			Debug.LogError("Player object not found in the scene. Make sure the player object has the tag 'Player'.");
 		}
+		lastCameraPosition = transform.position;
 	}
 
 	void Update()
 	{
 		if (player == null) return;
 
-		float posX = followPlayerHorizontally ? player.transform.position.x : transform.position.x;
-		float posY = followPlayerVertically ? player.transform.position.y : transform.position.y;
-
-		posX += followPlayerHorizontally ? offsetVertical.x : 0;
-		posY += followPlayerVertically ? offsetVertical.y : 0;
+		float posX = followPlayerHorizontally ? player.transform.position.x + offsetVertical.x : transform.position.x;
+		float posY = followPlayerVertically ? player.transform.position.y + offsetVertical.y : transform.position.y;
 
 		// Apply boundaries
 		posX = Mathf.Clamp(posX, boundariesX.x, boundariesX.y);
@@ -40,6 +39,16 @@ public class CameraHandler : MonoBehaviour
 		// Smoothly lerp to the target position
 		targetPosition = new Vector3(posX, posY, transform.position.z);
 		transform.position = Vector3.Lerp(transform.position, targetPosition, smoothSpeed);
+	}
+
+	void LateUpdate()
+	{
+		if (background != null)
+		{
+			Vector3 deltaMovement = transform.position - lastCameraPosition;
+			background.position += new Vector3(deltaMovement.x * parallaxEffectMultiplier, deltaMovement.y * parallaxEffectMultiplier, 0);
+		}
+		lastCameraPosition = transform.position;
 	}
 
 	public void ScreenShake(float duration, float magnitude)
