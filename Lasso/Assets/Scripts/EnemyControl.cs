@@ -787,6 +787,12 @@ public class EnemyControl : MonoBehaviour
 		// If the charger is in the rush state and collides with a fragile object, break it from the LassoHandler script.
 		if (currentState == "Rush" && collision.gameObject.tag == "Fragile")
 		{
+			// Attach a LassoHandler script to the object, if it doesn't already have one.
+			if (collision.gameObject.GetComponent<LassoHandler>() == null)
+			{
+				collision.gameObject.AddComponent<LassoHandler>();
+			}
+
 			if (collision.gameObject.GetComponent<LassoHandler>() != null)
 			{
 				collision.gameObject.GetComponent<LassoHandler>().BreakObject(collision.gameObject);
