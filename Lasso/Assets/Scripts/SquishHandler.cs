@@ -18,6 +18,13 @@ public class SquishHandler : MonoBehaviour
 		else if (collision.gameObject.tag == "Ground" && isSquishing)
 		{
 			isSquishing = false;
+
+			GameObject mainCamera = GameObject.Find("Main Camera");
+			if (mainCamera != null)
+			{
+				CameraHandler cameraHandler = mainCamera.GetComponent<CameraHandler>();
+				cameraHandler.ScreenShake(0.5f, 0.1f);
+			}
 		}
 		else if (collision.gameObject.tag != "Button" && isSquishing) // Squish and destroy all other objects enemies, good riddence
 		{
