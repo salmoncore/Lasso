@@ -60,6 +60,12 @@ public class PlayerMovement : MonoBehaviour
 		}
     }
 
+    // Public method that returns if the player has won
+    public bool HasWon()
+    {
+		return winFlag;
+	}
+
     // Clear Detection - If there are no more gameobjects with the tag "Enemy" or "EnemyProjectile" or "FragileProjectile" or "Breaking", the player wins.
     private void checkClear()
     {
