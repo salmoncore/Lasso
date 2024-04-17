@@ -23,18 +23,13 @@ public class LevelScript : MonoBehaviour
         }
 
        if (player.GetComponent<PlayerMovement>() != null)
-        {
-            if (player.GetComponent<PlayerMovement>().HasWon())
+       {        
+            if(player.GetComponent<PlayerMovement>().HasWon())
             {
                 Pass();
                 Debug.Log("epic win");
             }
-            else
-            {
-                gameManager.GetComponent<GameManagerScript>().gameOver();
-                Debug.Log("Dead");
-            }
-        }
+       }
     }
     public void Pass()
     {
