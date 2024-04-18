@@ -9,8 +9,8 @@ using Unity.VisualScripting;
 
 public class MainMenuManager : MonoBehaviour
 {
-    public GameObject optionsMenuUI, gameControlsUI, mainMenuUI;
-    public GameObject playButton, optionsFirstButton, optionsClosedButton, controlsFirstButton, controlsClosedButton;
+    public GameObject optionsMenuUI, gameControlsUI, mainMenuUI, levelSelectUI;
+    public GameObject playButton, optionsFirstButton, optionsClosedButton, controlsFirstButton, controlsClosedButton, buttonLevel, levelOpenButton;
     public GameObject inputManager;
     public GameObject toggle;
     public Text fullscreenB, fullscreenW, borderlessB, borderlessW;
@@ -48,7 +48,12 @@ public class MainMenuManager : MonoBehaviour
     }
 
     public void play() {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        mainMenuUI.SetActive(false);
+        levelSelectUI.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(buttonLevel);
+        Debug.Log(" closed");
         Debug.Log("Play");
     }
 
@@ -82,6 +87,24 @@ public class MainMenuManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(optionsClosedButton);
         Debug.Log("Options closed");
+    }
+
+    public void openLevel()
+    {
+		levelSelectUI.SetActive(true);
+		mainMenuUI.SetActive(false);
+		EventSystem.current.SetSelectedGameObject(null);
+		EventSystem.current.SetSelectedGameObject(levelOpenButton);
+		Debug.Log("Level Select open");
+	}
+
+    public void closeLevel()
+    {
+        levelSelectUI.SetActive(false);
+        mainMenuUI.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(buttonLevel);
+        Debug.Log("Level Select closed");
     }
 
     public void quit() {

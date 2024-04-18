@@ -90,18 +90,21 @@ public class PlayerMovement : MonoBehaviour
 		// If the clearFlag is true, and the game is set to win ONLY on clear, the player wins
 		if (clearFlag && (winOnClear && !winOnGoal))
 		{
+            Debug.Log("1");
 			winFlag = true;
 		}
 
 		// If the goalFlag is true, and the game is set to win ONLY on goal, the player wins
         if (goalFlag && (winOnGoal && !winOnClear))
         {
-			winFlag = true;
+            Debug.Log("2");
+            winFlag = true;
 		}
 
         // If the clearFlag is true, and the goalFlag is true, and the game is set to win on both, the player wins
         if (clearFlag && goalFlag && (winOnClear && winOnGoal))
         {
+            Debug.Log("3");
             winFlag = true;
         }
 
