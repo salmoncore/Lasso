@@ -3485,6 +3485,10 @@ PrefabInstance:
       propertyPath: breaksSturdyProjectiles
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8447865800932211955, guid: 385ee5c7b4d45a947a0e40c439f98fed, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.98
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

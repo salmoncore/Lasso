@@ -138,7 +138,21 @@ public class Projectile : MonoBehaviour
 			//	capturedEnemy.transform.position = GetFirePoint() + colliderOffset;
 			//}
 
-			capturedEnemy.transform.position = GetFirePoint();
+			// Check and see if the captured enemy has a "throwPoint" child object
+			Transform throwPoint = capturedEnemy.transform.Find("throwPoint");
+			// If the throwPoint exists, set the object's position to the FirePoint, and then set the object's position to the throwPoint's position
+			if (throwPoint != null)
+			{
+				capturedEnemy.transform.position = GetFirePoint();
+				capturedEnemy.transform.position = throwPoint.position;
+			}
+			else
+			{
+				capturedEnemy.transform.position = GetFirePoint();
+			}
+
+
+			//capturedEnemy.transform.position = GetFirePoint();
 
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;
 
