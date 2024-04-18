@@ -898,6 +898,10 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2157582591966046672, guid: 7cd133bbeed58464596a28e27661011d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2798914411058736740, guid: 7cd133bbeed58464596a28e27661011d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -1037,6 +1041,10 @@ PrefabInstance:
     - target: {fileID: 8616939691707219063, guid: 7cd133bbeed58464596a28e27661011d, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9186394586216264112, guid: 7cd133bbeed58464596a28e27661011d, type: 3}
+      propertyPath: m_Name
+      value: Back Button LS
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
