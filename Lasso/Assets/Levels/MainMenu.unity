@@ -161,7 +161,8 @@ MonoBehaviour:
   optionsClosedButton: {fileID: 705322921}
   controlsFirstButton: {fileID: 341369170}
   controlsClosedButton: {fileID: 744201961}
-  buttonLevel: {fileID: 587569182}
+  buttonLevel: {fileID: 1827269235}
+  levelOpenButton: {fileID: 771482139}
   inputManager: {fileID: 1507683103}
   toggle: {fileID: 586678462}
   fullscreenB: {fileID: 1845398212}
@@ -335,11 +336,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8616939691707219063, guid: 7cd133bbeed58464596a28e27661011d, type: 3}
   m_PrefabInstance: {fileID: 7472247606985988001}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &587569182 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9186394586216264112, guid: 7cd133bbeed58464596a28e27661011d, type: 3}
-  m_PrefabInstance: {fileID: 7472247606985988001}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &705322921 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3686649987937627304, guid: 7cd133bbeed58464596a28e27661011d, type: 3}
@@ -348,6 +344,11 @@ GameObject:
 --- !u!1 &744201961 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7419836704237060072, guid: 7cd133bbeed58464596a28e27661011d, type: 3}
+  m_PrefabInstance: {fileID: 7472247606985988001}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &771482139 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4936506226518260114, guid: 7cd133bbeed58464596a28e27661011d, type: 3}
   m_PrefabInstance: {fileID: 7472247606985988001}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &843519498 stripped
@@ -900,7 +901,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2157582591966046672, guid: 7cd133bbeed58464596a28e27661011d, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2798914411058736740, guid: 7cd133bbeed58464596a28e27661011d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
