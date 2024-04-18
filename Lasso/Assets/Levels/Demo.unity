@@ -2052,6 +2052,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gunner (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 8524054579843048906, guid: 017bca62831397746a1a31cdfbe1f510, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3432,7 +3436,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5954947448250239329, guid: 385ee5c7b4d45a947a0e40c439f98fed, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7061281397087134555, guid: 385ee5c7b4d45a947a0e40c439f98fed, type: 3}
       propertyPath: breaksSturdyProjectiles

@@ -258,7 +258,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Unsave
+  m_Text: Delete Save
 --- !u!222 &289857329
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -338,7 +338,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Manager
+  m_Text: Select
 --- !u!222 &292694772
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -744,7 +744,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: three
+  m_Text: Canyon
 --- !u!222 &657301824
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -823,7 +823,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: One
+  m_Text: Tutorial
 --- !u!222 &697297406
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -912,7 +912,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Two
+  m_Text: Lone Star
 --- !u!222 &780422504
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -959,8 +959,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.00012016, y: -109.7}
-  m_SizeDelta: {x: 113.9193, y: 39.2534}
+  m_AnchoredPosition: {x: -5, y: -106}
+  m_SizeDelta: {x: 205.36, y: 43.393}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &782969347
 MonoBehaviour:
@@ -1256,7 +1256,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: two
+  m_Text: Lone Star
 --- !u!222 &852004565
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1303,8 +1303,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 141.1, y: -0.000034809}
-  m_SizeDelta: {x: 90.4258, y: 31.1582}
+  m_AnchoredPosition: {x: 115.910484, y: -2.8021872}
+  m_SizeDelta: {x: 155, y: 34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1034813649
 MonoBehaviour:
@@ -1515,7 +1515,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: manager
+  m_Text: Select
 --- !u!222 &1050366026
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1747,8 +1747,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -141.7, y: -0.000015259}
-  m_SizeDelta: {x: 90.4258, y: 31.1582}
+  m_AnchoredPosition: {x: 0.7, y: 51.3}
+  m_SizeDelta: {x: 142.5976, y: 31.1582}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1394925056
 MonoBehaviour:
@@ -2173,7 +2173,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: One
+  m_Text: Tutorial
 --- !u!222 &1606900745
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2252,7 +2252,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Unsave
+  m_Text: Delete Save
 --- !u!222 &1644804080
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2299,8 +2299,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -3.3, y: -0.0000095367}
-  m_SizeDelta: {x: 90.4258, y: 31.1582}
+  m_AnchoredPosition: {x: -108, y: -2}
+  m_SizeDelta: {x: 155, y: 34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1684678083
 MonoBehaviour:
@@ -2511,7 +2511,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: three
+  m_Text: Canyon
 --- !u!222 &1715428846
 CanvasRenderer:
   m_ObjectHideFlags: 0
