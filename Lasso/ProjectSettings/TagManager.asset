@@ -18,6 +18,7 @@ TagManager:
   - StunnedEnemy
   - Goal
   - Button
+  - Bullet
   layers:
   - Default
   - TransparentFX

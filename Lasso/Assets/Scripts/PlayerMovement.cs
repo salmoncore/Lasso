@@ -41,6 +41,9 @@ public class PlayerMovement : MonoBehaviour
     private bool goalFlag = false;
     private bool clearFlag = false;
     private bool winFlag = false;
+    private GameObject ObjectiveText;
+    private int initialEnemyCount;
+    private int enemiesRemaining;
 
     // Awake is called when the script instance is being loaded
     private void Awake()
@@ -58,6 +61,16 @@ public class PlayerMovement : MonoBehaviour
         {
 			Debug.Log("Warning: Multiple goals exist within scene.");
 		}
+
+        // ObjectiveText is the name of a gameobject that is the child of the UICanvas gameobject in the scene
+        ObjectiveText = GameObject.Find("TextBackground");
+
+        if (ObjectiveText == null)
+        {
+			Debug.Log("ObjectiveText object not found, is UICanvas in the scene?");
+		}
+
+        initialEnemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length + GameObject.FindGameObjectsWithTag("StunnedEnemy").Length;
     }
 
     // Public method that returns if the player has won
@@ -69,16 +82,40 @@ public class PlayerMovement : MonoBehaviour
     // Clear Detection - If there are no more gameobjects with the tag "Enemy" or "EnemyProjectile" or "FragileProjectile" or "Breaking", the player wins.
     private void checkClear()
     {
+        enemiesRemaining = (GameObject.FindGameObjectsWithTag("Enemy").Length) + GameObject.FindGameObjectsWithTag("StunnedEnemy").Length;
+
         // Check for "Enemy", "EnemyProjectile", "FragileProjectile", and "Breaking" tags
-		if (GameObject.FindGameObjectsWithTag("Enemy").Length == 0)
+		if (enemiesRemaining == 0)
         {
             // If none exist, clearFlag is true
 			clearFlag = true;
+
+			ObjectiveText.GetComponent<UnityEngine.UI.Text>().text = "ONTO THE GOAL!";
+            
+            // pulse the text color between yellow and green
+            ObjectiveText.GetComponent<UnityEngine.UI.Text>().color = new Color(1, Mathf.PingPong(Time.time, 1), 0, 1);
 		}
         else
         {
 			// If any exist, clearFlag is false
 			clearFlag = false;
+
+            if (enemiesRemaining == 1)
+            {
+                ObjectiveText.GetComponent<UnityEngine.UI.Text>().text = "1 VARMIT REMAINS";
+                ObjectiveText.GetComponent<UnityEngine.UI.Text>().color = new Color(1, Mathf.PingPong(Time.time, 1), Mathf.PingPong(Time.time, 1), 1);
+            }
+            if (enemiesRemaining == initialEnemyCount)
+            {
+				ObjectiveText.GetComponent<UnityEngine.UI.Text>().text = "ADMINISTER JUSTICE";
+                // pulse the text color between red and yellow
+                ObjectiveText.GetComponent<UnityEngine.UI.Text>().color = new Color(1, Mathf.PingPong(Time.time, 1), 0, 1);
+			}
+            else
+            {
+                ObjectiveText.GetComponent<UnityEngine.UI.Text>().text = enemiesRemaining + " VARMITS REMAINING";
+                ObjectiveText.GetComponent<UnityEngine.UI.Text>().color = new Color(1, 1 - (float)enemiesRemaining / initialEnemyCount, 1 - (float)enemiesRemaining / initialEnemyCount, 1);
+            }
 		}
 	}
 
@@ -294,7 +331,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-	private bool isGrounded()
+	public bool isGrounded()
     {
 		Vector3 boxcastOrigin = playerCollider.bounds.center + new Vector3(boxCastOffset.x, boxCastOffset.y, 0);
 

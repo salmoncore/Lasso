@@ -128,6 +128,16 @@ public class Projectile : MonoBehaviour
 			}
 
 			capturedEnemy.SetActive(true);
+
+			// why dont work
+			//Collider2D collider = capturedEnemy.GetComponent<Collider2D>();
+			//if (collider != null)
+			//{
+			//	Vector2 colliderCenter = collider.bounds.center;
+			//	Vector2 colliderOffset = new Vector2(capturedEnemy.transform.position.x, capturedEnemy.transform.position.y) - colliderCenter;
+			//	capturedEnemy.transform.position = GetFirePoint() + colliderOffset;
+			//}
+
 			capturedEnemy.transform.position = GetFirePoint();
 
 			capturedEnemy.GetComponent<Collider2D>().enabled = true;

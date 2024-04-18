@@ -1378,9 +1378,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: UICanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 2814010533604599963, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 81
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814010533604599963, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_FontData.m_Alignment
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814010533604599963, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_FontData.m_FontStyle
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3624258116242212355, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3709303695438017640, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -662.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3709303695438017640, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 340.5
       objectReference: {fileID: 0}
     - target: {fileID: 5035354630343823395, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
       propertyPath: m_LocalScale.x
@@ -1474,6 +1494,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6560412770649310580, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 588.8602
+      objectReference: {fileID: 0}
+    - target: {fileID: 6560412770649310580, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 272.136
+      objectReference: {fileID: 0}
+    - target: {fileID: 6560412770649310580, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -665.60986
+      objectReference: {fileID: 0}
+    - target: {fileID: 6560412770649310580, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 376.432
+      objectReference: {fileID: 0}
     - target: {fileID: 7975897117752665687, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
       propertyPath: playerHealth
       value: 
@@ -1494,6 +1530,18 @@ PrefabInstance:
       propertyPath: badges.Array.data[2]
       value: 
       objectReference: {fileID: 1203905360}
+    - target: {fileID: 8845911315833644041, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8845911315833644041, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -10.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8902575154376638651, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
+      propertyPath: m_FontData.m_Alignment
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 8867032558057555374, guid: e69579e65bf02324598593c4ff11a4fd, type: 3}
@@ -2405,6 +2453,10 @@ PrefabInstance:
     - target: {fileID: 2065531016930096108, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5350320585879190461, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.49
       objectReference: {fileID: 0}
     - target: {fileID: 9026094276908541867, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
       propertyPath: pause
