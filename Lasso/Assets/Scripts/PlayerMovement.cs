@@ -105,7 +105,7 @@ public class PlayerMovement : MonoBehaviour
                 ObjectiveText.GetComponent<UnityEngine.UI.Text>().text = "1 VARMIT REMAINS";
                 ObjectiveText.GetComponent<UnityEngine.UI.Text>().color = new Color(1, Mathf.PingPong(Time.time, 1), Mathf.PingPong(Time.time, 1), 1);
             }
-            if (enemiesRemaining == initialEnemyCount)
+            else if (enemiesRemaining == initialEnemyCount)
             {
 				ObjectiveText.GetComponent<UnityEngine.UI.Text>().text = "ADMINISTER JUSTICE";
                 // pulse the text color between red and yellow
