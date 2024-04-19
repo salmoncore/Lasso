@@ -17,17 +17,20 @@ public class CameraHandler : MonoBehaviour
 
 	void Start()
 	{
-		player = GameObject.FindGameObjectWithTag("Player");
-		if (player == null)
-		{
-			Debug.LogError("Player object not found in the scene. Make sure the player object has the tag 'Player'.");
-		}
 		lastCameraPosition = transform.position;
 	}
 
 	void Update()
 	{
-		if (player == null) return;
+		if (player == null && Time.timeScale != 0)
+		{
+			player = GameObject.FindGameObjectWithTag("Player");
+		}
+		else if (player == null)
+		{
+			Debug.Log("Having trouble finding the player object for the camera :/");
+			return;
+		}
 
 		float posX = followPlayerHorizontally ? player.transform.position.x + offsetVertical.x : transform.position.x;
 		float posY = followPlayerVertically ? player.transform.position.y + offsetVertical.y : transform.position.y;

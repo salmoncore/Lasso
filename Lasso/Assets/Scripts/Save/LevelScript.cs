@@ -18,7 +18,13 @@ public class LevelScript : MonoBehaviour
     {
         if (player == null)
         {
-            Debug.Log("Player object not found in the scene. Make sure the player object has the tag 'Player'.");
+			player = GameObject.FindGameObjectWithTag("Player");
+
+		    if (player == null && Time.timeScale != 0)
+            { 
+			    Debug.Log("Failed to find player in the scene.");
+            }
+
             return;
         }
 

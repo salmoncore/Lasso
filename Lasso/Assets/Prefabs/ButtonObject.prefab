@@ -62,7 +62,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 478d688b6ab6ce547b90509e36f08c39, type: 3}
       propertyPath: m_Name
-      value: Button (1)
+      value: ButtonObject
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 478d688b6ab6ce547b90509e36f08c39, type: 3}
       propertyPath: m_TagString

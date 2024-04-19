@@ -102,7 +102,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (enemiesRemaining == 1)
             {
-                ObjectiveText.GetComponent<UnityEngine.UI.Text>().text = "1 VARMIT REMAINS";
+                ObjectiveText.GetComponent<UnityEngine.UI.Text>().text = "1 VARMINT REMAINS";
                 ObjectiveText.GetComponent<UnityEngine.UI.Text>().color = new Color(1, Mathf.PingPong(Time.time, 1), Mathf.PingPong(Time.time, 1), 1);
             }
             else if (enemiesRemaining == initialEnemyCount)
@@ -113,10 +113,15 @@ public class PlayerMovement : MonoBehaviour
 			}
             else
             {
-                ObjectiveText.GetComponent<UnityEngine.UI.Text>().text = enemiesRemaining + " VARMITS REMAINING";
+                ObjectiveText.GetComponent<UnityEngine.UI.Text>().text = enemiesRemaining + " VARMINTS REMAINING";
                 ObjectiveText.GetComponent<UnityEngine.UI.Text>().color = new Color(1, 1 - (float)enemiesRemaining / initialEnemyCount, 1 - (float)enemiesRemaining / initialEnemyCount, 1);
             }
 		}
+	}
+
+    public bool LevelCleared()
+    { 
+        return clearFlag;
 	}
 
     // Checks to see if the player has won, using the win conditions set in the inspector
