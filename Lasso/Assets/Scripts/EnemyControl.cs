@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class EnemyControl : MonoBehaviour
 {
+	public GameObject stunLines;
 	public GameObject bullet;
 	[SerializeField] private String Class = "CHOOSE Charger/Gunner/Balloonist";
 	[SerializeField] private String currentState = "Patrol";
@@ -36,18 +37,20 @@ public class EnemyControl : MonoBehaviour
 	[SerializeField] private bool breaksSturdyProjectiles = false; // Determines if the Charger can break sturdy projectiles while attacking
 	private Rigidbody2D rb;
     private Animator anim;
-	private ParticleSystem ps;
+	private ParticleSystem psl;
     private bool isCrumpled = false; // TODO: Remove or revise this.
     private bool waitFlag = false;
 	private bool gunnerOnCooldown = false;
     private float patrolDirection = 1; // Determines the direction the enemy is moving. -1 is left, 1 is right.
 	private float attackTimer;
+	private GameObject stunEffect;
 
-    void Start()
+	void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+		stunEffect = Instantiate(stunLines, GetComponent<CapsuleCollider2D>().bounds.center, Quaternion.identity);
+		rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-		ps = GetComponent<ParticleSystem>();
+		//ps = GetComponent<ParticleSystem>();
 
 		// If it's the Charger or Balloonist, choose a random direction to patrol in. The gunner will have the starting direction defined in the flags.
 		if (Class == "Charger" || Class == "Balloonist")
@@ -120,6 +123,12 @@ public class EnemyControl : MonoBehaviour
 		// // For Determining box sizes lmao
 		//}
 		//return;
+
+		// If isStunned, set GameObject stunEffect to the enemy's collider2D's center position
+		if (isStunned)
+		{
+			stunEffect.transform.position = GetComponent<CapsuleCollider2D>().bounds.center;
+		}
 
 		// If the enemy is stunned or crumpled, don't update the enemy logic until they recover.
 		if (isStunned || isCrumpled) return;
@@ -739,7 +748,7 @@ public class EnemyControl : MonoBehaviour
         gameObject.tag = "StunnedEnemy";
 
 		// play the stunned animation so long as they're stunned
-		Debug.Log("right before isStunned anim tag");
+		//Debug.Log("right before isStunned anim tag");
 
         StartCoroutine(StunTimer());
 
@@ -762,14 +771,18 @@ public class EnemyControl : MonoBehaviour
     IEnumerator StunTimer()
     {
 		anim.SetBool("isStunned", true);
-		ps.Play();
+
+		psl = stunEffect.GetComponent<ParticleSystem>();
+		psl.Play();
+
 		yield return new WaitForSeconds(2);
-		ps.Stop();
+
 		anim.SetBool("isStunned", false);
+		psl.Stop();
 
         isStunned = false;
         gameObject.tag = "Enemy";
-		Debug.Log("Enemy no longer stunned!");
+		//Debug.Log("Enemy no longer stunned!");
 	}
 
 	// Handles collisions with the enemy.
