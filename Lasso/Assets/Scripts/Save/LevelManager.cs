@@ -29,8 +29,8 @@ public class LevelManager : MonoBehaviour
 
     public void LoadLevel(int levelIndex)
     {
-        SceneManager.LoadScene(levelIndex);
-    }
+        SceneManager.LoadScene(levelIndex, LoadSceneMode.Single);
+	}
 
     public void DeleteSave()
     {
