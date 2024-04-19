@@ -34,7 +34,7 @@ public class Health : MonoBehaviour
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
 		// check the tag of the object we collided with
-        if (collision.gameObject.tag == "Enemy")
+        if (collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "Bullet")
         {
 			TakeDamage(damage);
             isEnemyToTheRight = collision.transform.position.x > transform.position.x;
