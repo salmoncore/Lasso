@@ -36,6 +36,7 @@ public class EnemyControl : MonoBehaviour
 	[SerializeField] private bool breaksSturdyProjectiles = false; // Determines if the Charger can break sturdy projectiles while attacking
 	private Rigidbody2D rb;
     private Animator anim;
+	private ParticleSystem ps;
     private bool isCrumpled = false; // TODO: Remove or revise this.
     private bool waitFlag = false;
 	private bool gunnerOnCooldown = false;
@@ -46,6 +47,7 @@ public class EnemyControl : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+		ps = GetComponent<ParticleSystem>();
 
 		// If it's the Charger or Balloonist, choose a random direction to patrol in. The gunner will have the starting direction defined in the flags.
 		if (Class == "Charger" || Class == "Balloonist")
@@ -760,7 +762,9 @@ public class EnemyControl : MonoBehaviour
     IEnumerator StunTimer()
     {
 		anim.SetBool("isStunned", true);
+		ps.Play();
 		yield return new WaitForSeconds(2);
+		ps.Stop();
 		anim.SetBool("isStunned", false);
 
         isStunned = false;
