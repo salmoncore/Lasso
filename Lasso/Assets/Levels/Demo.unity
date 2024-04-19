@@ -1650,7 +1650,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5657286492709285931, guid: 50c6ba5b63e02d0418279e55f7fc6030, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.0143
+      value: 11.66
       objectReference: {fileID: 0}
     - target: {fileID: 5657286492709285931, guid: 50c6ba5b63e02d0418279e55f7fc6030, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2941,11 +2941,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   background: {fileID: 1319137935}
   parallaxEffectMultiplier: 0.5
-  followPlayerVertically: 0
+  followPlayerVertically: 1
   followPlayerHorizontally: 1
   offsetVertical: {x: 0, y: 0}
   boundariesX: {x: 0, y: 12.2}
-  boundariesY: {x: 1.95, y: 10}
+  boundariesY: {x: 2, y: 10}
   smoothSpeed: 0.125
 --- !u!1 &1364727731 stripped
 GameObject:
