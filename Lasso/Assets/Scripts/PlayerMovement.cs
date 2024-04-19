@@ -119,6 +119,11 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
+    public bool LevelCleared()
+    { 
+        return clearFlag;
+	}
+
     // Checks to see if the player has won, using the win conditions set in the inspector
     private bool playerWins()
     {
