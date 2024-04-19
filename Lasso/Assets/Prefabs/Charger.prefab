@@ -1389,8 +1389,8 @@ MonoBehaviour:
   gunnerFleeTime: 4
   gunnerFaceLeft: 1
   isStunned: 0
-  ledgeCautious: 1
-  seeThroughObjects: 0
+  ledgeCautious: 0
+  seeThroughObjects: 1
   noStunDuringAttack: 0
   breaksSturdyProjectiles: 0
 --- !u!50 &1947557615033685475
