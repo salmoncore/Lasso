@@ -76,6 +76,7 @@ public class PlayerMovement : MonoBehaviour
     // Public method that returns if the player has won
     public bool HasWon()
     {
+        //Debug.Log("Win polled.");
 		return winFlag;
 	}
 
@@ -132,21 +133,21 @@ public class PlayerMovement : MonoBehaviour
 		// If the clearFlag is true, and the game is set to win ONLY on clear, the player wins
 		if (clearFlag && (winOnClear && !winOnGoal))
 		{
-            Debug.Log("1");
+            //Debug.Log("1");
 			winFlag = true;
 		}
 
 		// If the goalFlag is true, and the game is set to win ONLY on goal, the player wins
         if (goalFlag && (winOnGoal && !winOnClear))
         {
-            Debug.Log("2");
+            //Debug.Log("2");
             winFlag = true;
 		}
 
         // If the clearFlag is true, and the goalFlag is true, and the game is set to win on both, the player wins
         if (clearFlag && goalFlag && (winOnClear && winOnGoal))
         {
-            Debug.Log("3");
+            //Debug.Log("3");
             winFlag = true;
         }
 
@@ -250,9 +251,8 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerWins())
         {
-			// Enters here if player has won
-            // Maybe add in a delay or a win screen?
-			SceneManager.LoadScene("MainMenu");
+			// Condition checked by LevelScript
+            // Debug.Log("Player wins!");
 		}
 
         if (pause.isPaused) {
