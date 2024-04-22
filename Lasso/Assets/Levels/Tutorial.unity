@@ -3447,14 +3447,6 @@ PrefabInstance:
       propertyPath: pause
       value: 
       objectReference: {fileID: 2023089615}
-    - target: {fileID: 1425149703185049305, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
-      propertyPath: winOnGoal
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1425149703185049305, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
-      propertyPath: winOnClear
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1435682157497542414, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
       propertyPath: gameManager
       value: 
