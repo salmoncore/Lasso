@@ -255,14 +255,14 @@ public class PlayerMovement : MonoBehaviour
         bool collidingLeft = isCollidingLeft();
         bool collidingRight = isCollidingRight();
 
-        if (collidingLeft)
-        { 
-            Debug.Log("Colliding Left");
-        }
-        if (collidingRight)
-        {
-            Debug.Log("Colliding Right");
-        }
+        //if (collidingLeft)
+        //{ 
+        //    Debug.Log("Colliding Left");
+        //}
+        //if (collidingRight)
+        //{
+        //    Debug.Log("Colliding Right");
+        //}
 
         if (playerWins())
         {
