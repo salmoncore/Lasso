@@ -731,7 +731,7 @@ PrefabInstance:
       objectReference: {fileID: 7312503242525735413}
     - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
       propertyPath: sfxClips.Array.size
-      value: 11
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
       propertyPath: musicClips.Array.size
@@ -781,6 +781,18 @@ PrefabInstance:
       propertyPath: sfxClips.Array.data[10]
       value: 
       objectReference: {fileID: 8300000, guid: 2a721b97d86698546ab5a5ab1c237434, type: 3}
+    - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
+      propertyPath: sfxClips.Array.data[11]
+      value: 
+      objectReference: {fileID: 8300000, guid: 5d3555c43644c6d498e82836bee722ed, type: 3}
+    - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
+      propertyPath: sfxClips.Array.data[12]
+      value: 
+      objectReference: {fileID: 8300000, guid: 5bf0ba8a73726fe4f82d279e43e12105, type: 3}
+    - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
+      propertyPath: sfxClips.Array.data[13]
+      value: 
+      objectReference: {fileID: 8300000, guid: 59553ba072a146f47808762fd51ae738, type: 3}
     - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
       propertyPath: musicClips.Array.data[0]
       value: 

@@ -17,11 +17,11 @@ public class PlayerAttack : MonoBehaviour
 	private bool buttonReleased = true;
 	private Vector2 aimDirection;
 	private Vector2 movementDirection;
-
 	private PlayerInput playerInput;
 	public PauseManager pause;
-
 	private bool flicked;
+	public GameObject musicPlayer;
+    public AudioManager audioManagerScript;
 
 	private void Awake()
     {
@@ -107,6 +107,9 @@ public class PlayerAttack : MonoBehaviour
 		cooldownTimer = 0;
 
 		Vector2 attackDirection = GetAttackDirection();
+		musicPlayer = GameObject.Find("MusicPlayer");
+		audioManagerScript = musicPlayer.GetComponent<AudioManager>();
+		audioManagerScript.SFX("lasso");
 
 		if (lassoObj.GetComponent<Projectile>().HasCapturedEnemy())
 		{

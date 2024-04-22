@@ -88,6 +88,10 @@ public class AudioManager : MonoBehaviour
             instance.sfxSource.Stop();
             int rand = UnityEngine.Random.Range(2, 11);
             startSfx(rand);
+        } else if (sound == "lasso") {
+            instance.sfxSource.Stop();
+            int rand = UnityEngine.Random.Range(11, 14);
+            startSfx(rand);
         }
     }
 
