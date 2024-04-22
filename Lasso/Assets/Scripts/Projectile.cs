@@ -228,7 +228,13 @@ public class Projectile : MonoBehaviour
 	{
 		enemy.GetComponent<Collider2D>().enabled = false;
 
-		// Hitstun?
+		if (enemy.TryGetComponent<EnemyControl>(out EnemyControl enemyControl))
+		{
+			if (enemyControl.GetType().GetMethod("pslInterrupt") != null)
+			{
+				enemyControl.pslInterrupt();
+			}
+		}
 
 		Vector2 startPosition = enemy.transform.position;
 
