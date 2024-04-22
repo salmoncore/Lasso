@@ -61,6 +61,9 @@ public class AudioManager : MonoBehaviour
         } else if (next.name == "Demo") {
             instance.musicPlayer.Stop();
             startMusic(1);
+        } else if (next.name == "Credits") {
+            instance.musicPlayer.Stop();
+            startMusic(3);
         }
 
 
