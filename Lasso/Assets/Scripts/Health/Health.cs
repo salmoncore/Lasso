@@ -52,6 +52,18 @@ public class Health : MonoBehaviour
 
 	public void TakeDamage(int _damage) // TODO: Does this need to be public anymore?
     {
+        if (_damage == -1) // Instantly kill player, bypass invincibility
+        {
+			currentHealth = 0;
+			gameManager.gameOver();
+			anim.SetBool("dead", true);
+			GetComponent<PlayerMovement>().enabled = false;
+			GetComponent<PlayerAttack>().enabled = false;
+			body.velocity = new Vector2(0, 0);
+			body.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
+			dead = true;
+			return;
+		}
         if (isInvincible) return;
 
         // Clamp the health to be between 0 and startingHealth
@@ -122,6 +134,12 @@ public class Health : MonoBehaviour
 
     private void Update()
     {
+        if (player == null)
+        {
+			player = GameObject.FindGameObjectWithTag("Player");
+            Debug.Log("Health is attempting to find player...");
+		}
+
         // TODO: Remove these for release
         if (Input.GetKeyDown(KeyCode.PageDown))
         {

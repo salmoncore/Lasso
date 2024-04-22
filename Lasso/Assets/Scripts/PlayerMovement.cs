@@ -229,6 +229,21 @@ public class PlayerMovement : MonoBehaviour
 		{
 			movementDirection = context.ReadValue<Vector2>();
 		}
+
+        if (context.action.name == playerInput.actions["Pause"].name)
+        {
+            if (context.performed)
+            {
+				if (pause.isPaused)
+				{
+					pause.resume();
+				}
+				else
+				{
+					pause.pause();
+				}
+			}
+		}
 	}
 
 	private void Update()

@@ -22,6 +22,7 @@ public class Projectile : MonoBehaviour
 
 	private Vector2 lineTrim;
 	private bool isRetrieving = false;
+	private bool retreivingEnemy = false;
 
 	private BoxCollider2D boxCollider;
 	private Animator anim;
@@ -96,6 +97,7 @@ public class Projectile : MonoBehaviour
 		}
 
 		isRetrieving = false;
+
 		Deactivate();
 	}
 
@@ -217,6 +219,7 @@ public class Projectile : MonoBehaviour
 			anim.SetTrigger("Hit");
 
 			capturedEnemy = collision.gameObject;
+			retreivingEnemy = true;
 			StartCoroutine(CaptureEnemy(capturedEnemy));
 		}
 	}
@@ -225,7 +228,13 @@ public class Projectile : MonoBehaviour
 	{
 		enemy.GetComponent<Collider2D>().enabled = false;
 
-		// Hitstun?
+		if (enemy.TryGetComponent<EnemyControl>(out EnemyControl enemyControl))
+		{
+			if (enemyControl.GetType().GetMethod("pslInterrupt") != null)
+			{
+				enemyControl.pslInterrupt();
+			}
+		}
 
 		Vector2 startPosition = enemy.transform.position;
 
@@ -250,6 +259,7 @@ public class Projectile : MonoBehaviour
 			enemy.GetComponent<MeshRenderer>().enabled = false;
 		}
 
+		retreivingEnemy = false;
 		enemy.SetActive(false);
 		Deactivate();
 	}
@@ -313,6 +323,9 @@ public class Projectile : MonoBehaviour
 
 	private void Deactivate()
 	{
-		gameObject.SetActive(false);
+		if (!retreivingEnemy)
+		{
+			gameObject.SetActive(false);
+		}
 	}
 }

@@ -15,13 +15,15 @@ public class PauseManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !gameManager.isDead) {
-            if (isPaused) {
-                resume();
-            } else {
-                pause();
-            }
-        }
+        // Now handled in playermovement using new input system
+
+        //if (Input.GetKeyDown(KeyCode.Escape) && !gameManager.isDead) {
+        //    if (isPaused) {
+        //        resume();
+        //    } else {
+        //        pause();
+        //    }
+        //}
     }
 
     public void resume() {
