@@ -11,7 +11,19 @@ public class SquishHandler : MonoBehaviour
 	{
 		Debug.Log("Collided with: " + collision.gameObject.name);
 
-		if (collision.gameObject.tag == "Player" && isSquishing)
+		bool hitBottom;
+
+		if (collision.contacts.Length > 0)
+		{
+			Vector2 contactNormal = collision.contacts[0].normal;
+			hitBottom = Vector2.Dot(contactNormal, Vector2.up) > 0.5f;
+		}
+		else
+		{
+			hitBottom = false;
+		}
+
+		if (collision.gameObject.tag == "Player" && isSquishing && hitBottom)
 		{
 			collision.gameObject.GetComponent<Health>().TakeDamage(1000);
 		}
@@ -26,7 +38,7 @@ public class SquishHandler : MonoBehaviour
 				cameraHandler.ScreenShake(0.5f, 0.1f);
 			}
 		}
-		else if (collision.gameObject.tag != "Button" && isSquishing) // Squish and destroy all other objects enemies, good riddence
+		else if (collision.gameObject.tag != "Button" && isSquishing && hitBottom) // Squish and destroy all other objects enemies, good riddence
 		{
 			if (!squishingCoroutines.ContainsKey(collision.gameObject))
 			{
