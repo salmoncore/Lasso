@@ -25,7 +25,7 @@ public class SquishHandler : MonoBehaviour
 
 		if (collision.gameObject.tag == "Player" && isSquishing && hitBottom)
 		{
-			collision.gameObject.GetComponent<Health>().TakeDamage(1000);
+			collision.gameObject.GetComponent<Health>().TakeDamage(-1);
 		}
 		else if (collision.gameObject.tag == "Ground" && isSquishing)
 		{

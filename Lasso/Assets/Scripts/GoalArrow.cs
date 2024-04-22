@@ -19,13 +19,14 @@ public class GoalArrow : MonoBehaviour
 		}
 
 		lineRenderer = gameObject.AddComponent<LineRenderer>();
+
 		lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
 
 		lineRenderer.startColor = new Color(0.0f, 1.0f, 0.0f, 1.0f);
 		lineRenderer.endColor = new Color(0.0f, 1.0f, 0.0f, 0.0f);
 
-		lineRenderer.startWidth = 0.06f;
-		lineRenderer.endWidth = 0.14f;
+		lineRenderer.startWidth = 0.15f;
+		lineRenderer.endWidth = 0.01f;
 	}
 
 	private void Update()
