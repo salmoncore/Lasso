@@ -22,13 +22,13 @@ public class CameraHandler : MonoBehaviour
 
 	void Update()
 	{
-		if (player == null && Time.timeScale != 0)
+		if (player == null && Time.timeScale != 0f)
 		{
 			player = GameObject.FindGameObjectWithTag("Player");
+			Debug.Log("Player found: " + player);
 		}
 		else if (player == null)
 		{
-			Debug.Log("Having trouble finding the player object for the camera :/");
 			return;
 		}
 

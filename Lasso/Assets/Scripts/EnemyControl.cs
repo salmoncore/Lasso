@@ -785,6 +785,12 @@ public class EnemyControl : MonoBehaviour
 		//Debug.Log("Enemy no longer stunned!");
 	}
 
+	// Public method for disabling stun effects.
+	public void pslInterrupt()
+	{
+		stunEffect.SetActive(false);
+	}
+
 	// Handles collisions with the enemy.
 	private void OnCollisionEnter2D(Collision2D collision)
 	{	

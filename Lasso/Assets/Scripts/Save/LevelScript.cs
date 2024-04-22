@@ -10,33 +10,36 @@ public class LevelScript : MonoBehaviour
 
     public void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
         gameManager = GameObject.Find("GameManager");
+
+        // Null check
+        if (gameManager == null)
+        {
+			Debug.Log("GameManager not found!!! Saving may fail.");
+		}
+        else
+        {
+			Debug.Log("GameManager found: " + gameManager.name);
+		}
     }
 
     public void Update()
     {
-        if (player == null)
+        if (player == null && Time.timeScale != 0)
         {
 			player = GameObject.FindGameObjectWithTag("Player");
-
-		    if (player == null && Time.timeScale != 0)
-            { 
-			    Debug.Log("Failed to find player in the scene.");
-            }
-
-            return;
         }
 
-       if (player.GetComponent<PlayerMovement>() != null)
-       {        
-            if(player.GetComponent<PlayerMovement>().HasWon())
+        if (player != null && player.GetComponent<PlayerMovement>() != null)
+        {
+            if (player.GetComponent<PlayerMovement>().HasWon())
             {
-                Pass();
                 Debug.Log("epic win");
+                Pass();
             }
-       }
+        }
     }
+
     public void Pass()
     {
         int currentLevel = SceneManager.GetActiveScene().buildIndex;
