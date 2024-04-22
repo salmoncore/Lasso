@@ -12,6 +12,10 @@ public class DeathVoid : MonoBehaviour
 			// die
 			collision.gameObject.GetComponent<Health>().TakeDamage(-1);
 		}
+		else if (collision.gameObject.tag == "Ground")
+		{
+			// do nothing
+		}
 
 		// If it's not the player just destroy the object
 		else
