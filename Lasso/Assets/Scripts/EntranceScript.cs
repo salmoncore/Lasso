@@ -70,7 +70,11 @@ public class EntranceScript : MonoBehaviour
 	IEnumerator SpawnPlayer()
 	{
 		yield return new WaitForSecondsRealtime(0.5f);
-		player.transform.position = transform.GetChild(0).position;
+
+		//player.transform.position = transform.GetChild(0).position;
+		// Set the player's XY position to the entrance's XY position
+		player.transform.position = new Vector2(transform.position.x, transform.position.y);
+
 		player.SetActive(true);
 		player = null;
 		fallAway = true;
