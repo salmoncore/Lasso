@@ -7,9 +7,8 @@ public class CameraHandler : MonoBehaviour
 	[SerializeField] private float parallaxEffectMultiplier = 0.5f;
 	[SerializeField] private bool followPlayerVertically;
 	[SerializeField] private bool followPlayerHorizontally;
-	[SerializeField] private Vector2 offsetVertical;
-	[SerializeField] private Vector2 boundariesX;
-	[SerializeField] private Vector2 boundariesY;
+	[SerializeField] public Vector2 boundariesX; // X-axis boundaries
+	[SerializeField] public Vector2 boundariesY; // Y-axis boundaries
 	[SerializeField] private float smoothSpeed = 0.125f; // Speed of the camera's follow
 	private GameObject player;
 	private Vector3 targetPosition;
@@ -32,12 +31,8 @@ public class CameraHandler : MonoBehaviour
 			return;
 		}
 
-		float posX = followPlayerHorizontally ? player.transform.position.x + offsetVertical.x : transform.position.x;
-		float posY = followPlayerVertically ? player.transform.position.y + offsetVertical.y : transform.position.y;
-
-		// Apply boundaries
-		posX = Mathf.Clamp(posX, boundariesX.x, boundariesX.y);
-		posY = Mathf.Clamp(posY, boundariesY.x, boundariesY.y);
+		float posX = followPlayerHorizontally ? Mathf.Clamp(player.transform.position.x, boundariesX.x, boundariesX.y) : transform.position.x;
+		float posY = followPlayerVertically ? Mathf.Clamp(player.transform.position.y, boundariesY.x, boundariesY.y) : transform.position.y;
 
 		// Smoothly lerp to the target position
 		targetPosition = new Vector3(posX, posY, transform.position.z);

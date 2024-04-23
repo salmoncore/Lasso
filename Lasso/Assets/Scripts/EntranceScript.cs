@@ -62,6 +62,14 @@ public class EntranceScript : MonoBehaviour
 			if (transform.position.y <= startPosition.y)
 			{
 				Time.timeScale = 1f;
+
+				GameObject player = GameObject.FindGameObjectWithTag("Player");
+				PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+				PlayerAttack playerAttack = player.GetComponent<PlayerAttack>();
+
+				playerMovement.levelEntry = false;
+				playerAttack.levelEntry = false;
+
 				Destroy(gameObject);
 			}
 		}
@@ -70,7 +78,9 @@ public class EntranceScript : MonoBehaviour
 	IEnumerator SpawnPlayer()
 	{
 		yield return new WaitForSecondsRealtime(0.5f);
-		player.transform.position = transform.GetChild(0).position;
+
+		player.transform.position = new Vector2(transform.position.x, transform.position.y);
+
 		player.SetActive(true);
 		player = null;
 		fallAway = true;
