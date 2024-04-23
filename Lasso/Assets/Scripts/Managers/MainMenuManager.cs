@@ -14,11 +14,21 @@ public class MainMenuManager : MonoBehaviour
     public GameObject inputManager;
     public GameObject toggle;
     public Text fullscreenB, fullscreenW, borderlessB, borderlessW;
+    public AudioSlider audioSlider;
+    public GameObject options;
+    public GameObject maineMenuCanvas;
     
     Toggle m_toggle;
     // Start is called before the first frame update
     void Start()
     {
+        // makes the music and sfx the same level volume it had before. Stays even after quitting the game.
+        maineMenuCanvas = GameObject.Find("MainMenuCanvas");
+        audioSlider = maineMenuCanvas.GetComponentInChildren<AudioSlider>(true);
+        audioSlider.setMusicVolume(PlayerPrefs.GetFloat(AudioManager.MUSIC_KEY, 1f));
+        audioSlider.setSFXVolume(PlayerPrefs.GetFloat(AudioManager.SFX_KEY, 1f));
+
+        // begins the main UI
         inputManager.SetActive(true);
         optionsMenuUI.SetActive(false);
         gameControlsUI.SetActive(false);
@@ -53,7 +63,7 @@ public class MainMenuManager : MonoBehaviour
         levelSelectUI.SetActive(true);
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(buttonLevel);
-        Debug.Log(" closed");
+        Debug.Log("closed");
         Debug.Log("Play");
     }
 

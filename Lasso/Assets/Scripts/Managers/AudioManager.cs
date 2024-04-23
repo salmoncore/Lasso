@@ -25,7 +25,7 @@ public class AudioManager : MonoBehaviour
     void Awake() {
         if (instance == null) {
             instance = this;
-            startMusic(0);
+            startMusic(1);
             DontDestroyOnLoad(gameObject);
         } else {
             Destroy(gameObject);
@@ -56,14 +56,18 @@ public class AudioManager : MonoBehaviour
         Debug.Log(musicClips.Count);
         if (next.name == "MainMenu") {
             instance.musicPlayer.Stop();
-            startMusic(0);
-            
-        } else if (next.name == "Demo") {
-            instance.musicPlayer.Stop();
             startMusic(1);
-        } else if (next.name == "Credits") {
+        } else if (next.name == "Tutorial") {
+            
+        } else if (next.name == "Lone Star"){
+            instance.musicPlayer.Stop();
+            startMusic(2);
+        } else if (next.name == "Canyon") {
             instance.musicPlayer.Stop();
             startMusic(3);
+        } else if (next.name == "Credits") {
+            instance.musicPlayer.Stop();
+            startMusic(4);
         }
 
 
@@ -72,7 +76,7 @@ public class AudioManager : MonoBehaviour
 
     public void playerDied() {
         instance.musicPlayer.Stop();
-        startMusic(2);
+        startMusic(0);
     }
 
     // loads sfx clips
@@ -96,12 +100,13 @@ public class AudioManager : MonoBehaviour
     }
 
     // volume saved in audioslider.cs
-    void loadVolume()  {
+    public void loadVolume()  {
 
         float musicVolume = PlayerPrefs.GetFloat(MUSIC_KEY, 1F);
         float sfxVolume = PlayerPrefs.GetFloat(SFX_KEY, 1F);
 
         mixer.SetFloat(AudioSlider.MIXER_MUSIC, Mathf.Log10(musicVolume) * 20);
         mixer.SetFloat(AudioSlider.MIXER_SFX, Mathf.Log10(sfxVolume) * 20);
+
     }
 }
