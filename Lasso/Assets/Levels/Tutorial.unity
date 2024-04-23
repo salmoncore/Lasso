@@ -3461,11 +3461,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2065531016930096108, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.74
+      value: -7.23
       objectReference: {fileID: 0}
     - target: {fileID: 2065531016930096108, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.89
+      value: -3.33
       objectReference: {fileID: 0}
     - target: {fileID: 2065531016930096108, guid: 58550d3b1d02e0944a3f04bfc358a4e2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4709,7 +4709,6 @@ MonoBehaviour:
   parallaxEffectMultiplier: 0.5
   followPlayerVertically: 1
   followPlayerHorizontally: 1
-  offsetVertical: {x: 0, y: 0}
   boundariesX: {x: 0, y: 20}
   boundariesY: {x: 0.48, y: 10}
   smoothSpeed: 0.125
@@ -7501,7 +7500,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4559777069528350353, guid: c93a0e742c1d8ff4f86512137f7c2a74, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -6.74
+      value: -6.667
       objectReference: {fileID: 0}
     - target: {fileID: 4559777069528350353, guid: c93a0e742c1d8ff4f86512137f7c2a74, type: 3}
       propertyPath: m_LocalPosition.z
