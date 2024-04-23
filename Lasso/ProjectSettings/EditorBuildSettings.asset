@@ -15,9 +15,6 @@ EditorBuildSettings:
     path: Assets/Levels/Lone Star.unity
     guid: 808c401169741e94d9c014469a8622df
   - enabled: 1
-    path: Assets/Levels/Canyon Grand.unity
-    guid: ffb23eeec6a2cb84eb32bf613139892f
-  - enabled: 1
     path: Assets/Levels/Credits.unity
     guid: b8bc4b410d557a4428cc9ca89afb95a9
   m_configObjects: {}
