@@ -726,6 +726,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
+      propertyPath: audioSlider
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
       propertyPath: musicPlayer
       value: 
       objectReference: {fileID: 7312503242525735413}

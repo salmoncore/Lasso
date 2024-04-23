@@ -96,12 +96,13 @@ public class AudioManager : MonoBehaviour
     }
 
     // volume saved in audioslider.cs
-    void loadVolume()  {
+    public void loadVolume()  {
 
         float musicVolume = PlayerPrefs.GetFloat(MUSIC_KEY, 1F);
         float sfxVolume = PlayerPrefs.GetFloat(SFX_KEY, 1F);
 
         mixer.SetFloat(AudioSlider.MIXER_MUSIC, Mathf.Log10(musicVolume) * 20);
         mixer.SetFloat(AudioSlider.MIXER_SFX, Mathf.Log10(sfxVolume) * 20);
+
     }
 }

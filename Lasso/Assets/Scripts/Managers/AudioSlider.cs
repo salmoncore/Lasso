@@ -28,9 +28,10 @@ public class AudioSlider : MonoBehaviour
         sfxSlider.value = PlayerPrefs.GetFloat(AudioManager.SFX_KEY, 1f);
     }
 
-    void onDisabled() {
+    void Update() {
         PlayerPrefs.SetFloat(AudioManager.MUSIC_KEY, musicSlider.value);
         PlayerPrefs.SetFloat(AudioManager.SFX_KEY, sfxSlider.value);
+        PlayerPrefs.Save();
     }
     
     public void setMusicVolume(float value) {
