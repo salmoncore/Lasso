@@ -7,8 +7,8 @@ public class CameraHandler : MonoBehaviour
 	[SerializeField] private float parallaxEffectMultiplier = 0.5f;
 	[SerializeField] private bool followPlayerVertically;
 	[SerializeField] private bool followPlayerHorizontally;
-	[SerializeField] private Vector2 boundariesX; // X-axis boundaries
-	[SerializeField] private Vector2 boundariesY; // Y-axis boundaries
+	[SerializeField] public Vector2 boundariesX; // X-axis boundaries
+	[SerializeField] public Vector2 boundariesY; // Y-axis boundaries
 	[SerializeField] private float smoothSpeed = 0.125f; // Speed of the camera's follow
 	private GameObject player;
 	private Vector3 targetPosition;
