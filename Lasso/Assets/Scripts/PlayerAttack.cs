@@ -38,7 +38,7 @@ public class PlayerAttack : MonoBehaviour
 
 	private void PlayerInput_onActionTriggered(InputAction.CallbackContext context)
 	{
-		if (context.action.name == playerInput.actions["Attack"].name && !levelEntry)
+		if (context.action.name == playerInput.actions["Attack"].name)
 		{
 			if (context.performed && buttonReleased)
 			{
@@ -51,7 +51,7 @@ public class PlayerAttack : MonoBehaviour
 			}
 		}
 
-		if (context.action.name == playerInput.actions["Aim"].name && !levelEntry)
+		if (context.action.name == playerInput.actions["Aim"].name)
 		{
 			aimDirection = context.ReadValue<Vector2>();
 
@@ -72,7 +72,7 @@ public class PlayerAttack : MonoBehaviour
 			}
 		}
 
-        if (context.action.name == playerInput.actions["Movement"].name && !levelEntry)
+        if (context.action.name == playerInput.actions["Movement"].name)
 		{
 			movementDirection = context.ReadValue<Vector2>();
 		}
@@ -83,7 +83,7 @@ public class PlayerAttack : MonoBehaviour
 		if (pause.isPaused) {
 			fireFlag = false;
 		} else {
-			if (fireFlag && (cooldownTimer > attackCooldown) && playerMovement.canAttack())
+			if (fireFlag && (cooldownTimer > attackCooldown) && playerMovement.canAttack() && !levelEntry)
 			{
 				Attack();
 				fireFlag = false;
@@ -109,8 +109,20 @@ public class PlayerAttack : MonoBehaviour
 
 		Vector2 attackDirection = GetAttackDirection();
 		musicPlayer = GameObject.Find("MusicPlayer");
-		audioManagerScript = musicPlayer.GetComponent<AudioManager>();
-		audioManagerScript.SFX("lasso");
+
+		if (musicPlayer != null)
+		{
+			audioManagerScript = musicPlayer.GetComponent<AudioManager>();
+
+			if (audioManagerScript != null)
+			{
+				audioManagerScript.SFX("lasso");
+			}
+			else
+			{
+				Debug.Log("AudioManager script not found");
+			}
+		}
 
 		if (lassoObj.GetComponent<Projectile>().HasCapturedEnemy())
 		{
