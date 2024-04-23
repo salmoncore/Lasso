@@ -62,6 +62,14 @@ public class EntranceScript : MonoBehaviour
 			if (transform.position.y <= startPosition.y)
 			{
 				Time.timeScale = 1f;
+
+				GameObject player = GameObject.FindGameObjectWithTag("Player");
+				PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+				PlayerAttack playerAttack = player.GetComponent<PlayerAttack>();
+
+				playerMovement.levelEntry = false;
+				playerAttack.levelEntry = false;
+
 				Destroy(gameObject);
 			}
 		}

@@ -22,6 +22,7 @@ public class PlayerAttack : MonoBehaviour
 	private bool flicked;
 	public GameObject musicPlayer;
     public AudioManager audioManagerScript;
+	public bool levelEntry = true;
 
 	private void Awake()
     {
@@ -37,7 +38,7 @@ public class PlayerAttack : MonoBehaviour
 
 	private void PlayerInput_onActionTriggered(InputAction.CallbackContext context)
 	{
-		if (context.action.name == playerInput.actions["Attack"].name)
+		if (context.action.name == playerInput.actions["Attack"].name && !levelEntry)
 		{
 			if (context.performed && buttonReleased)
 			{
@@ -50,7 +51,7 @@ public class PlayerAttack : MonoBehaviour
 			}
 		}
 
-		if (context.action.name == playerInput.actions["Aim"].name)
+		if (context.action.name == playerInput.actions["Aim"].name && !levelEntry)
 		{
 			aimDirection = context.ReadValue<Vector2>();
 
@@ -71,7 +72,7 @@ public class PlayerAttack : MonoBehaviour
 			}
 		}
 
-        if (context.action.name == playerInput.actions["Movement"].name)
+        if (context.action.name == playerInput.actions["Movement"].name && !levelEntry)
 		{
 			movementDirection = context.ReadValue<Vector2>();
 		}

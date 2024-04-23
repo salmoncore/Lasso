@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
     private float jumpBufferTime = 0.2f;
     private float jumpBufferCounter;
     public PauseManager pause;
+    public bool levelEntry = true;
 
     private PlayerInput playerInput;
     private Vector2 movementDirection;
@@ -211,7 +212,7 @@ public class PlayerMovement : MonoBehaviour
 
 	private void PlayerInput_onActionTriggered(InputAction.CallbackContext context)
     {
-		if (context.action.name == playerInput.actions["Jump"].name)
+		if (context.action.name == playerInput.actions["Jump"].name && !levelEntry)
         {
 			if (context.performed)
             {
@@ -225,7 +226,7 @@ public class PlayerMovement : MonoBehaviour
 			}
 		}
 
-		if (context.action.name == playerInput.actions["Movement"].name)
+		if (context.action.name == playerInput.actions["Movement"].name && !levelEntry)
 		{
 			movementDirection = context.ReadValue<Vector2>();
 		}
@@ -270,7 +271,7 @@ public class PlayerMovement : MonoBehaviour
             // Debug.Log("Player wins!");
 		}
 
-        if (pause.isPaused) {
+        if (pause.isPaused || levelEntry) {
 
         } else {
             horizontalInput = movementDirection.x;
