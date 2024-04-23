@@ -24,7 +24,7 @@ public class CameraHandler : MonoBehaviour
 		if (player == null && Time.timeScale != 0f)
 		{
 			player = GameObject.FindGameObjectWithTag("Player");
-			Debug.Log("Player found: " + player);
+			//Debug.Log("Player found: " + player);
 		}
 		else if (player == null)
 		{
