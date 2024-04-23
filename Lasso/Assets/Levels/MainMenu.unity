@@ -169,6 +169,9 @@ MonoBehaviour:
   fullscreenW: {fileID: 1465027113}
   borderlessB: {fileID: 1289532470}
   borderlessW: {fileID: 1981445555}
+  audioSlider: {fileID: 0}
+  options: {fileID: 0}
+  maineMenuCanvas: {fileID: 0}
 --- !u!4 &84942857
 Transform:
   m_ObjectHideFlags: 0
@@ -739,7 +742,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
       propertyPath: musicClips.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
       propertyPath: sfxClips.Array.data[0]
@@ -800,17 +803,21 @@ PrefabInstance:
     - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
       propertyPath: musicClips.Array.data[0]
       value: 
-      objectReference: {fileID: 8300000, guid: ab74d56c18fde3d4db4730f23afa2ea6, type: 3}
+      objectReference: {fileID: 8300000, guid: 6ef6eef25eed2844cb24e0eb96ce4c71, type: 3}
     - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
       propertyPath: musicClips.Array.data[1]
       value: 
-      objectReference: {fileID: 8300000, guid: a2d2c18fcdf37f0449600bc502ae96a2, type: 3}
+      objectReference: {fileID: 8300000, guid: ab74d56c18fde3d4db4730f23afa2ea6, type: 3}
     - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
       propertyPath: musicClips.Array.data[2]
       value: 
-      objectReference: {fileID: 8300000, guid: 6ef6eef25eed2844cb24e0eb96ce4c71, type: 3}
+      objectReference: {fileID: 8300000, guid: ef7510a060dde3f42bae79275eff8249, type: 3}
     - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
       propertyPath: musicClips.Array.data[3]
+      value: 
+      objectReference: {fileID: 8300000, guid: a2d2c18fcdf37f0449600bc502ae96a2, type: 3}
+    - target: {fileID: 1124853319219223663, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
+      propertyPath: musicClips.Array.data[4]
       value: 
       objectReference: {fileID: 8300000, guid: 6edf24bfab6a8d84ea1207a12740cc64, type: 3}
     - target: {fileID: 1178090085505877398, guid: e73f82a9ef88a7e4cbf75e9e4bc97ba6, type: 3}
