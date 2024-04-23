@@ -6,6 +6,7 @@ using UnityEngine;
 public class ButtonControl : MonoBehaviour
 {
 	[SerializeField] private GameObject Box; // The thing that the button will drop
+	[SerializeField] private bool boxSquishes = true;
 
 	private void Start()
 	{
@@ -31,7 +32,11 @@ public class ButtonControl : MonoBehaviour
 		rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
 		rb.WakeUp(); // Ensure Rigidbody is awake after changing constraints
 
-		Box.AddComponent<SquishHandler>();
+		// If the box "squishes" things under it when it lands, add the SquishHandler script to the box
+		if (boxSquishes)
+		{
+			Box.AddComponent<SquishHandler>();
+		}
 
 		// Call Break from LassoHandler.cs
 		GetComponent<LassoHandler>().BreakObject(this.gameObject);

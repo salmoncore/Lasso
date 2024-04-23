@@ -60,7 +60,18 @@ public class GoalArrow : MonoBehaviour
 	{
 		if (player != null && player.GetComponent<Collider2D>() != null)
 		{
-			return player.GetComponent<Collider2D>().bounds.center;
+			//return player.GetComponent<Collider2D>().bounds.center;
+
+			Transform firePoint = player.transform.Find("firePoint");
+			if (firePoint != null)
+			{
+				return firePoint.position;
+			}
+			else
+			{
+				Debug.LogError("Player's firePoint object not found.");
+				return Vector2.zero;
+			}
 		}
 		else
 		{
