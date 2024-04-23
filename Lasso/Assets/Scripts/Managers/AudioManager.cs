@@ -61,6 +61,9 @@ public class AudioManager : MonoBehaviour
         } else if (next.name == "Demo") {
             instance.musicPlayer.Stop();
             startMusic(1);
+        } else if (next.name == "Credits") {
+            instance.musicPlayer.Stop();
+            startMusic(3);
         }
 
 
@@ -84,6 +87,10 @@ public class AudioManager : MonoBehaviour
         } else if (sound == "hurt") {
             instance.sfxSource.Stop();
             int rand = UnityEngine.Random.Range(2, 11);
+            startSfx(rand);
+        } else if (sound == "lasso") {
+            instance.sfxSource.Stop();
+            int rand = UnityEngine.Random.Range(11, 14);
             startSfx(rand);
         }
     }
