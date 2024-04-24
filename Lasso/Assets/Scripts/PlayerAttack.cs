@@ -32,6 +32,11 @@ public class PlayerAttack : MonoBehaviour
 		playerInput = GetComponent<PlayerInput>();
 		playerInput.onActionTriggered += PlayerInput_onActionTriggered;
 
+		if (GameObject.Find("Entrance") == null)
+		{
+			levelEntry = false;
+		}
+
 		// Disable the sack object by default
 		sackObj.SetActive(false);
 	}

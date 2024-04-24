@@ -86,8 +86,8 @@ public class EnemyControl : MonoBehaviour
 		// Initializing variables based on the class of the enemy.
 		if (Class == "Charger")
 		{
-			boxCastSize = new Vector2(0.59f, 1.36f);
-			boxCastOffset = new Vector2(0.27f, 0.02f);
+			boxCastSize = new Vector2(.7f, 1.36f);
+			boxCastOffset = new Vector2(0.27f, 0.02f); 
 			ledgeCheckSize = new Vector2(0.05f, 0.5f);
 			ledgeCheckOffset = new Vector2(0.34f, -0.75f);
 			playerSightSize = new Vector2(5f, 1f);
@@ -489,9 +489,25 @@ public class EnemyControl : MonoBehaviour
 		{
 			//Debug.Log("Hit wall/object!");
 
-			rb.velocity = new Vector2(0, rb.velocity.y);
-			currentState = "Patrol";
-			//Debug.Log("Moving to " + currentState + "state.");
+			CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+			Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+			float wallHeight = hitWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
+			float enemyHeight = capsuleCollider.bounds.size.y;
+			float wallDistance = hitWall.distance + (boxCastSize.x / 2);
+
+			if (wallHeight < enemyHeight)
+			{
+				float time = 1f / (wallHeight * enemyHeight);
+				transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight * 2f), transform.position.z), time);
+			}
+			else
+			{
+				// Wall is too high, switch to patrol state
+				rb.velocity = new Vector2(0, rb.velocity.y);
+				//currentState = "Patrol";
+				//Debug.Log("Moving to " + currentState + "state.");
+			}
 		}
 		else // Otherwise, continue rushing.
         {
