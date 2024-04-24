@@ -238,7 +238,7 @@ public class EnemyControl : MonoBehaviour
 			transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 		}
 
-		anim.SetBool("isMoving", true);
+		anim.SetTrigger("startMoving");
 		anim.SetBool("isIdle", false);
 
 		// If there is no wall or object in the way, continue moving away from the player
@@ -246,11 +246,54 @@ public class EnemyControl : MonoBehaviour
 		{
 			rb.velocity = new Vector2(patrolDirection * chargeSpeed, rb.velocity.y);
 		}
+		else if (hitWall())
+		{
+			CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+			Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+			float wallHeight = hitWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
+			float enemyHeight = capsuleCollider.bounds.size.y;
+			float wallDistance = hitWall.distance + (boxCastSize.x / 2);
+
+			if (wallHeight < enemyHeight)
+			{
+				float time = 1f / (wallHeight * enemyHeight);
+				transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z), time);
+			}
+			else
+			{
+				// Wall is too high
+				rb.velocity = new Vector2(0, rb.velocity.y);
+				anim.SetTrigger("stopMoving");
+
+				// Start blasting
+				if (!isCooldownRunning)
+				{
+					isCooldownRunning = true;
+					StartCoroutine(Cooldown());
+				}
+			}
+		}
+		else if (hitObject())
+		{ 
+			// Switch layers to go through objects, continue fleeing until past object
+		}
+		else if (hitLedge())
+		{
+			// Raycast straight down and check if there's a "DeathVoid" tagged object below the enemy
+
+			// If no way, anim.SetTrigger("stopMoving");
+		}
 		else
 		{
-			// If there is a wall or object in the way, shoot at the player
-			rb.velocity = new Vector2(0, rb.velocity.y);
-			//Shoot(); ---------------------<<<<<<<<<<<<<<
+			anim.SetTrigger("stopMoving");
+
+			// Start blasting
+			if (!isCooldownRunning)
+			{
+				isCooldownRunning = true;
+				StartCoroutine(Cooldown());
+			}
 		}
 	}
 
