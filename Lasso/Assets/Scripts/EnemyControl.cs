@@ -152,9 +152,6 @@ public class EnemyControl : MonoBehaviour
 				case "Attack":
 					Attack();
 					break;
-				case "Skid":
-					Skid();
-					break;
 			}
 		}
 		else if (Class == "Gunner")
@@ -482,7 +479,15 @@ public class EnemyControl : MonoBehaviour
 
 		if ((patrolDirection < 0 && playerPosition.x > transform.position.x) || (patrolDirection > 0 && playerPosition.x < transform.position.x))
 		{
-			currentState = "Skid";
+			// Slowly reduce patrol direction to 0, then flip the enemy.
+			patrolDirection = Mathf.Lerp(patrolDirection, 0, 0.01f);
+			skidFlip();
+			if (Math.Abs(patrolDirection) < 0.35)
+			{
+				// Patrol in the direction of the player
+				patrolDirection = playerPosition.x > transform.position.x ? 1 : -1;
+				currentState = "Patrol";
+			}
 		}
 
 		// Ledge checking during the rush, dependant on if the enemy is ledge cautious.
@@ -510,7 +515,7 @@ public class EnemyControl : MonoBehaviour
 			if (wallHeight < enemyHeight)
 			{
 				float time = 1f / (wallHeight * enemyHeight);
-				transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight * 2f), transform.position.z), wallHeight);
+				transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z), time);
 			}
 			else
 			{
@@ -526,54 +531,6 @@ public class EnemyControl : MonoBehaviour
 		}
     }
 
-	private void Skid()
-	{
-		if (isStunned || isCrumpled || waitFlag) return;
-
-		// Get the player's location.
-		Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
-
-		// If the enemy is rushing to the left, and the player is to the right, call RushSkid with true.
-		if (patrolDirection < 0 && playerPosition.x > transform.position.x)
-		{
-			StartCoroutine(RushSkid(true));
-			currentState = "Skid";
-		}
-		// If the enemy is rushing to the right, and the player is to the left, call RushSkid with false.
-		else if (patrolDirection > 0 && playerPosition.x < transform.position.x)
-		{
-			StartCoroutine(RushSkid(false));
-			currentState = "Skid";
-		}
-		else
-		{
-			currentState = "Rush";
-		}
-	}
-
-	IEnumerator RushSkid(bool toLeft)
-	{
-		waitFlag = true;
-
-		// Adjust patrol direction based on skidding direction
-		patrolDirection = toLeft ? -1 : 1;
-
-		// Set the scale to flip horizontally if skidding left
-		transform.localScale = new Vector3(toLeft ? Mathf.Abs(transform.localScale.x) : -Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-
-		// Calculate skid speed based on patrol speed
-		float skidSpeed = patrolSpeed / 2;
-
-		// Set the velocity for skidding
-		rb.velocity = new Vector2(skidSpeed * patrolDirection, rb.velocity.y);
-
-		// Wait for 1 second
-		yield return new WaitForSeconds(1f);
-
-		// Reset the wait flag
-		waitFlag = false;
-	}
-
 	// Charger attacks the player. If the player remains in the attack range, the enemy will attack for a longer time.
 	private void Attack()
 	{
@@ -584,6 +541,22 @@ public class EnemyControl : MonoBehaviour
 		// while attacking, the brute should sprint.
 		anim.SetBool("isWalking", false);
 		anim.SetBool("isRunning", true);
+
+		// Get the player's location.
+		Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
+
+		if ((patrolDirection < 0 && playerPosition.x > transform.position.x) || (patrolDirection > 0 && playerPosition.x < transform.position.x))
+		{
+			// Slowly reduce patrol direction to 0, then flip the enemy.
+			patrolDirection = Mathf.Lerp(patrolDirection, 0, 0.01f);
+			skidFlip();
+			if (Math.Abs(patrolDirection) < 0.35)
+			{
+				// Patrol in the direction of the player
+				patrolDirection = playerPosition.x > transform.position.x ? 1 : -1;
+				currentState = "Patrol";
+			}
+		}
 
 		// If the charger hasn't hit anything and the attack timer hasn't run out, continue attacking.
 		if ((!hitObject() || !hitWall() || !hitLedge()) && attackTimer > 0)
@@ -942,14 +915,35 @@ public class EnemyControl : MonoBehaviour
 		{
 			// Flip the transform.localScale.z depending on the patrolDirection
 
-			if (patrolDirection > 0)
+			if (patrolDirection > 0) // right
 			{
 				transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, -Mathf.Abs(transform.localScale.z));
 			}
-			else
+			else // left
 			{
 				transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, Mathf.Abs(transform.localScale.z));
 			}
 		}
     }
+
+	private void skidFlip()
+	{
+		if (TryGetComponent<SpriteRenderer>(out SpriteRenderer spriteRenderer))
+		{
+			spriteRenderer.flipX = !spriteRenderer.flipX;
+		}
+		else
+		{
+			// Flip the transform.localScale.z depending on the patrolDirection
+
+			if (patrolDirection > 0) // right
+			{
+				transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, Mathf.Abs(transform.localScale.z));
+			}
+			else // left
+			{
+				transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, -Mathf.Abs(transform.localScale.z));
+			}
+		}
+	}
 }
