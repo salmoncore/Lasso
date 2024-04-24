@@ -152,6 +152,9 @@ public class EnemyControl : MonoBehaviour
 				case "Attack":
 					Attack();
 					break;
+				case "Skid":
+					Skid();
+					break;
 			}
 		}
 		else if (Class == "Gunner")
@@ -474,6 +477,14 @@ public class EnemyControl : MonoBehaviour
 
         if (isStunned || isCrumpled || waitFlag) return;
 
+		// Get the player's location.
+		Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
+
+		if ((patrolDirection < 0 && playerPosition.x > transform.position.x) || (patrolDirection > 0 && playerPosition.x < transform.position.x))
+		{
+			currentState = "Skid";
+		}
+
 		// Ledge checking during the rush, dependant on if the enemy is ledge cautious.
         if (hitLedge() && ledgeCautious)
         {
@@ -499,7 +510,7 @@ public class EnemyControl : MonoBehaviour
 			if (wallHeight < enemyHeight)
 			{
 				float time = 1f / (wallHeight * enemyHeight);
-				transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight * 2f), transform.position.z), time);
+				transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight * 2f), transform.position.z), wallHeight);
 			}
 			else
 			{
@@ -515,7 +526,55 @@ public class EnemyControl : MonoBehaviour
 		}
     }
 
-    // Charger attacks the player. If the player remains in the attack range, the enemy will attack for a longer time.
+	private void Skid()
+	{
+		if (isStunned || isCrumpled || waitFlag) return;
+
+		// Get the player's location.
+		Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
+
+		// If the enemy is rushing to the left, and the player is to the right, call RushSkid with true.
+		if (patrolDirection < 0 && playerPosition.x > transform.position.x)
+		{
+			StartCoroutine(RushSkid(true));
+			currentState = "Skid";
+		}
+		// If the enemy is rushing to the right, and the player is to the left, call RushSkid with false.
+		else if (patrolDirection > 0 && playerPosition.x < transform.position.x)
+		{
+			StartCoroutine(RushSkid(false));
+			currentState = "Skid";
+		}
+		else
+		{
+			currentState = "Rush";
+		}
+	}
+
+	IEnumerator RushSkid(bool toLeft)
+	{
+		waitFlag = true;
+
+		// Adjust patrol direction based on skidding direction
+		patrolDirection = toLeft ? -1 : 1;
+
+		// Set the scale to flip horizontally if skidding left
+		transform.localScale = new Vector3(toLeft ? Mathf.Abs(transform.localScale.x) : -Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+
+		// Calculate skid speed based on patrol speed
+		float skidSpeed = patrolSpeed / 2;
+
+		// Set the velocity for skidding
+		rb.velocity = new Vector2(skidSpeed * patrolDirection, rb.velocity.y);
+
+		// Wait for 1 second
+		yield return new WaitForSeconds(1f);
+
+		// Reset the wait flag
+		waitFlag = false;
+	}
+
+	// Charger attacks the player. If the player remains in the attack range, the enemy will attack for a longer time.
 	private void Attack()
 	{
 		if (isStunned || isCrumpled || waitFlag) return;
