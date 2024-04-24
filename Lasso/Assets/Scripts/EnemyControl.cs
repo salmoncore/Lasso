@@ -278,6 +278,12 @@ public class EnemyControl : MonoBehaviour
 			isCooldownRunning = true;
 			StartCoroutine(Cooldown());
 		}
+
+		// If the player is no longer in sight, return to the Lookout state
+		if (!lookoutPlayer(gunnerSightRange))
+		{
+			currentState = "Lookout";
+		}
 	}
 
 	IEnumerator Cooldown()
