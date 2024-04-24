@@ -26,8 +26,8 @@ public class EnemyControl : MonoBehaviour
 	[SerializeField] private float aggroTimeDivision = 2f; // How much longer the enemy attacks the player the longer the player is in sight. Used for Charger class.
 	[SerializeField] private float gunnerSightRange = 10f; // Range at which the Gunner can see the player
 	[SerializeField] private float gunnerFleeRange = 5f; // Range at which the Gunner will flee from the player
-	[SerializeField] private float gunnerDelayToFire = 2f; // TODO: Fix this. Delay before the gunner can shoot at the player.
-	[SerializeField] private float gunnerCooldown = 5f;	// Cooldown between shots for the Gunner
+	[SerializeField] private float gunnerFireDelay = .5f; // Burst fire delay
+	[SerializeField] private float gunnerCooldown = 2f;	// Cooldown between shots volleys for the Gunner
 	[SerializeField] private float gunnerFleeTime = 4f; // The amount of time the Gunner will flee from the player
 	[SerializeField] private bool gunnerFaceLeft = true; // Determines if the Gunner faces left or right on spawn
 	[SerializeField] private bool isStunned = false; // Determines if the enemy is stunned
@@ -44,6 +44,8 @@ public class EnemyControl : MonoBehaviour
     private float patrolDirection = 1; // Determines the direction the enemy is moving. -1 is left, 1 is right.
 	private float attackTimer;
 	private GameObject stunEffect;
+
+	private bool isCooldownRunning = false;
 
 	void Start()
     {
@@ -102,7 +104,6 @@ public class EnemyControl : MonoBehaviour
 			{
 				transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
 			}
-			Cooldown(gunnerDelayToFire);
 
 			boxCastSize = new Vector2(1f, 1.169f);
 			boxCastOffset = new Vector2(0.14f, 0.04f);
@@ -198,7 +199,6 @@ public class EnemyControl : MonoBehaviour
 		else if (lookoutPlayer(gunnerSightRange))
 		{
 			//Debug.Log("Shooting!");
-			Cooldown(gunnerDelayToFire);
 			currentState = "TakeAim";
 		}
 	}
@@ -250,7 +250,7 @@ public class EnemyControl : MonoBehaviour
 		{
 			// If there is a wall or object in the way, shoot at the player
 			rb.velocity = new Vector2(0, rb.velocity.y);
-			Shoot();
+			//Shoot(); ---------------------<<<<<<<<<<<<<<
 		}
 	}
 
@@ -259,7 +259,6 @@ public class EnemyControl : MonoBehaviour
 	{
 		if (lookoutPlayer(gunnerFleeRange))
 		{
-			//Debug.Log("Fleeing!");
 			currentState = "Flee";
 			return;
 		}
@@ -274,24 +273,35 @@ public class EnemyControl : MonoBehaviour
 			transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 		}
 
-		Shoot();
-
-		// If the player is no longer in sight, return to the Lookout state.
-		if (!lookoutPlayer(gunnerSightRange))
+		if (!isCooldownRunning)
 		{
-			currentState = "Lookout";
+			isCooldownRunning = true;
+			StartCoroutine(Cooldown());
 		}
 	}
 
-	// For Gunner. Handles firing and cooldowns for the gunner. Called in the TakeAim state.
+	IEnumerator Cooldown()
+	{
+		yield return new WaitForSeconds(1f); // Wait 1 second
+
+		int shotsFired = 0;
+		while (shotsFired < 3)
+		{
+			Shoot();
+			shotsFired++;
+			yield return new WaitForSeconds(0.3f); // Wait 0.5 seconds between shots
+		}
+
+		yield return new WaitForSeconds(2f); // Wait 3 seconds before firing again
+
+		isCooldownRunning = false; // Set the flag to false after the cooldown is complete
+	}
+
 	private void Shoot()
 	{
-		if (gunnerOnCooldown || waitFlag) return;
-
 		// Instantiate the bullet prefab at the firePoint's position
 		Transform firePoint = transform.Find("firePoint");
 
-		// Error checking, else instantiate the bullet and set its velocity in the direction of the player.
 		if (firePoint == null)
 		{
 			Debug.Log("Failed to get firepoint. Is enemyControl set to gunner?");
@@ -305,18 +315,13 @@ public class EnemyControl : MonoBehaviour
 			GameObject bulletInstance = Instantiate(bullet, firePoint.position, Quaternion.identity);
 			Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
 			Vector3 direction = playerPosition - firePoint.position;
+
+			// Add a small random deviation to the direction
+			float randomAngle = UnityEngine.Random.Range(-10f, 10f); // adjust the range to your liking
+			direction = Quaternion.Euler(0, 0, randomAngle) * direction;
+
 			bulletInstance.GetComponent<Rigidbody2D>().velocity = direction.normalized * 10;
 		}
-
-		// Start the cooldown for the gunner
-		StartCoroutine(Cooldown(gunnerCooldown));
-	}
-
-	IEnumerator Cooldown(float time)
-	{
-		gunnerOnCooldown = true;
-		yield return new WaitForSeconds(time);
-		gunnerOnCooldown = false;
 	}
 
 	// For Gunner. Checks if the player is in sight of the Gunner. Uses playerSightSize/Offset for seeing player through floors & walls.
