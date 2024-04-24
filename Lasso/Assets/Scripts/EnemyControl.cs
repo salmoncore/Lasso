@@ -209,20 +209,6 @@ public class EnemyControl : MonoBehaviour
 	{
 		if (waitFlag) return;
 
-		// Check if the player is still in sight
-
-		if (lookoutPlayer(gunnerFleeRange))
-		{
-			// If the player is still in sight, continue fleeing
-			rb.velocity = new Vector2(-patrolDirection * chargeSpeed, rb.velocity.y);
-		}
-		else
-		{
-			// If the player is no longer in sight, stop fleeing and return to the lookout state
-			rb.velocity = new Vector2(0, rb.velocity.y);
-			currentState = "Lookout";
-		}
-
 		// Get the direction of the player
 		Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
 
@@ -230,22 +216,22 @@ public class EnemyControl : MonoBehaviour
 		if (playerPosition.x < transform.position.x)
 		{
 			patrolDirection = 1;
-			transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+			transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 		}
 		else
 		{
 			patrolDirection = -1;
-			transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+			transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 		}
 
-		anim.SetTrigger("startMoving");
 		anim.SetBool("isIdle", false);
+		anim.SetTrigger("startMoving");
 
 		// If there is no wall or object in the way, continue moving away from the player
 		if (!hitWall() && !hitObject() && !hitLedge())
 		{
+			anim.SetTrigger("startMoving");
 			rb.velocity = new Vector2(patrolDirection * chargeSpeed * .8f, rb.velocity.y);
-			flip();
 		}
 		else if (hitWall())
 		{
@@ -258,6 +244,7 @@ public class EnemyControl : MonoBehaviour
 
 			if (wallHeight < enemyHeight)
 			{
+				anim.SetTrigger("startMoving");
 				float time = 1f / (wallHeight * enemyHeight);
 				transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z), time);
 			}
@@ -276,9 +263,9 @@ public class EnemyControl : MonoBehaviour
 			}
 		}
 		else if (hitObject())
-		{ 
+		{
 			// Shoot in the direction the enemy is trying to flee in.
-			anim.SetTrigger("stopMoving");
+			//anim.SetTrigger("stopMoving");
 
 			if (!isShootingObject)
 			{
@@ -307,6 +294,7 @@ public class EnemyControl : MonoBehaviour
 			}
 			else
 			{
+				anim.SetTrigger("startMoving");
 				rb.velocity = new Vector2(patrolDirection * chargeSpeed, rb.velocity.y);
 			}
 
@@ -340,6 +328,7 @@ public class EnemyControl : MonoBehaviour
 		}
 		else
 		{
+			anim.SetTrigger("stopMoving");
 			GameObject bulletInstance = Instantiate(bullet, transform.Find("firePoint").position, Quaternion.identity);
 			// Add a small random deviation to the direction
 			float randomAngle = UnityEngine.Random.Range(-10f, 10f);
