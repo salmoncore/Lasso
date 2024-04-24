@@ -287,9 +287,11 @@ public class EnemyControl : MonoBehaviour
 		int shotsFired = 0;
 		while (shotsFired < 3)
 		{
+			anim.SetTrigger("isAttack1");
 			Shoot();
 			shotsFired++;
 			yield return new WaitForSeconds(0.3f); // Wait 0.5 seconds between shots
+			anim.SetTrigger("isAttack2");
 		}
 
 		yield return new WaitForSeconds(2f); // Wait 3 seconds before firing again
@@ -302,6 +304,9 @@ public class EnemyControl : MonoBehaviour
 		// Instantiate the bullet prefab at the firePoint's position
 		Transform firePoint = transform.Find("firePoint");
 
+		anim.SetBool("isMoving", false);
+		anim.SetBool("isIdle", true);
+
 		if (firePoint == null)
 		{
 			Debug.Log("Failed to get firepoint. Is enemyControl set to gunner?");
@@ -309,7 +314,6 @@ public class EnemyControl : MonoBehaviour
 		}
 		else
 		{
-			anim.SetTrigger("isAttack1");
 
 			// Set bullet to velocity of 10 in the direction of the center of the player's collider
 			GameObject bulletInstance = Instantiate(bullet, firePoint.position, Quaternion.identity);
@@ -317,7 +321,7 @@ public class EnemyControl : MonoBehaviour
 			Vector3 direction = playerPosition - firePoint.position;
 
 			// Add a small random deviation to the direction
-			float randomAngle = UnityEngine.Random.Range(-10f, 10f); // adjust the range to your liking
+			float randomAngle = UnityEngine.Random.Range(-10f, 10f); 
 			direction = Quaternion.Euler(0, 0, randomAngle) * direction;
 
 			bulletInstance.GetComponent<Rigidbody2D>().velocity = direction.normalized * 10;
