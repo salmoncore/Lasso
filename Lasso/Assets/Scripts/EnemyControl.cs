@@ -44,8 +44,9 @@ public class EnemyControl : MonoBehaviour
     private float patrolDirection = 1; // Determines the direction the enemy is moving. -1 is left, 1 is right.
 	private float attackTimer;
 	private GameObject stunEffect;
-	private bool isShootingObject;
+	private bool isRepositioning = false;
 	private bool isCooldownRunning = false;
+	private bool isTraversing = false;
 
 	void Start()
     {
@@ -162,11 +163,17 @@ public class EnemyControl : MonoBehaviour
 				case "Lookout":
 					Lookout();
 					break;
-				case "TakeAim":
-					TakeAim();
+				case "Reposition":
+					Reposition();
 					break;
-				case "Flee":
-					Flee();
+				case "Shoot":
+					Shoot();
+					break;
+				case "Run":
+					Run();
+					break;
+				case "WallClimb":
+					WallClimb();
 					break;
 			}
 		}
@@ -187,167 +194,308 @@ public class EnemyControl : MonoBehaviour
 		if (waitFlag) return;
 
 		anim.SetBool("isIdle", true);
+		//anim.SetTrigger("stopMoving");
 		anim.SetBool("isMoving", false);
 
-		// Check if the player is in the Flee or Sight range, and switch to either Flee or TakeAim states, respectively.
-		if (lookoutPlayer(gunnerFleeRange))
+		if (lookoutPlayer(gunnerSightRange))
 		{
-			//Debug.Log("Fleeing!");
-			currentState = "Flee";
-			return;
-		} 
-		else if (lookoutPlayer(gunnerSightRange))
-		{
-			//Debug.Log("Shooting!");
-			currentState = "TakeAim";
+			// Shoot
+			currentState = "Shoot";
 		}
 	}
 
-	// For Gunner. Enemy moves away from the player for a set amount of time, or until the enemy hits a wall or object.
-	// If the gunner gets cornered, they will shoot at the player.
-	private void Flee()
-	{
-		if (waitFlag) return;
+	private void Reposition()
+	{ 
+		Debug.Log("Repositioning...");
 
-		// Get the direction of the player
-		Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
+		// Randomly choose a direction to move in
+		patrolDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
 
-		// Determine the direction to move in to flee from the player
-		if (playerPosition.x < transform.position.x)
+		if (hitWall() || hitObject() || hitLedge())
 		{
-			patrolDirection = 1;
-			transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+			patrolDirection *= -1;
+		}
+		
+		// Flip the enemy to face the direction they're moving in
+		if (patrolDirection > 0)
+		{
+			transform.localScale = new Vector3(-Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 		}
 		else
 		{
-			patrolDirection = -1;
-			transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+			transform.localScale = new Vector3(Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 		}
 
-		anim.SetBool("isIdle", false);
+		//Debug.Log("Moving to the " + (patrolDirection == 1 ? "right" : "left") + ".");
 		anim.SetTrigger("startMoving");
+		currentState = "Run";
+	}
 
-		// If there is no wall or object in the way, continue moving away from the player
-		if (!hitWall() && !hitObject() && !hitLedge())
-		{
-			anim.SetTrigger("startMoving");
-			rb.velocity = new Vector2(patrolDirection * chargeSpeed * .8f, rb.velocity.y);
-		}
-		else if (hitWall())
-		{
-			CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
-			Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
-			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
-			float wallHeight = hitWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
-			float enemyHeight = capsuleCollider.bounds.size.y;
-			float wallDistance = hitWall.distance + (boxCastSize.x / 2);
+	private void Run()
+	{
+		anim.SetBool("isRunning", true);
+		anim.SetBool("isWalking", false);
+		anim.SetBool("isIdle", false);
 
-			if (wallHeight < enemyHeight)
-			{
-				anim.SetTrigger("startMoving");
-				float time = 1f / (wallHeight * enemyHeight);
-				transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z), time);
+		rb.velocity = new Vector2(chargeSpeed * patrolDirection, rb.velocity.y);
+
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+		RaycastHit2D hitaWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+		float wallHeight = hitaWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
+		float enemyHeight = capsuleCollider.bounds.size.y;
+
+		if (hitWall())
+		{ 
+			Debug.Log("Hit wall!");
+			//anim.SetTrigger("stopMoving");
+
+			if (wallHeight < (enemyHeight * 1.5))
+			{ 
+				Debug.Log("Climbable?");
+				currentState = "WallClimb";
 			}
-			else
-			{
-				// Wall is too high
-				rb.velocity = new Vector2(0, rb.velocity.y);
-				anim.SetTrigger("stopMoving");
+            else
+            {
+                Debug.Log("Not climbable.");
 
-				// Start blasting
-				if (!isCooldownRunning)
+				if (UnityEngine.Random.Range(0, 2) == 0)
 				{
-					isCooldownRunning = true;
-					StartCoroutine(Cooldown());
+					currentState = "Reposition";
+				}
+				else
+				{
+					currentState = "Lookout";
+					patrolDirection *= -1;
+
+					anim.SetBool("isIdle", true);
+					anim.SetBool("isRunning", false);
+					anim.SetBool("isWalking", false);
+					anim.SetTrigger("stopMoving");
+
+					if (patrolDirection > 0)
+					{
+						transform.localScale = new Vector3(-Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+					}
+					else
+					{
+						transform.localScale = new Vector3(Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+					}
 				}
 			}
 		}
 		else if (hitObject())
 		{
-			// Shoot in the direction the enemy is trying to flee in.
-			//anim.SetTrigger("stopMoving");
-
-			if (!isShootingObject)
-			{
-				isShootingObject = true;
-				StartCoroutine(ShootObject());
-			}
+		
 		}
 		else if (hitLedge())
 		{
-			// Raycast straight down and check if there's a "DeathVoid" tagged object below the enemy
-			RaycastHit2D hitVoid = Physics2D.Raycast(transform.position, Vector2.down, 100, LayerMask.GetMask("DeathVoid"));
-
-			// If there's a void below the enemy, start blasting
-			// Otherwise, continue fleeing in the direction of the ledge
-
-			if (hitVoid.collider != null)
-			{
-				anim.SetTrigger("stopMoving");
-
-				// Start blasting
-				if (!isCooldownRunning)
-				{
-					isCooldownRunning = true;
-					StartCoroutine(Cooldown());
-				}
-			}
-			else
-			{
-				anim.SetTrigger("startMoving");
-				rb.velocity = new Vector2(patrolDirection * chargeSpeed, rb.velocity.y);
-			}
-
-			// If no way, anim.SetTrigger("stopMoving");
+		
 		}
 		else
 		{
-			anim.SetTrigger("stopMoving");
-
-			// Start blasting
-			if (!isCooldownRunning)
-			{
-				isCooldownRunning = true;
-				StartCoroutine(Cooldown());
-			}
+			
 		}
 	}
 
-	// Coroutine for shooting at the object in the way of the enemy's fleeing path, with a 1 second delay between shots.
-	IEnumerator ShootObject()
+	private void WallClimb()
 	{
-		yield return new WaitForSeconds(1f);
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+		RaycastHit2D hitaWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+		float wallHeight = hitaWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
+		float enemyHeight = capsuleCollider.bounds.size.y;
 
-		// Instantiate the bullet prefab at the firePoint's position
-		Transform firePoint = transform.Find("firePoint");
-
-		if (firePoint == null)
-		{
-			Debug.Log("Failed to get firepoint. Is enemyControl set to gunner?");
-			yield break;
-		}
-		else
-		{
-			anim.SetTrigger("stopMoving");
-			GameObject bulletInstance = Instantiate(bullet, transform.Find("firePoint").position, Quaternion.identity);
-			// Add a small random deviation to the direction
-			float randomAngle = UnityEngine.Random.Range(-10f, 10f);
-			Vector3 direction = new Vector3(patrolDirection, 0, randomAngle);
-			bulletInstance.GetComponent<Rigidbody2D>().velocity = direction.normalized * 10;
-		}
-
-		isShootingObject = false; // Reset the flag after shooting
+		StartCoroutine(Climb());
 	}
+
+	// Coroutine called Climb that will move the enemy up the wall, and when complete, randomly choose to reposition or lookout.
+	IEnumerator Climb()
+	{
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+		RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+		float wallHeight = hitWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
+		float enemyHeight = capsuleCollider.bounds.size.y;
+		float wallDistance = hitWall.distance + (boxCastSize.x / 2);
+		float time = 1f / (wallHeight * enemyHeight);
+
+		if (wallHeight < enemyHeight)
+		{
+			//anim.SetTrigger("startMoving");
+			Debug.Log("Climbing wall...");
+			transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z), time);
+		}
+		//else
+		//{
+		//	// Wall is too high
+		//	Debug.Log("Wall is too high.");
+		//	rb.velocity = new Vector2(0, rb.velocity.y);
+		//	anim.SetTrigger("stopMoving");
+		//}
+
+		yield return new WaitForSeconds(.5f);
+		
+		// Call NewState to randomly choose between Reposition and Lookout, and end the coroutine.
+		NewState();
+
+		yield return null;
+	}
+
+	private void NewState()
+	{
+		currentState = UnityEngine.Random.Range(0, 2) == 0 ? "Reposition" : "Lookout";
+		Debug.Log("Moving to " + currentState + " state.");
+
+		if (currentState == "Lookout")
+		{
+			anim.SetBool("isIdle", true);
+			anim.SetBool("isRunning", false);
+			anim.SetBool("isWalking", false);
+			anim.SetTrigger("stopMoving");
+		}
+		return;
+	}
+
+	// For Gunner. Enemy moves away from the player for a set amount of time, or until the enemy hits a wall or object.
+	// If the gunner gets cornered, they will shoot at the player.
+	//private void Flee()
+	//{
+	//	if (waitFlag) return;
+	//
+	//	// Get the direction of the player
+	//	Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
+	//
+	//	// Determine the direction to move in to flee from the player
+	//	if (playerPosition.x < transform.position.x)
+	//	{
+	//		patrolDirection = 1;
+	//		transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+	//	}
+	//	else
+	//	{
+	//		patrolDirection = -1;
+	//		transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+	//	}
+	//
+	//	anim.SetBool("isIdle", false);
+	//	anim.SetTrigger("startMoving");
+	//
+	//	// If there is no wall or object in the way, continue moving away from the player
+	//	if (!hitWall() && !hitObject() && !hitLedge())
+	//	{
+	//		anim.SetTrigger("startMoving");
+	//		rb.velocity = new Vector2(patrolDirection * chargeSpeed * .8f, rb.velocity.y);
+	//	}
+	//	else if (hitWall())
+	//	{
+	//		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+	//		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+	//		RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+	//		float wallHeight = hitWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
+	//		float enemyHeight = capsuleCollider.bounds.size.y;
+	//		float wallDistance = hitWall.distance + (boxCastSize.x / 2);
+	//
+	//		if (wallHeight < enemyHeight)
+	//		{
+	//			anim.SetTrigger("startMoving");
+	//			float time = 1f / (wallHeight * enemyHeight);
+	//			transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z), time);
+	//		}
+	//		else
+	//		{
+	//			// Wall is too high
+	//			rb.velocity = new Vector2(0, rb.velocity.y);
+	//			anim.SetTrigger("stopMoving");
+	//
+	//			// Start blasting
+	//			if (!isCooldownRunning)
+	//			{
+	//				isCooldownRunning = true;
+	//				StartCoroutine(Cooldown());
+	//			}
+	//		}
+	//	}
+	//	else if (hitObject())
+	//	{
+	//		// Shoot in the direction the enemy is trying to flee in.
+	//		//anim.SetTrigger("stopMoving");
+	//
+	//		if (!isShootingObject)
+	//		{
+	//			isShootingObject = true;
+	//			StartCoroutine(ShootObject());
+	//		}
+	//	}
+	//	else if (hitLedge())
+	//	{
+	//		// Raycast straight down and check if there's a "DeathVoid" tagged object below the enemy
+	//		RaycastHit2D hitVoid = Physics2D.Raycast(transform.position, Vector2.down, 100, LayerMask.GetMask("DeathVoid"));
+	//
+	//		// If there's a void below the enemy, start blasting
+	//		// Otherwise, continue fleeing in the direction of the ledge
+	//
+	//		if (hitVoid.collider != null)
+	//		{
+	//			anim.SetTrigger("stopMoving");
+	//
+	//			// Start blasting
+	//			if (!isCooldownRunning)
+	//			{
+	//				isCooldownRunning = true;
+	//				StartCoroutine(Cooldown());
+	//			}
+	//		}
+	//		else
+	//		{
+	//			anim.SetTrigger("startMoving");
+	//			rb.velocity = new Vector2(patrolDirection * chargeSpeed, rb.velocity.y);
+	//		}
+	//
+	//		// If no way, anim.SetTrigger("stopMoving");
+	//	}
+	//	else
+	//	{
+	//		anim.SetTrigger("stopMoving");
+	//
+	//		// Start blasting
+	//		if (!isCooldownRunning)
+	//		{
+	//			isCooldownRunning = true;
+	//			StartCoroutine(Cooldown());
+	//		}
+	//	}
+	//}
+	//
+	//// Coroutine for shooting at the object in the way of the enemy's fleeing path, with a 1 second delay between shots.
+	//IEnumerator ShootObject()
+	//{
+	//	yield return new WaitForSeconds(1f);
+	//
+	//	// Instantiate the bullet prefab at the firePoint's position
+	//	Transform firePoint = transform.Find("firePoint");
+	//
+	//	if (firePoint == null)
+	//	{
+	//		Debug.Log("Failed to get firepoint. Is enemyControl set to gunner?");
+	//		yield break;
+	//	}
+	//	else
+	//	{
+	//		anim.SetTrigger("stopMoving");
+	//		GameObject bulletInstance = Instantiate(bullet, transform.Find("firePoint").position, Quaternion.identity);
+	//		// Add a small random deviation to the direction
+	//		float randomAngle = UnityEngine.Random.Range(-10f, 10f);
+	//		Vector3 direction = new Vector3(patrolDirection, 0, randomAngle);
+	//		bulletInstance.GetComponent<Rigidbody2D>().velocity = direction.normalized * 10;
+	//	}
+	//
+	//	isShootingObject = false; // Reset the flag after shooting
+	//}
 
 	// For Gunner. Enemy shoots at the player if the player is in sight. Transitions from Lookout state.
-	private void TakeAim()
-	{
-		if (lookoutPlayer(gunnerFleeRange))
-		{
-			currentState = "Flee";
-			return;
-		}
-
+	private void Shoot()
+	{	
 		// Flip to face the direction of the player as the gunner aims.
 		if (GameObject.Find("Player").transform.position.x < transform.position.x)
 		{
@@ -357,47 +505,47 @@ public class EnemyControl : MonoBehaviour
 		{
 			transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 		}
-
+	
 		if (!isCooldownRunning)
 		{
 			isCooldownRunning = true;
-			StartCoroutine(Cooldown());
-		}
-
-		// If the player is no longer in sight, return to the Lookout state
-		if (!lookoutPlayer(gunnerSightRange))
-		{
-			currentState = "Lookout";
+			StartCoroutine(FireAndCooldown());
 		}
 	}
-
-	IEnumerator Cooldown()
+	
+	IEnumerator FireAndCooldown()
 	{
-		yield return new WaitForSeconds(1f); // Wait 1 second
+		if (isStunned || isCrumpled || waitFlag) yield break;
 
+		yield return new WaitForSeconds(1f); // Wait 1 second
+	
 		int shotsFired = 0;
 		while (shotsFired < 3)
 		{
 			anim.SetTrigger("isAttack1");
-			Shoot();
+			Fire();
 			shotsFired++;
-			yield return new WaitForSeconds(0.3f); // Wait 0.5 seconds between shots
+			yield return new WaitForSeconds(0.3f);
 			anim.SetTrigger("isAttack2");
 		}
+	
+		yield return new WaitForSeconds(.5f);
 
-		yield return new WaitForSeconds(2f); // Wait 3 seconds before firing again
+		currentState = "Reposition";
 
 		isCooldownRunning = false; // Set the flag to false after the cooldown is complete
 	}
-
-	private void Shoot()
+	
+	private void Fire()
 	{
+		if (isStunned || isCrumpled || waitFlag) return;
+
 		// Instantiate the bullet prefab at the firePoint's position
 		Transform firePoint = transform.Find("firePoint");
-
+	
 		anim.SetBool("isMoving", false);
 		anim.SetBool("isIdle", true);
-
+	
 		if (firePoint == null)
 		{
 			Debug.Log("Failed to get firepoint. Is enemyControl set to gunner?");
@@ -405,16 +553,16 @@ public class EnemyControl : MonoBehaviour
 		}
 		else
 		{
-
+	
 			// Set bullet to velocity of 10 in the direction of the center of the player's collider
 			GameObject bulletInstance = Instantiate(bullet, firePoint.position, Quaternion.identity);
 			Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
 			Vector3 direction = playerPosition - firePoint.position;
-
+	
 			// Add a small random deviation to the direction
 			float randomAngle = UnityEngine.Random.Range(-10f, 10f); 
 			direction = Quaternion.Euler(0, 0, randomAngle) * direction;
-
+	
 			bulletInstance.GetComponent<Rigidbody2D>().velocity = direction.normalized * 10;
 		}
 	}
@@ -878,7 +1026,7 @@ public class EnemyControl : MonoBehaviour
 
 		if (hit.collider == null)
 		{
-			Debug.Log("Ledge detected!");
+			//Debug.Log("Ledge detected!");
 			return true;
 		}
 
@@ -908,6 +1056,9 @@ public class EnemyControl : MonoBehaviour
 		else if (Class == "Gunner")
 		{
 			currentState = "Lookout";
+			anim.SetTrigger("stopMoving");
+			anim.SetBool("isIdle", true);
+			anim.SetBool("isMoving", false);
 		}
 		else if (Class == "Balloon")
 		{
