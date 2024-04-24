@@ -44,7 +44,7 @@ public class EnemyControl : MonoBehaviour
     private float patrolDirection = 1; // Determines the direction the enemy is moving. -1 is left, 1 is right.
 	private float attackTimer;
 	private GameObject stunEffect;
-
+	private bool isShootingObject;
 	private bool isCooldownRunning = false;
 
 	void Start()
@@ -244,7 +244,8 @@ public class EnemyControl : MonoBehaviour
 		// If there is no wall or object in the way, continue moving away from the player
 		if (!hitWall() && !hitObject() && !hitLedge())
 		{
-			rb.velocity = new Vector2(patrolDirection * chargeSpeed, rb.velocity.y);
+			rb.velocity = new Vector2(patrolDirection * chargeSpeed * .8f, rb.velocity.y);
+			flip();
 		}
 		else if (hitWall())
 		{
@@ -276,11 +277,38 @@ public class EnemyControl : MonoBehaviour
 		}
 		else if (hitObject())
 		{ 
-			// Switch layers to go through objects, continue fleeing until past object
+			// Shoot in the direction the enemy is trying to flee in.
+			anim.SetTrigger("stopMoving");
+
+			if (!isShootingObject)
+			{
+				isShootingObject = true;
+				StartCoroutine(ShootObject());
+			}
 		}
 		else if (hitLedge())
 		{
 			// Raycast straight down and check if there's a "DeathVoid" tagged object below the enemy
+			RaycastHit2D hitVoid = Physics2D.Raycast(transform.position, Vector2.down, 100, LayerMask.GetMask("DeathVoid"));
+
+			// If there's a void below the enemy, start blasting
+			// Otherwise, continue fleeing in the direction of the ledge
+
+			if (hitVoid.collider != null)
+			{
+				anim.SetTrigger("stopMoving");
+
+				// Start blasting
+				if (!isCooldownRunning)
+				{
+					isCooldownRunning = true;
+					StartCoroutine(Cooldown());
+				}
+			}
+			else
+			{
+				rb.velocity = new Vector2(patrolDirection * chargeSpeed, rb.velocity.y);
+			}
 
 			// If no way, anim.SetTrigger("stopMoving");
 		}
@@ -295,6 +323,31 @@ public class EnemyControl : MonoBehaviour
 				StartCoroutine(Cooldown());
 			}
 		}
+	}
+
+	// Coroutine for shooting at the object in the way of the enemy's fleeing path, with a 1 second delay between shots.
+	IEnumerator ShootObject()
+	{
+		yield return new WaitForSeconds(1f);
+
+		// Instantiate the bullet prefab at the firePoint's position
+		Transform firePoint = transform.Find("firePoint");
+
+		if (firePoint == null)
+		{
+			Debug.Log("Failed to get firepoint. Is enemyControl set to gunner?");
+			yield break;
+		}
+		else
+		{
+			GameObject bulletInstance = Instantiate(bullet, transform.Find("firePoint").position, Quaternion.identity);
+			// Add a small random deviation to the direction
+			float randomAngle = UnityEngine.Random.Range(-10f, 10f);
+			Vector3 direction = new Vector3(patrolDirection, 0, randomAngle);
+			bulletInstance.GetComponent<Rigidbody2D>().velocity = direction.normalized * 10;
+		}
+
+		isShootingObject = false; // Reset the flag after shooting
 	}
 
 	// For Gunner. Enemy shoots at the player if the player is in sight. Transitions from Lookout state.
