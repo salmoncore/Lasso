@@ -13,7 +13,11 @@ public class CameraZoomOut : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		StartCoroutine(ZoomOut());
+		// Check the tag of what collided with the trigger. If it's player, zoom out.
+		if (other.gameObject.tag == "Player")
+		{
+			StartCoroutine(ZoomOut());
+		}
 	}
 
 	IEnumerator ZoomOut()

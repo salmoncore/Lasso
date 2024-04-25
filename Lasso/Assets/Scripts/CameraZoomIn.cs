@@ -13,7 +13,10 @@ public class CameraZoomIn : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		StartCoroutine(ZoomIn());
+		if (other.gameObject.tag == "Player")
+		{
+			StartCoroutine(ZoomIn());
+		}
 	}
 
 	IEnumerator ZoomIn()
