@@ -231,6 +231,24 @@ public class EnemyControl : MonoBehaviour
 		currentState = "Run";
 	}
 
+	private bool heightCheck()
+	{
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+		RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+		float wallHeight = hitWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
+		float enemyHeight = capsuleCollider.bounds.size.y;
+
+		if (wallHeight < enemyHeight)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	private void Run()
 	{
 		anim.SetBool("isRunning", true);
@@ -239,26 +257,20 @@ public class EnemyControl : MonoBehaviour
 
 		rb.velocity = new Vector2(chargeSpeed * patrolDirection, rb.velocity.y);
 
-		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
-		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
-		RaycastHit2D hitaWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
-		float wallHeight = hitaWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
-		float enemyHeight = capsuleCollider.bounds.size.y;
-
 		if (hitWall())
 		{ 
 			Debug.Log("Hit wall!");
 			//anim.SetTrigger("stopMoving");
-
-			if (wallHeight < (enemyHeight * 1.5))
+		
+			if (heightCheck())
 			{ 
 				Debug.Log("Climbable?");
 				currentState = "WallClimb";
 			}
-            else
-            {
-                Debug.Log("Not climbable.");
-
+		    else
+		    {
+		        Debug.Log("Not climbable.");
+		
 				if (UnityEngine.Random.Range(0, 2) == 0)
 				{
 					currentState = "Reposition";
@@ -267,12 +279,12 @@ public class EnemyControl : MonoBehaviour
 				{
 					currentState = "Lookout";
 					patrolDirection *= -1;
-
+		
 					anim.SetBool("isIdle", true);
 					anim.SetBool("isRunning", false);
 					anim.SetBool("isWalking", false);
 					anim.SetTrigger("stopMoving");
-
+		
 					if (patrolDirection > 0)
 					{
 						transform.localScale = new Vector3(-Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
@@ -286,16 +298,29 @@ public class EnemyControl : MonoBehaviour
 		}
 		else if (hitObject())
 		{
-		
+			Debug.Log("Hit object.");
+			
+			// Start a coroutine to momentarily switch the layer of this gameobject to "GunnerFlee" to avoid getting hit by the object.
+			StartCoroutine(Flee());
 		}
 		else if (hitLedge())
 		{
-		
+			Debug.Log("Hit ledge.");
+			rb.velocity = new Vector2(0, rb.velocity.y);
+			currentState = "Reposition";
 		}
 		else
 		{
-			
+			//Debug.Log("Running...");
 		}
+	}
+
+	// For gunner. Enemy momentarily switches to the "GunnerFlee" layer to avoid getting hit by objects.
+	IEnumerator Flee()
+	{
+		gameObject.layer = LayerMask.NameToLayer("GunnerFlee");
+		yield return new WaitForSeconds(.5f);
+		gameObject.layer = LayerMask.NameToLayer("Enemy");
 	}
 
 	private void WallClimb()
