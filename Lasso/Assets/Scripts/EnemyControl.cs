@@ -1045,6 +1045,16 @@ public class EnemyControl : MonoBehaviour
 		{
 			patrolDirection *= -1;
 			flip();
+
+			if (currentState == "Rush")
+			{
+				currentState = "Patrol";
+			}
+
+			if (currentState == "Run")
+			{
+				currentState = "Lookout";
+			}
 		}
 
 		// If the charger is in the rush state and collides with a fragile object, break it from the LassoHandler script.
