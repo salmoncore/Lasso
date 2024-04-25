@@ -47,6 +47,7 @@ public class EnemyControl : MonoBehaviour
 	private bool isRepositioning = false;
 	private bool isCooldownRunning = false;
 	private bool isTraversing = false;
+	private bool isFleeing = false;
 
 	void Start()
     {
@@ -296,31 +297,72 @@ public class EnemyControl : MonoBehaviour
 				}
 			}
 		}
-		else if (hitObject())
+		
+		if (hitObject())
 		{
 			Debug.Log("Hit object.");
 			
 			// Start a coroutine to momentarily switch the layer of this gameobject to "GunnerFlee" to avoid getting hit by the object.
 			StartCoroutine(Flee());
 		}
-		else if (hitLedge())
+		
+		if (hitLedge())
 		{
 			Debug.Log("Hit ledge.");
-			rb.velocity = new Vector2(0, rb.velocity.y);
-			currentState = "Reposition";
-		}
-		else
-		{
-			//Debug.Log("Running...");
+
+			// Call a method that checks to see if there's a "DeathVoid" tagged object below the enemy. If there isn't, continue running, otherwise, stop and enter the Lookout state.
+			if (!hitVoid())
+			{
+				rb.velocity = new Vector2(chargeSpeed * patrolDirection, rb.velocity.y);
+			}
+			else
+			{
+				rb.velocity = new Vector2(0, rb.velocity.y);
+				currentState = "Lookout";
+				anim.SetBool("isIdle", true);
+				anim.SetBool("isRunning", false);
+				anim.SetBool("isWalking", false);
+				anim.SetTrigger("stopMoving");
+			}
 		}
 	}
 
-	// For gunner. Enemy momentarily switches to the "GunnerFlee" layer to avoid getting hit by objects.
-	IEnumerator Flee()
+	private bool hitVoid()
 	{
-		gameObject.layer = LayerMask.NameToLayer("GunnerFlee");
-		yield return new WaitForSeconds(.5f);
-		gameObject.layer = LayerMask.NameToLayer("Enemy");
+		// Produces the boxcast to check if there's a "DeathVoid" tagged object below the enemy.
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (playerSightSize.x / 2 + playerSightOffset.x), playerSightOffset.y, 0);
+
+		RaycastHit2D hitVoid = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, Vector2.down, 100, LayerMask.GetMask("Default"));
+
+		// If the player is within the sight range, check for walls and objects in the way.
+		if (hitVoid.collider != null)
+		{
+			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+			RaycastHit2D hitObject = new RaycastHit2D();
+
+			hitObject = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Interactive"));
+
+			// If no wall is detected or the player is closer than the wall, and if the player is closer than the object or no object is detected, begin rushing.
+			if ((hitWall.collider == null || hitWall.distance > hitVoid.distance) && (hitObject.collider == null || hitObject.distance > hitVoid.distance))
+			{
+				Debug.Log("Void detected beneath!");
+				return true;
+			}
+		}
+
+		// More debug lines for the boxcast.
+		Vector2 topRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, playerSightSize.y / 2, 0);
+		Vector2 topLeft = boxcastOrigin + new Vector3(-playerSightSize.x / 2, playerSightSize.y / 2, 0);
+		Vector2 bottomRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, -playerSightSize.y / 2, 0);
+		Vector2 bottomLeft = boxcastOrigin + new Vector3(-playerSightSize.x / 2, -playerSightSize.y / 2, 0);
+
+		Debug.DrawLine(topLeft, topRight, Color.green); // Top edge
+		Debug.DrawLine(topRight, bottomRight, Color.green); // Right edge
+		Debug.DrawLine(bottomRight, bottomLeft, Color.green); // Bottom edge
+		Debug.DrawLine(bottomLeft, topLeft, Color.green); // Left edge
+
+		return false;
 	}
 
 	private void WallClimb()
@@ -334,7 +376,15 @@ public class EnemyControl : MonoBehaviour
 		StartCoroutine(Climb());
 	}
 
-	// Coroutine called Climb that will move the enemy up the wall, and when complete, randomly choose to reposition or lookout.
+	// For gunner. Enemy momentarily switches to the "GunnerFlee" layer to avoid getting hit by objects.
+	IEnumerator Flee()
+	{
+		gameObject.layer = LayerMask.NameToLayer("GunnerFlee");
+		yield return new WaitForSeconds(1f);
+		gameObject.layer = LayerMask.NameToLayer("Enemies");
+	}
+
+		// Coroutine called Climb that will move the enemy up the wall, and when complete, randomly choose to reposition or lookout.
 	IEnumerator Climb()
 	{
 		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
@@ -349,7 +399,9 @@ public class EnemyControl : MonoBehaviour
 		{
 			//anim.SetTrigger("startMoving");
 			Debug.Log("Climbing wall...");
-			transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z), time);
+			//transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z), time);
+			// Don't linear interpolate, just place the enemy at the top of the wall.
+			transform.position = new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z);
 		}
 		//else
 		//{
