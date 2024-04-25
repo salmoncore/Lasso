@@ -16,6 +16,15 @@ public class DeathVoid : MonoBehaviour
 		{
 			// do nothing
 		}
+		else if (collision.gameObject.TryGetComponent<EnemyControl>(out EnemyControl enemyControl))
+		{
+			// If the object has a pslInterrupt method, call it
+			if (enemyControl.GetType().GetMethod("pslInterrupt") != null)
+			{
+				enemyControl.pslInterrupt();
+			}
+			Destroy(collision.gameObject);
+		}
 
 		// If it's not the player just destroy the object
 		else
