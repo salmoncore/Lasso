@@ -19,7 +19,7 @@ public class LevelScript : MonoBehaviour
 		}
         else
         {
-			Debug.Log("GameManager found: " + gameManager.name);
+			//Debug.Log("GameManager found: " + gameManager.name);
 		}
     }
 

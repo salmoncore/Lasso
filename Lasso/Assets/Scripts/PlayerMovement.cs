@@ -55,6 +55,11 @@ public class PlayerMovement : MonoBehaviour
         anim = GetComponent<Animator>();
         playerCollider = GetComponent<CapsuleCollider2D>();
 
+        if (GameObject.Find("Entrance") == null)
+        {
+			levelEntry = false;
+		}
+
         playerInput = GetComponent<PlayerInput>();
         playerInput.onActionTriggered += PlayerInput_onActionTriggered;
 

@@ -19,6 +19,7 @@ TagManager:
   - Goal
   - Button
   - Bullet
+  - DeathVoid
   layers:
   - Default
   - TransparentFX

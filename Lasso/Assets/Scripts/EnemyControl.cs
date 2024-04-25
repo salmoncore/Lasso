@@ -26,8 +26,8 @@ public class EnemyControl : MonoBehaviour
 	[SerializeField] private float aggroTimeDivision = 2f; // How much longer the enemy attacks the player the longer the player is in sight. Used for Charger class.
 	[SerializeField] private float gunnerSightRange = 10f; // Range at which the Gunner can see the player
 	[SerializeField] private float gunnerFleeRange = 5f; // Range at which the Gunner will flee from the player
-	[SerializeField] private float gunnerDelayToFire = 2f; // TODO: Fix this. Delay before the gunner can shoot at the player.
-	[SerializeField] private float gunnerCooldown = 5f;	// Cooldown between shots for the Gunner
+	[SerializeField] private float gunnerFireDelay = .5f; // Burst fire delay
+	[SerializeField] private float gunnerCooldown = 2f;	// Cooldown between shots volleys for the Gunner
 	[SerializeField] private float gunnerFleeTime = 4f; // The amount of time the Gunner will flee from the player
 	[SerializeField] private bool gunnerFaceLeft = true; // Determines if the Gunner faces left or right on spawn
 	[SerializeField] private bool isStunned = false; // Determines if the enemy is stunned
@@ -44,6 +44,10 @@ public class EnemyControl : MonoBehaviour
     private float patrolDirection = 1; // Determines the direction the enemy is moving. -1 is left, 1 is right.
 	private float attackTimer;
 	private GameObject stunEffect;
+	private bool isRepositioning = false;
+	private bool isCooldownRunning = false;
+	private bool isTraversing = false;
+	private bool isFleeing = false;
 
 	void Start()
     {
@@ -86,8 +90,8 @@ public class EnemyControl : MonoBehaviour
 		// Initializing variables based on the class of the enemy.
 		if (Class == "Charger")
 		{
-			boxCastSize = new Vector2(0.59f, 1.36f);
-			boxCastOffset = new Vector2(0.27f, 0.02f);
+			boxCastSize = new Vector2(.7f, 1.36f);
+			boxCastOffset = new Vector2(0.27f, 0.02f); 
 			ledgeCheckSize = new Vector2(0.05f, 0.5f);
 			ledgeCheckOffset = new Vector2(0.34f, -0.75f);
 			playerSightSize = new Vector2(5f, 1f);
@@ -102,7 +106,6 @@ public class EnemyControl : MonoBehaviour
 			{
 				transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
 			}
-			Cooldown(gunnerDelayToFire);
 
 			boxCastSize = new Vector2(1f, 1.169f);
 			boxCastOffset = new Vector2(0.14f, 0.04f);
@@ -161,11 +164,17 @@ public class EnemyControl : MonoBehaviour
 				case "Lookout":
 					Lookout();
 					break;
-				case "TakeAim":
-					TakeAim();
+				case "Reposition":
+					Reposition();
 					break;
-				case "Flee":
-					Flee();
+				case "Shoot":
+					Shoot();
+					break;
+				case "Run":
+					Run();
+					break;
+				case "WallClimb":
+					WallClimb();
 					break;
 			}
 		}
@@ -186,84 +195,248 @@ public class EnemyControl : MonoBehaviour
 		if (waitFlag) return;
 
 		anim.SetBool("isIdle", true);
+		//anim.SetTrigger("stopMoving");
 		anim.SetBool("isMoving", false);
 
-		// Check if the player is in the Flee or Sight range, and switch to either Flee or TakeAim states, respectively.
-		if (lookoutPlayer(gunnerFleeRange))
+		if (lookoutPlayer(gunnerSightRange))
 		{
-			//Debug.Log("Fleeing!");
-			currentState = "Flee";
-			return;
-		} 
-		else if (lookoutPlayer(gunnerSightRange))
-		{
-			//Debug.Log("Shooting!");
-			Cooldown(gunnerDelayToFire);
-			currentState = "TakeAim";
+			// Shoot
+			currentState = "Shoot";
 		}
 	}
 
-	// For Gunner. Enemy moves away from the player for a set amount of time, or until the enemy hits a wall or object.
-	// If the gunner gets cornered, they will shoot at the player.
-	private void Flee()
+	private void Reposition()
+	{ 
+		Debug.Log("Repositioning...");
+
+		// Randomly choose a direction to move in
+		patrolDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+
+		if (hitWall() || hitObject() || hitLedge())
+		{
+			patrolDirection *= -1;
+		}
+		
+		// Flip the enemy to face the direction they're moving in
+		if (patrolDirection > 0)
+		{
+			transform.localScale = new Vector3(-Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+		}
+		else
+		{
+			transform.localScale = new Vector3(Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+		}
+
+		//Debug.Log("Moving to the " + (patrolDirection == 1 ? "right" : "left") + ".");
+		anim.SetTrigger("startMoving");
+		currentState = "Run";
+	}
+
+	private bool heightCheck()
 	{
-		if (waitFlag) return;
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+		RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+		float wallHeight = hitWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
+		float enemyHeight = capsuleCollider.bounds.size.y;
 
-		// Check if the player is still in sight
-
-		if (lookoutPlayer(gunnerFleeRange))
+		if (wallHeight < enemyHeight)
 		{
-			// If the player is still in sight, continue fleeing
-			rb.velocity = new Vector2(-patrolDirection * chargeSpeed, rb.velocity.y);
+			return true;
 		}
 		else
 		{
-			// If the player is no longer in sight, stop fleeing and return to the lookout state
-			rb.velocity = new Vector2(0, rb.velocity.y);
-			currentState = "Lookout";
+			return false;
 		}
+	}
 
-		// Get the direction of the player
-		Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
-
-		// Determine the direction to move in to flee from the player
-		if (playerPosition.x < transform.position.x)
-		{
-			patrolDirection = 1;
-			transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-		}
-		else
-		{
-			patrolDirection = -1;
-			transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-		}
-
-		anim.SetBool("isMoving", true);
+	private void Run()
+	{
+		anim.SetBool("isRunning", true);
+		anim.SetBool("isWalking", false);
 		anim.SetBool("isIdle", false);
 
-		// If there is no wall or object in the way, continue moving away from the player
-		if (!hitWall() && !hitObject() && !hitLedge())
-		{
-			rb.velocity = new Vector2(patrolDirection * chargeSpeed, rb.velocity.y);
+		rb.velocity = new Vector2(chargeSpeed * patrolDirection, rb.velocity.y);
+
+		if (hitWall())
+		{ 
+			Debug.Log("Hit wall!");
+			//anim.SetTrigger("stopMoving");
+		
+			if (heightCheck())
+			{ 
+				Debug.Log("Climbable?");
+				currentState = "WallClimb";
+			}
+		    else
+		    {
+		        Debug.Log("Not climbable.");
+		
+				if (UnityEngine.Random.Range(0, 2) == 0)
+				{
+					currentState = "Reposition";
+				}
+				else
+				{
+					currentState = "Lookout";
+					patrolDirection *= -1;
+		
+					anim.SetBool("isIdle", true);
+					anim.SetBool("isRunning", false);
+					anim.SetBool("isWalking", false);
+					anim.SetTrigger("stopMoving");
+		
+					if (patrolDirection > 0)
+					{
+						transform.localScale = new Vector3(-Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+					}
+					else
+					{
+						transform.localScale = new Vector3(Math.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+					}
+				}
+			}
 		}
-		else
+		
+		if (hitObject())
 		{
-			// If there is a wall or object in the way, shoot at the player
-			rb.velocity = new Vector2(0, rb.velocity.y);
-			Shoot();
+			Debug.Log("Hit object.");
+			
+			// Start a coroutine to momentarily switch the layer of this gameobject to "GunnerFlee" to avoid getting hit by the object.
+			StartCoroutine(Flee());
 		}
+		
+		if (hitLedge())
+		{
+			Debug.Log("Hit ledge.");
+
+			// Call a method that checks to see if there's a "DeathVoid" tagged object below the enemy. If there isn't, continue running, otherwise, stop and enter the Lookout state.
+			if (!hitVoid())
+			{
+				rb.velocity = new Vector2(chargeSpeed * patrolDirection, rb.velocity.y);
+			}
+			else
+			{
+				rb.velocity = new Vector2(0, rb.velocity.y);
+				currentState = "Lookout";
+				anim.SetBool("isIdle", true);
+				anim.SetBool("isRunning", false);
+				anim.SetBool("isWalking", false);
+				anim.SetTrigger("stopMoving");
+			}
+		}
+	}
+
+	private bool hitVoid()
+	{
+		// Produces the boxcast to check if there's a "DeathVoid" tagged object below the enemy.
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (playerSightSize.x / 2 + playerSightOffset.x), playerSightOffset.y, 0);
+
+		RaycastHit2D hitVoid = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, Vector2.down, 100, LayerMask.GetMask("Default"));
+
+		// If the player is within the sight range, check for walls and objects in the way.
+		if (hitVoid.collider != null)
+		{
+			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+			RaycastHit2D hitObject = new RaycastHit2D();
+
+			hitObject = Physics2D.BoxCast(boxcastOrigin, playerSightSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Interactive"));
+
+			// If no wall is detected or the player is closer than the wall, and if the player is closer than the object or no object is detected, begin rushing.
+			if ((hitWall.collider == null || hitWall.distance > hitVoid.distance) && (hitObject.collider == null || hitObject.distance > hitVoid.distance))
+			{
+				Debug.Log("Void detected beneath!");
+				return true;
+			}
+		}
+
+		// More debug lines for the boxcast.
+		Vector2 topRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, playerSightSize.y / 2, 0);
+		Vector2 topLeft = boxcastOrigin + new Vector3(-playerSightSize.x / 2, playerSightSize.y / 2, 0);
+		Vector2 bottomRight = boxcastOrigin + new Vector3(playerSightSize.x / 2, -playerSightSize.y / 2, 0);
+		Vector2 bottomLeft = boxcastOrigin + new Vector3(-playerSightSize.x / 2, -playerSightSize.y / 2, 0);
+
+		Debug.DrawLine(topLeft, topRight, Color.green); // Top edge
+		Debug.DrawLine(topRight, bottomRight, Color.green); // Right edge
+		Debug.DrawLine(bottomRight, bottomLeft, Color.green); // Bottom edge
+		Debug.DrawLine(bottomLeft, topLeft, Color.green); // Left edge
+
+		return false;
+	}
+
+	private void WallClimb()
+	{
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+		RaycastHit2D hitaWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+		float wallHeight = hitaWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
+		float enemyHeight = capsuleCollider.bounds.size.y;
+
+		StartCoroutine(Climb());
+	}
+
+	// For gunner. Enemy momentarily switches to the "GunnerFlee" layer to avoid getting hit by objects.
+	IEnumerator Flee()
+	{
+		gameObject.layer = LayerMask.NameToLayer("GunnerFlee");
+		yield return new WaitForSeconds(1f);
+		gameObject.layer = LayerMask.NameToLayer("Enemies");
+	}
+
+		// Coroutine called Climb that will move the enemy up the wall, and when complete, randomly choose to reposition or lookout.
+	IEnumerator Climb()
+	{
+		CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+		Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+		RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+		float wallHeight = hitWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
+		float enemyHeight = capsuleCollider.bounds.size.y;
+		float wallDistance = hitWall.distance + (boxCastSize.x / 2);
+		float time = 1f / (wallHeight * enemyHeight);
+
+		if (wallHeight < enemyHeight)
+		{
+			//anim.SetTrigger("startMoving");
+			Debug.Log("Climbing wall...");
+			//transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z), time);
+			// Don't linear interpolate, just place the enemy at the top of the wall.
+			transform.position = new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z);
+		}
+		//else
+		//{
+		//	// Wall is too high
+		//	Debug.Log("Wall is too high.");
+		//	rb.velocity = new Vector2(0, rb.velocity.y);
+		//	anim.SetTrigger("stopMoving");
+		//}
+
+		yield return new WaitForSeconds(.5f);
+		
+		// Call NewState to randomly choose between Reposition and Lookout, and end the coroutine.
+		NewState();
+
+		yield return null;
+	}
+
+	private void NewState()
+	{
+		currentState = UnityEngine.Random.Range(0, 2) == 0 ? "Reposition" : "Lookout";
+		Debug.Log("Moving to " + currentState + " state.");
+
+		if (currentState == "Lookout")
+		{
+			anim.SetBool("isIdle", true);
+			anim.SetBool("isRunning", false);
+			anim.SetBool("isWalking", false);
+			anim.SetTrigger("stopMoving");
+		}
+		return;
 	}
 
 	// For Gunner. Enemy shoots at the player if the player is in sight. Transitions from Lookout state.
-	private void TakeAim()
-	{
-		if (lookoutPlayer(gunnerFleeRange))
-		{
-			//Debug.Log("Fleeing!");
-			currentState = "Flee";
-			return;
-		}
-
+	private void Shoot()
+	{	
 		// Flip to face the direction of the player as the gunner aims.
 		if (GameObject.Find("Player").transform.position.x < transform.position.x)
 		{
@@ -273,25 +446,47 @@ public class EnemyControl : MonoBehaviour
 		{
 			transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
 		}
-
-		Shoot();
-
-		// If the player is no longer in sight, return to the Lookout state.
-		if (!lookoutPlayer(gunnerSightRange))
+	
+		if (!isCooldownRunning)
 		{
-			currentState = "Lookout";
+			isCooldownRunning = true;
+			StartCoroutine(FireAndCooldown());
 		}
 	}
-
-	// For Gunner. Handles firing and cooldowns for the gunner. Called in the TakeAim state.
-	private void Shoot()
+	
+	IEnumerator FireAndCooldown()
 	{
-		if (gunnerOnCooldown || waitFlag) return;
+		if (isStunned || isCrumpled || waitFlag) yield break;
+
+		yield return new WaitForSeconds(1f); // Wait 1 second
+	
+		int shotsFired = 0;
+		while (shotsFired < 3)
+		{
+			anim.SetTrigger("isAttack1");
+			Fire();
+			shotsFired++;
+			yield return new WaitForSeconds(0.3f);
+			anim.SetTrigger("isAttack2");
+		}
+	
+		yield return new WaitForSeconds(.5f);
+
+		currentState = "Reposition";
+
+		isCooldownRunning = false; // Set the flag to false after the cooldown is complete
+	}
+	
+	private void Fire()
+	{
+		if (isStunned || isCrumpled || waitFlag) return;
 
 		// Instantiate the bullet prefab at the firePoint's position
 		Transform firePoint = transform.Find("firePoint");
-
-		// Error checking, else instantiate the bullet and set its velocity in the direction of the player.
+	
+		anim.SetBool("isMoving", false);
+		anim.SetBool("isIdle", true);
+	
 		if (firePoint == null)
 		{
 			Debug.Log("Failed to get firepoint. Is enemyControl set to gunner?");
@@ -299,24 +494,18 @@ public class EnemyControl : MonoBehaviour
 		}
 		else
 		{
-			anim.SetTrigger("isAttack1");
-
+	
 			// Set bullet to velocity of 10 in the direction of the center of the player's collider
 			GameObject bulletInstance = Instantiate(bullet, firePoint.position, Quaternion.identity);
 			Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
 			Vector3 direction = playerPosition - firePoint.position;
+	
+			// Add a small random deviation to the direction
+			float randomAngle = UnityEngine.Random.Range(-10f, 10f); 
+			direction = Quaternion.Euler(0, 0, randomAngle) * direction;
+	
 			bulletInstance.GetComponent<Rigidbody2D>().velocity = direction.normalized * 10;
 		}
-
-		// Start the cooldown for the gunner
-		StartCoroutine(Cooldown(gunnerCooldown));
-	}
-
-	IEnumerator Cooldown(float time)
-	{
-		gunnerOnCooldown = true;
-		yield return new WaitForSeconds(time);
-		gunnerOnCooldown = false;
 	}
 
 	// For Gunner. Checks if the player is in sight of the Gunner. Uses playerSightSize/Offset for seeing player through floors & walls.
@@ -474,6 +663,22 @@ public class EnemyControl : MonoBehaviour
 
         if (isStunned || isCrumpled || waitFlag) return;
 
+		// Get the player's location.
+		Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
+
+		if ((patrolDirection < 0 && playerPosition.x > transform.position.x) || (patrolDirection > 0 && playerPosition.x < transform.position.x))
+		{
+			// Slowly reduce patrol direction to 0, then flip the enemy.
+			patrolDirection = Mathf.Lerp(patrolDirection, 0, 0.01f);
+			skidFlip();
+			if (Math.Abs(patrolDirection) < 0.35)
+			{
+				// Patrol in the direction of the player
+				patrolDirection = playerPosition.x > transform.position.x ? 1 : -1;
+				currentState = "Patrol";
+			}
+		}
+
 		// Ledge checking during the rush, dependant on if the enemy is ledge cautious.
         if (hitLedge() && ledgeCautious)
         {
@@ -489,9 +694,25 @@ public class EnemyControl : MonoBehaviour
 		{
 			//Debug.Log("Hit wall/object!");
 
-			rb.velocity = new Vector2(0, rb.velocity.y);
-			currentState = "Patrol";
-			//Debug.Log("Moving to " + currentState + "state.");
+			CapsuleCollider2D capsuleCollider = GetComponent<CapsuleCollider2D>();
+			Vector3 boxcastOrigin = capsuleCollider.bounds.center + new Vector3(patrolDirection * (boxCastSize.x / 2 + boxCastOffset.x), boxCastOffset.y, 0);
+			RaycastHit2D hitWall = Physics2D.BoxCast(boxcastOrigin, boxCastSize, 0, new Vector2(patrolDirection, 0), 0, LayerMask.GetMask("Ground"));
+			float wallHeight = hitWall.collider.bounds.max.y - capsuleCollider.bounds.min.y;
+			float enemyHeight = capsuleCollider.bounds.size.y;
+			float wallDistance = hitWall.distance + (boxCastSize.x / 2);
+
+			if (wallHeight < enemyHeight)
+			{
+				float time = 1f / (wallHeight * enemyHeight);
+				transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x + (wallDistance * patrolDirection), transform.position.y + (wallHeight), transform.position.z), time);
+			}
+			else
+			{
+				// Wall is too high, switch to patrol state
+				rb.velocity = new Vector2(0, rb.velocity.y);
+				//currentState = "Patrol";
+				//Debug.Log("Moving to " + currentState + "state.");
+			}
 		}
 		else // Otherwise, continue rushing.
         {
@@ -499,7 +720,7 @@ public class EnemyControl : MonoBehaviour
 		}
     }
 
-    // Charger attacks the player. If the player remains in the attack range, the enemy will attack for a longer time.
+	// Charger attacks the player. If the player remains in the attack range, the enemy will attack for a longer time.
 	private void Attack()
 	{
 		if (isStunned || isCrumpled || waitFlag) return;
@@ -509,6 +730,22 @@ public class EnemyControl : MonoBehaviour
 		// while attacking, the brute should sprint.
 		anim.SetBool("isWalking", false);
 		anim.SetBool("isRunning", true);
+
+		// Get the player's location.
+		Vector3 playerPosition = GameObject.Find("Player").GetComponent<CapsuleCollider2D>().bounds.center;
+
+		if ((patrolDirection < 0 && playerPosition.x > transform.position.x) || (patrolDirection > 0 && playerPosition.x < transform.position.x))
+		{
+			// Slowly reduce patrol direction to 0, then flip the enemy.
+			patrolDirection = Mathf.Lerp(patrolDirection, 0, 0.01f);
+			skidFlip();
+			if (Math.Abs(patrolDirection) < 0.35)
+			{
+				// Patrol in the direction of the player
+				patrolDirection = playerPosition.x > transform.position.x ? 1 : -1;
+				currentState = "Patrol";
+			}
+		}
 
 		// If the charger hasn't hit anything and the attack timer hasn't run out, continue attacking.
 		if ((!hitObject() || !hitWall() || !hitLedge()) && attackTimer > 0)
@@ -730,7 +967,7 @@ public class EnemyControl : MonoBehaviour
 
 		if (hit.collider == null)
 		{
-			Debug.Log("Ledge detected!");
+			//Debug.Log("Ledge detected!");
 			return true;
 		}
 
@@ -760,6 +997,9 @@ public class EnemyControl : MonoBehaviour
 		else if (Class == "Gunner")
 		{
 			currentState = "Lookout";
+			anim.SetTrigger("stopMoving");
+			anim.SetBool("isIdle", true);
+			anim.SetBool("isMoving", false);
 		}
 		else if (Class == "Balloon")
 		{
@@ -867,14 +1107,35 @@ public class EnemyControl : MonoBehaviour
 		{
 			// Flip the transform.localScale.z depending on the patrolDirection
 
-			if (patrolDirection > 0)
+			if (patrolDirection > 0) // right
 			{
 				transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, -Mathf.Abs(transform.localScale.z));
 			}
-			else
+			else // left
 			{
 				transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, Mathf.Abs(transform.localScale.z));
 			}
 		}
     }
+
+	private void skidFlip()
+	{
+		if (TryGetComponent<SpriteRenderer>(out SpriteRenderer spriteRenderer))
+		{
+			spriteRenderer.flipX = !spriteRenderer.flipX;
+		}
+		else
+		{
+			// Flip the transform.localScale.z depending on the patrolDirection
+
+			if (patrolDirection > 0) // right
+			{
+				transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, Mathf.Abs(transform.localScale.z));
+			}
+			else // left
+			{
+				transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, -Mathf.Abs(transform.localScale.z));
+			}
+		}
+	}
 }
